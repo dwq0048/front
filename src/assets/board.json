@@ -1,0 +1,20 @@
+[
+    {
+        "path": "/notice",
+        "name": "Notice",
+        "skin": {
+            "main": "default",
+            "view": "default",
+            "post": "default"
+        }
+    },
+    {
+        "path": "/vrchat",
+        "name": "Vrchat",
+        "skin": {
+            "main": "vrchat",
+            "view": "vrchat",
+            "post": "vrchat"
+        }
+    }
+]
