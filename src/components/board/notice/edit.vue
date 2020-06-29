@@ -95,31 +95,34 @@ export default {
 				post: this.$refs.edit.postData
 			}
 
-			data.post = sanitizeHtml(data.post, {
-				allowedTags: [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'b', 's', 'i', 'strong', 'a', 'p', 'hr', 'br', 'ul', 'ol', 'li', 'blockquote', 'img', 'iframe' ],
-				allowedAttributes: {
-					'a': [ 'href', 'name', 'target' ],
-					'*': [ 'style' ],
-					'img': [ 'index' ]
-				},
-				allowedStyles: {
-					'*': {
-						'text-align': [/^left$/, /^right$/, /^center$/]
+			data.post = sanitizeHtml(data.post ,{
+				allowedTags : false , 
+				allowedAttributes : false ,
+				transformTags: {
+					'img': function(tagName, attribs) {
+						return {
+							tagName: 'img',
+							attribs: {
+								'src': '',
+								'data-index': attribs['data-index']
+							}
+						};
 					}
-				},
+				}
 			});
 
-			const images = this.$refs.edit.upImage.images;
-			//fs.append(images);
+			let imageStorage = this.$refs.edit.imageStorage;
+			for(let i=0;i<imageStorage.length;i++){
+				delete imageStorage[i].base64;
+			}
 
 			const fs = new FormData();
 			fs.append('position', data.position);
 			fs.append('title', data.title);
 			fs.append('post', data.post);
-			for(let i=0;i<images.length;i++){
-				fs.append('images', images[i]);
+			for(let i=0;i<imageStorage.length;i++){
+				fs.append('images', imageStorage[i]);
 			}
-			//fs.append('images', images);
 
 			this.$axios({
 				method: 'post',
@@ -133,7 +136,6 @@ export default {
 			}).catch((err) => {
 				console.log(err);
 			});
-
 		}
 		/*
 		submit: function(){

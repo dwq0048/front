@@ -4,8 +4,7 @@
 			<div class="editor-menu">
 				<ul>
 					<li>
-						<input type="file" ref="myBtn" multiple @change="ImageTemp($event.target.name, $event.target.files, commands.images)" />
-						<button class="heading" :class="{ 'is-active': varActive.head }" @click="Active('head')">
+						<button class="heading" :class="{ 'is-active': varActive.head }" @click="editActive('head')">
 							<p>H</p>
 							<div class="click">
 								<h1 :class="{ 'is-active': isActive.heading({ level: 1 }) }" @click="commands.heading({ level: 1 })">제목 크기 1</h1>
@@ -112,7 +111,7 @@
 						</button>
 					</li>
 					<li>
-						<button @click="Active('link')">
+						<button @click="editActive('link')">
 							<font-awesome-icon :icon="faLink" />
 							<div class="help">
 								<p>링크</p>
@@ -120,7 +119,8 @@
 						</button>
 					</li>
 					<li>
-						<button @click="Image()">
+						<input type="file" ref="imageRef" multiple @change="imageTemporage($event.target.files, commands.images)" />
+						<button @click="imageBtn()">
 							<font-awesome-icon :icon="faImage" />
 							<div class="help">
 								<p>이미지 업로드</p>
@@ -149,20 +149,20 @@
 						</label>
 					</div>
 					<div class="pop-bottom">
-						<button type="button" :class="{ 'is-active': isActive.hyperlink() }" @click="linkStart(commands.hyperlink)">확인</button>
-						<button type="button" @click="Active('link')">취소</button>
+						<button type="button" :class="{ 'is-active': isActive.hyperlink() }" @click="editLink(commands.hyperlink)">확인</button>
+						<button type="button" @click="editActive('link')">취소</button>
 					</div>
 				</div>
 			</div>
 		</editor-menu-bar>
-		<div class="editor-content" v-on:click="onContents">
+		<div class="editor-content" v-on:click="editContents()">
 			<editor-content :editor="editor" />
 		</div>
 		<div class="editor-images" ref="imageScroll" :class="{ 'is-active' : editorActive }">
 			<ul ref="imageList">
-				<li v-for="(item, i) in upImage.images" :key="i">
+				<li v-for="(item, i) in imageStorage" :key="i">
 					<div>
-						<img :src="item.base" alt="images" :index="i">
+						<img :src="item.base64" :index="i">
 					</div>
 				</li>
 			</ul>
@@ -243,18 +243,22 @@ export default {
 			faCheckSquare,
 			faMinus,
 			faCheck,
-			upImage: { images: [], data: { current: 0 } },
+			
 			editorActive: false,
 			varActive : {
 				head : false,
 				link : false
 			},
 			postData : '',
-			address : ''
+			address : '',
+
+			imageStorage: [],
+			fileStorage: []
 		}
 	},
 	methods: {
-		Active: function(data) {
+		// EDIT EVENT
+		editActive: function(data) {
 			if(!this.varActive[data]){
 				this.varActive[data] = true
 			}else{
@@ -273,56 +277,42 @@ export default {
 
 			return this.varActive[data];
 		},
-		linkStart: function(data) {
+		editLink: function(data) {
 			let href = address.value;
 			this.varActive['link'] = false
 
 			data({ href: href });
 		},
-		onContents: function() {
+		editContents: function() {
 			let data = this.varActive;
 			for (var obj in this.varActive) {
-    			if(this.varActive[obj] == true){
+				if(this.varActive[obj] == true){
 					this.varActive[obj] = false
 				}
 			}
 		},
-		Image: function() {
-			const elem = this.$refs.myBtn;
+		// EDIT EVENT
 
-			elem.click();
+		// IMAGE EVENT
+		imageBtn: function(){
+			this.$refs.imageRef.click();
 		},
-		ImageTemp: function(name, files, command) {
+		imageTemporage: function(files, command){
 			for(let i=0;i<files.length;i++){
 				this.encodeBase64ImageFile(files[i]).then((src) => {
-					files[i].base = src;
-					this.upImage.images.push(files[i]);
+					files[i].index = this.imageStorage.length;
+					files[i].base64 = src;
+					this.imageStorage.push(files[i]);
+					let index = files[i].index;
 
-					const index = this.upImage.images.length -1;
 					command({ src, index });
 				});
 			}
 
-			console.log(this.upImage);
+			console.log(this.imageStorage);
 		},
 		imageList: function(image){
 			/*
-			for(let i=0;i<this.upImage.images.length;i++){
-				console.log(this.upImage.images[i]);
-				const elLi = document.createElement("li");
-				const elDiv = document.createElement("div");
-				const elImage = document.createElement("img");
-				this.encodeBase64ImageFile(this.upImage.images[i]).then((src) => {
-					elLi.appendChild(elDiv);
-					elDiv.appendChild(elImage);
-					elImage.setAttribute('src', src);
-
-					this.$refs.imageList.appendChild(elLi);
-					console.log('asdasd');
-				});
-			
-			}
-			*/
 			const elImage = document.createElement("img");
 			this.encodeBase64ImageFile(image).then((src) => {
 
@@ -330,7 +320,11 @@ export default {
 				return src;
 
 			});
+			*/
 		},
+		// IMAGE EVENT
+
+		// OTHER
 		encodeBase64ImageFile: function(image) {
 			return new Promise((resolve, reject) => {
 				let reader = new FileReader()
@@ -343,6 +337,7 @@ export default {
 				}
 			})
 		},
+		// OTHER
 	},
 	beforeDestroy() {
 		this.editor.destroy()

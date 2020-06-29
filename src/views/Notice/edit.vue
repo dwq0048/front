@@ -1,7 +1,7 @@
 <template>
     <div class="board">
-        <default-header />
         <side-navigation />
+        <default-header />
 
         <div class="title"></div>
         <div class="contents">
