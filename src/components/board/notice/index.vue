@@ -31,6 +31,20 @@
                         <p>오줌달달</p>
                     </div>
                 </li>
+                <li v-for="(item, i) in list" :key="i">
+                    <div class="num">
+                        <p>1</p>
+                    </div>
+                    <div class="title">
+                        <p>{{ item.title }}</p>
+                    </div>
+                    <div class="date">
+                        <p>{{ item.state.date }}</p>
+                    </div>
+                    <div class="user">
+                        <p>{{ item.user.name }}</p>
+                    </div>
+                </li>
             </ul>
         </div>
     </div>
@@ -38,7 +52,34 @@
 
 <script>
 export default {
-    name: 'DefaultMain'
+    name: 'DefaultMain',
+    data() {
+        return {
+            list : [],
+            page : 0
+        }
+    },
+    methods : {
+
+    },
+    created: function(){
+        const data = {
+            board: 'notice',
+            page: this.page,
+            view: 15
+        }
+
+        this.$axios({
+            method: 'post',
+            url: `/api/1/board/list/notice`,
+            data: data,
+            withCredentials: true,
+        }).then((req) => {
+            this.list = req.data.data;
+        }).catch((err) => {
+            console.log(err);
+        })
+    }
 }
 </script>
 
