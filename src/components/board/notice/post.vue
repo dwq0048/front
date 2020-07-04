@@ -2,7 +2,7 @@
     <div class="default">
         <div class="nav">
             <div class="title">
-                <h1>공지사항</h1>
+                <h1>{{ post.title }}</h1>
             </div>
             <div class="menu">
                 <ul>
@@ -15,24 +15,6 @@
                 </ul>
             </div>
         </div>
-        <div class="list">
-            <ul>
-                <li v-for="(item, i) in list" :key="i">
-                    <div class="num">
-                        <p>{{ ((page * 15)+i)+1 }}</p>
-                    </div>
-                    <div class="title">
-                        <p><router-link :to="'/notice/post/'+item._id">{{ item.title }}</router-link></p>
-                    </div>
-                    <div class="date">
-                        <p>{{ dateFormat(item.state.date) }}</p>
-                    </div>
-                    <div class="user">
-                        <p>{{ item.user.name }}</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
     </div>
 </template>
 
@@ -41,35 +23,26 @@ export default {
     name: 'DefaultMain',
     data() {
         return {
-            list : [],
-            page : 0
+            id: this.$route.params.id,
+            post: {}
         }
     },
     methods : {
-        dateFormat: function(data){
-            const date = new Date(data);
-            var year = date.getFullYear();              //yyyy
-            var month = (1 + date.getMonth());          //M
-            month = month >= 10 ? month : '0' + month;  //month 두자리로 저장
-            var day = date.getDate();                   //d
-            day = day >= 10 ? day : '0' + day;          //day 두자리로 저장
-            return  year + '-' + month + '-' + day;
-        }
+        
     },
     created: function(){
         const data = {
-            board: 'notice',
-            page: this.page,
-            view: 15
+            id: this.id,
+            board: 'notice'
         }
 
         this.$axios({
             method: 'post',
-            url: `/api/1/board/list/notice`,
+            url: `/api/1/board/view/${this.id}`,
             data: data,
             withCredentials: true,
         }).then((req) => {
-            this.list = req.data.data;
+            this.post = req.data.req;
         }).catch((err) => {
             console.log(err);
         })

@@ -11,25 +11,31 @@ const routes = [
 		path: '/',
 		name: 'Home',
 		component: () => import('@/views/Home'),
-		beforeEnter: token
+		beforeEnter: token({ auth : 0 })
 	},
 	{
 		path: '/login',
 		name: 'Login',
 		component: () => import('@/views/Login'),
-		beforeEnter: token
+		beforeEnter: token()
 	},
 	{
 		path: '/notice',
 		name: 'Notice',
 		component: () => import('@/views/Notice'),
-		beforeEnter: token,
+		beforeEnter: token({ auth : 0 })
 	},
 	{
 		path: '/notice/edit',
 		name: 'NoticeEdit',
 		component: () => import('@/views/Notice/edit'),
-		beforeEnter: token
+		beforeEnter: token({ auth : 1 })
+	},
+	{
+		path: '/notice/post/:id',
+		name: 'NoticePost',
+		component: () => import('@/views/Notice/post'),
+		beforeEnter: token({ auth : 0 })
 	}
 ];
 

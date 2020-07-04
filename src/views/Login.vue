@@ -13,17 +13,17 @@
         </div>
         <div class="contents">
             <form v-on:submit.prevent="login">
-                <div class="form" :class="{ active: isActive, input: inActive }" >
-                    <div class="input">
+                <div class="form" :class="{ active: isError['form'] }" >
+                    <div class="input" :class="{ active: isError['userid'] }">
                         <label for="userid">User ID / E-mail</label>
                         <div class="form-input">
-                            <input type="text" placeholder="User ID / E-mail" id ="userid" v-model="name" />
+                            <input type="text" placeholder="User ID / E-mail" id ="userid" v-model="userid" />
                         </div>
                     </div>
-                    <div class="input">
+                    <div class="input" :class="{ active: isError['userpw'] }">
                         <label for="password">Password</label>
                         <div class="form-input">
-                            <input type="password" placeholder="password" id ="password" v-model="password" />
+                            <input type="password" placeholder="password" id ="userpw" v-model="userpw" />
                         </div>
                     </div>
                     <div class="checkbox">
@@ -60,8 +60,8 @@
                                 </button>
                             </div>
                     </div>
-                    <div class="alert">
-                        <p>아이디 또는 비밀번호가 틀렸습니다.</p>
+                    <div class="alert" :class="{ active: isError['alert'] }">
+                        <p>{{ isError['message'] }}</p>
                     </div>
 
                     <div class="line">
@@ -81,45 +81,94 @@ import Side from '@/components/layout/side'
 
 export default {
     name: 'Login',
+    data() {
+        return {
+            isError: {
+                alert: false,
+                userid: false,
+                userpw: false,
+                form: false,
+                message: ''
+            },
+            userid: '',
+            userpw: ''
+        }
+    },
 	components: {
         'default-header': Header,
         'default-side': Side
-    },
-    data() {
-        return {
-            isActive : false,
-            inActive : false
-        }
     },
     methods : {
         'login' : function(){
             let data = {
                 userid : userid.value,
-                password : password.value
+                userpw : userpw.value
             }
 
-            let form = new FormData();
-            form.userid = data.userid;
-            form.password = data.password;
+            if(!data.userid){
+                this.loginFail('userid no field');
+                return
+            }else if(!data.userpw){
+                this.loginFail('userpw no field');
+                return
+            }
 
-            this.$axios({
-				method: 'post',
-				url: `/api/1/auth/login`,
-				data: data,
-				withCredentials : true
-			}).then((req) => {
-                this.$store.commit('tokenStatus', req.data.info);
-                this.$router.push({ path: '/' });
+            this.$store.dispatch('Login', data).then((req) => {
+                if(req.data.status == 'fail'){
+                    //로그인 실패
+                    this.loginFail(req.data.message);
+                }else if(req.data.status == 'success'){
+                    // 로그인 성공
+                    console.log(req.data);
+					this.$store.commit('TokenInfo', req.data.info);
+					this.$router.push({ path: '/' });
+                }
+            }).catch((err) => {
+                console.log(err);
             })
-            .catch((err) => {
-                this.isActive = true;
-                this.inActive = true;
+        },
+        loginFail: function(message){
+            this.reset();
+            this.isError.form = true;
 
-                window.setTimeout(() => {
-                    this.isActive = false;
-                }, 300);
-            })
-            
+            switch(message){
+                case 'userid no field':
+                    this.isError.alert = true;
+                    this.isError.userid = true;
+                    this.isError.message = '아이디를 입력해주세요.';
+                    break;
+                case 'userpw no field':
+                    this.isError.userpw = true;
+                    this.isError.alert = true;
+                    this.isError.message = '비밀번호를 입력해주세요.'
+                    break;
+                case 'userid error':
+                    this.isError.alert = true;
+                    this.isError.userid = true;
+                    this.isError.userpw = true;
+                    this.isError.message = '아이디 또는 비밀번호가 틀렸습니다.';
+                    break;
+                case 'password error':
+                    this.isError.alert = true;
+                    this.isError.userid = true;
+                    this.isError.userpw = true;
+                    this.isError.message = '아이디 또는 비밀번호가 틀렸습니다.';
+                    break;
+                default:
+                    this.isError.alert = true;
+                    this.isError.message = '알 수 없는 오류입니다.';
+                    break;
+            }
+
+            window.setTimeout(() => {
+                this.isError.form = false;
+			}, 300);
+        },
+        reset: function(){
+            this.isError.userid = false;
+            this.isError.userpw = false;
+            this.isError.alert = false;
+            this.isError.message = '';
         }
     }
 }
@@ -381,21 +430,19 @@ export default {
 
     }
 
-    .form.input {
-        .input {
-            .form-input {
-                @include transition(.2s all);
-                border: 1px solid #e84f4f;
-            }
-        }
-
-        .alert {
+    .input.active {
+        .form-input {
             @include transition(.2s all);
-            opacity: 1;
+            border: 1px solid #e84f4f;
         }
     }
 
-    .active {
+    .alert.active {
+        @include transition(.2s all);
+        opacity: 1;
+    }
+
+    .form.active {
         animation-duration: .3s;
         animation-direction: reverse;
         animation-name: slidein;
