@@ -15,6 +15,8 @@ const guest = {
 }
 
 const before = (object) => (to, from, next) => {
+	store.commit('onNavigation', false);
+
 	token().then((req) => {
 		if(object.auth){
 			if(object.auth <= store.state.userInfo.data.access.auth){

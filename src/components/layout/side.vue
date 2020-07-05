@@ -1,30 +1,22 @@
 <template>
-    <div id="side" v-bind:class="{ active : $store.state.navigation, close : this.close }">
+    <div id="side" v-bind:class="{ active : $store.state.navigation, close : close }">
         <div class="close" title="닫기" v-on:click="onNavigation()"></div>
-        <div class="contents">
+        <div class="contents" ref="side">
             <ul>
                 <!-- LOGIN -->
-                <li>
-                    <div class="menu">
-                        <div>
-                            <span>
-                                <div>
-                                    
-                                </div>
-                            </span>
-                            LOGIN
-                        </div>
-                    </div>
+                <li v-if="!isLogin">
+
+                    <!-- view -->
                     <div class="view">
                         <div>
                             <div class="login">
-                                <form>
-                                    <div class="form">
-                                        <div class="form-input">
-                                            <input type="text" placeholder="USER ID / E-MAIL"/>
+                                <form v-on:submit.prevent="login">
+                                    <div class="form" :class="{ active: isError['form'] }">
+                                        <div class="form-input" :class="{ active: isError['userid'] }">
+                                            <input type="text" placeholder="USER ID / E-MAIL" v-model="userid"/>
                                         </div>
-                                        <div class="form-input">
-                                            <input type="password" placeholder="PASSWORD"/>
+                                        <div class="form-input" :class="{ active: isError['userpw'] }">
+                                            <input type="password" placeholder="PASSWORD" v-model="userpw"/>
                                         </div>
                                         <div class="checkbox">
                                             <label>
@@ -54,9 +46,11 @@
                                         </div>
 
                                         <div class="form-submit">
-                                            <button type="button">
-                                                LOGIN
-                                            </button>
+                                            <button type="submit">LOGIN</button>
+                                        </div>
+
+                                        <div class="alert" :class="{ active: isError['alert'] }">
+                                            <p>{{ isError['message'] }}</p>
                                         </div>
 
                                         <div class="line">
@@ -69,20 +63,13 @@
                             </div>
                         </div>
                     </div>
+                    <!-- view -->
                 </li>
 
                 <!-- MY PAGE -->
                 <li>
-                    <div class="menu">
-                        <div>
-                            <span>
-                                <div>
 
-                                </div>
-                            </span>
-                            MY PAGE
-                        </div>
-                    </div>
+                    <!-- view -->
                     <div class="view">
                         <div>
                             <div class="mypage">
@@ -91,8 +78,24 @@
                                         <div></div>
                                     </div>
                                     <div class="intro">
-                                        <p><b>이름</b> : 하하</p>
-                                        <p><b>마지막 로그인</b> : 2018:12:12</p>
+                                        <p class="nickname"> 하하</p>
+                                        <p class="setting">
+                                            <span class="bell" >
+                                                <i><font-awesome-icon :icon="faBell" /></i>
+                                                <span>알림</span>
+                                            </span>
+                                            <span class="wish" title="좋아요">
+                                                <i><font-awesome-icon :icon="faHeart" /></i>
+                                                <span>좋아요</span>
+                                            </span>
+                                            <span class="cog" title="설정">
+                                                <i><font-awesome-icon :icon="faCog" /></i>
+                                                <span>설정</span>
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div class="button">
+                                        <router-link to="/" title="로그아웃">로그아웃</router-link>
                                     </div>
                                 </div>
 
@@ -102,29 +105,229 @@
                             </div>
                         </div>
                     </div>
+                    <!-- view -->
                 </li>
 
+                <!-- MENU -->
+                <li>
+
+                    <!-- view -->
+                    <div class="view">
+                        <div class="no-padding">
+                            <div class="menu">
+                                <div>
+                                    <div>
+                                        <div>
+                                            <i><font-awesome-icon :icon="faHome" /></i>
+                                        </div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div>
+                                                <div>
+                                                    <div>홈</div>
+                                                </div>
+                                                <span>
+                                                    <div></div>
+                                                </span>
+                                            </div>
+                                            <ul>
+                                                <li>
+                                                    <router-link to="/notice">공지사항</router-link>
+                                                    <router-link to="/">버그 리포트</router-link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <i><font-awesome-icon :icon="faInfo" /></i>
+                                        </div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div>
+                                                <div>
+                                                    <div>정보</div>
+                                                </div>
+                                                <span>
+                                                    <div></div>
+                                                </span>
+                                            </div>
+                                            <ul>
+                                                <li>
+                                                    <router-link to="/">WIKI</router-link>
+                                                    <router-link to="/">질문</router-link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <i><font-awesome-icon :icon="faComments" /></i>
+                                        </div>
+                                    </div>
+                                    <ul>
+                                        <li>
+                                            <div>
+                                                <div>
+                                                    <div>커뮤니티</div>
+                                                </div>
+                                                <span>
+                                                    <div></div>
+                                                </span>
+                                            </div>
+                                            <ul>
+                                                <li>
+                                                    <router-link to="/">자유게시판</router-link>
+                                                    <router-link to="/">VR 포토</router-link>
+                                                    <router-link to="/">VR 영상</router-link>
+                                                </li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- view -->
+                </li>
+                <!-- MENU -->
+
             </ul>
+
+            <div class="scrollBar" ref="scrollBar" :style="styleObject"></div>
         </div>
     </div>
 </template>
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faBell, faHeart, faCog, faHome, faInfo, faComments } from '@fortawesome/free-solid-svg-icons'
+
 export default {
     name: 'side',
     data(){
         return {
-            close: false
+            close: false,
+            isLogin: this.$store.state.userInfo.status,
+            userid: '',
+            userpw: '',
+            isError: {
+                alert: false,
+                userid: false,
+                userpw: false,
+                form: false,
+                message: ''
+            },
+            faBell,
+            faHeart,
+            faCog,
+            faHome,
+            faInfo,
+            faComments,
+            styleObject: {}
         }
     },
     methods: {
         onNavigation : function(){
             this.close = true;
             setTimeout(() => {
-                this.$store.commit('onNavigation');
+                this.$store.commit('onNavigation',false);
                 this.close = false;
             },300)
+        },
+        login : function(){
+            const data = {
+                userid: this.userid,
+                userpw: this.userpw
+            }
+
+            if(!data.userid){
+                this.loginFail('userid no field');
+                return
+            }else if(!data.userpw){
+                this.loginFail('userpw no field');
+                return
+            }
+
+            this.$store.dispatch('Login', data).then((req) => {
+                if(req.data.status == 'fail'){
+                    //로그인 실패
+                    this.loginFail(req.data.message);
+                }else if(req.data.status == 'success'){
+                    // 로그인 성공
+					this.$store.commit('TokenInfo', req.data.info);
+					this.$router.push({ path: '/' });
+                }
+            }).catch((err) => {
+                console.log(err);
+            })
+
+        },
+        loginFail: function(message){
+            this.reset();
+            this.isError.form = true;
+
+            switch(message){
+                case 'userid no field':
+                    this.isError.alert = true;
+                    this.isError.userid = true;
+                    this.isError.message = '아이디를 입력해주세요.';
+                    break;
+                case 'userpw no field':
+                    this.isError.userpw = true;
+                    this.isError.alert = true;
+                    this.isError.message = '비밀번호를 입력해주세요.'
+                    break;
+                case 'userid error':
+                    this.isError.alert = true;
+                    this.isError.userid = true;
+                    this.isError.userpw = true;
+                    this.isError.message = '아이디 또는 비밀번호가 틀렸습니다.';
+                    break;
+                case 'password error':
+                    this.isError.alert = true;
+                    this.isError.userid = true;
+                    this.isError.userpw = true;
+                    this.isError.message = '아이디 또는 비밀번호가 틀렸습니다.';
+                    break;
+                default:
+                    this.isError.alert = true;
+                    this.isError.message = '알 수 없는 오류입니다.';
+                    break;
+            }
+
+            window.setTimeout(() => {
+                this.isError.form = false;
+			}, 300);
+        },
+        reset: function(){
+            this.isError.userid = false;
+            this.isError.userpw = false;
+            this.isError.alert = false;
+            this.isError.message = '';
         }
+    },
+    mounted() {
+        const Content = this.$refs.side;
+        const ContentHeight = Content.scrollHeight;
+        const ContentOffset = Content.offsetHeight;
+
+        const Bar = this.$refs.scrollBar; 
+        const BarHeight = (ContentOffset / ContentHeight * 100);//Bar.offsetHeight;
+        Bar.style.height = `${BarHeight}%`;
+
+        const ScrollPosition = 100 - BarHeight;
+
+		Content.addEventListener('scroll', (data) => {
+            const scroll = (Content.scrollTop) / (ContentHeight - ContentOffset) * ScrollPosition;
+            Bar.style.top = `${scroll}%`;
+		});
     }
 }
 </script>
@@ -256,12 +459,31 @@ export default {
             & {
                 width: 350px;
                 height: 100%;
-                position: absolute;
+                position: fixed;
                 right: -350px;
                 top: 0;
                 background-color: $bg-black-light;
                 cursor: default;
                 border-left: 2px solid $bg-blue;
+                overflow-y: scroll;
+                -ms-overflow-style: none;
+            }
+
+            &::-webkit-scrollbar {
+                display:none;
+            }
+
+            & > div.scrollBar {
+                & {
+                    position:fixed;
+                    right: 0px;
+                    top: 0%;
+                    width: 3px;
+                    height: 100%;
+                    background-color: #ee8243;
+                    @include transition(.2s all);
+                    z-index: 10;
+                }
             }
 
             & > ul {
@@ -359,6 +581,8 @@ export default {
                             height: auto;
                             max-width: 300px;
                             margin: 0 auto;
+                            position: relative;
+                            @include transition(.2s all);
                         }
 
                         & > .form-input {
@@ -408,6 +632,12 @@ export default {
                             }
                         }
 
+                        & > .alert {
+                            margin-top: 10px;
+                            font-size: #{$font-size - 2};
+                            color: #f1f1f1;
+                        }
+
                         & > .line {
                             & {
                                 padding-top: 30px;
@@ -434,6 +664,53 @@ export default {
 
                         }
                     }
+
+                    & .form-input.active {
+                        & {
+                            @include transition(.2s all);
+                            border: 2px solid #e84f4f;
+                        }
+
+                        & input::placeholder {
+                            color: #e84f4f;
+                        }
+                    }
+
+                    & .alert.active {
+                        @include transition(.2s all);
+                        opacity: 1;
+                    }
+
+                    & .form.active {
+                        animation-duration: .3s;
+                        animation-direction: reverse;
+                        animation-name: slidein;
+                        @keyframes slidein {
+                            0% {
+                                left: -2px;
+                            }
+
+                            20% {
+                                left: 0px;
+                            }
+
+                            40% {
+                                left: 2px;
+                            }
+
+                            60% {
+                                left: 0px;
+                            }
+
+                            80% {
+                                left: -2px;
+                            }
+
+                            100% {
+                                left: 0px;
+                            }
+                        }
+                    }
                 }
 
                 .mypage {
@@ -441,46 +718,255 @@ export default {
                     & > .profile {
                         & {
                             width: 100%;
-                            height: 300px;
                             display: block;
                         }
 
                         & > .image {
                             & {
-                                width: 30%;
+                                width: 20%;
                                 height: auto;
                                 display: inline-block;
                             }
 
                             & > div {
                                 position: relative;
-                                background-color: #fff;
+                                background-color: #c4c4c4;
                                 border: 2px solid $bg-orange;
                                 padding-top: 100%;
-                                border-radius: 50%;
                                 overflow: hidden;
                             }
                         }
 
                         & > .intro {
                             & {
-                                width: 70%;
+                                width: 80%;
                                 height: auto;
                                 display: inline-block;
-                                vertical-align: top;
+                                vertical-align: bottom;
                                 padding-left: 20px;
                             }
 
                             & > p {
-                                font-size: #{$font-size - 2};
+                                font-size: #{$font-size};
                                 color: #fff;
                                 margin-bottom: 5px;
+                            }
+
+                            & > p.nickname {
+                                font-size: #{$font-size + 4};
+                                font-weight: bold;
+                            }
+
+                            & > p.setting {
+                                & > span {
+                                    & {
+                                        margin-right: 15px;
+                                        cursor: pointer;
+                                        position: relative;
+                                        @include transform(scale(1));
+                                        @include transition(.2s all);
+                                        display: inline-block;
+                                    }
+
+                                    & > span {
+                                        font-size: #{$font-size - 2};
+                                        padding-left: 5px;
+                                        vertical-align: middle;
+                                        display: inline-block;
+                                    }
+
+                                    & > i {
+                                        display: inline-block;
+                                        vertical-align: middle;
+                                    }
+                                }
+
+                                & > span:hover {
+                                    & {
+                                        @include transform(scale(1.1));
+                                        @include transition(.2s all);
+                                    }
+                                }
+                            }
+                        }
+
+                        & > .button {
+                            & {
+                                margin-top: 20px;
+                            }
+
+                            & > a {
+                                width: 100%;
+                                font-size: #{$font-size - 2};
+                                text-align: center;
+                                padding: 10px;
+                                display: block;
+                                background-color: #555;
+                                color: #f1f1f1;
+                                text-decoration: none;
+                                outline: none;
+                                letter-spacing: 3px;
+                                font-weight: bold;
+                                @include transition(.2s all);
+                            }
+
+                            & > a:hover {
+                                background-color: #515151;
+                                @include transition(.2s all);
                             }
                         }
                     }
                 }
 
+                
+                .menu {
+                    
+                    & > div {
+                        & > div {
+                            & {
+                                width: 15%;
+                                display: inline-block;
+                                vertical-align: top;
+                                font-size: 0;
+                            }
 
+                            & > div {
+                                & {
+                                    width: 100%;
+                                    height: auto;
+                                    padding-top: 100%;
+                                    position: relative;
+                                }
+
+                                & > i {
+                                    color: #c4c4c4;
+                                    font-size: #{$font-size - 2};
+                                    position: absolute;
+                                    left: 50%; top: 50%;
+                                    @include transform(translate(-50%, -50%));
+                                }
+                            }
+                        }
+
+                        & > ul {
+                            & {
+                                width: 85%;
+                                display: inline-block;
+                                vertical-align: top;
+                                font-size: 0;
+                                background-color: #555;
+                            }
+
+                            & > li {
+                                & {
+                                    display: block;
+                                }
+
+                                & > div {
+                                    & {
+                                        font-size: #{$font-size};
+                                        font-weight: bold;
+                                        color: #c4c4c4;
+                                        background-color: #353535;
+                                        width: 100%;
+                                        height: 52.19px;
+                                        padding-left: 20px;
+                                        display: block;
+                                        position: relative;
+                                        cursor: pointer;
+                                    }
+
+                                    & > div {
+                                        & {
+                                            display: table;
+                                            height: 100%;
+                                        }
+
+                                        & > div {
+                                            display: table-cell;
+                                            vertical-align: middle;
+                                        }
+                                    }
+
+                                    & > span {
+                                        & {
+                                            display: block;
+                                            position: absolute;
+                                            right: 25px; top: 50%;
+                                            @include transform(translateY(-50%));
+                                        }
+
+                                        & > div {
+                                            & {
+                                                width: 10px;
+                                                height: 10px;
+                                                position:relative;
+                                                @include transform(rotate(-45deg));
+                                            }
+
+                                            &::after {
+                                                content: " ";
+                                                display: block;
+                                                width: 100%;
+                                                height: 2px;
+                                                position: absolute;
+                                                left:0; bottom: 0;
+                                                background-color: #c4c4c4;
+                                            }
+
+                                            &::before {
+                                                content: " ";
+                                                display: block;
+                                                height: 100%;
+                                                width: 2px;
+                                                position: absolute;
+                                                left:0; bottom: 0;
+                                                background-color: #c4c4c4;
+                                            }
+                                        }
+                                        
+                                    }
+                                }
+
+                                & > ul {
+                                    & {
+                                        font-size: 0;
+                                        text-decoration: none;
+                                    }
+
+                                    & > li {
+                                        & {
+                                            padding-bottom: 50px;
+                                        }
+
+                                        & > a {
+                                            display: block;
+                                            padding: 15px 20px;
+                                            font-size: #{$font-size};
+                                            text-decoration: none;
+                                            color: #f1f1f1;
+                                            @include transition(all .2s)
+                                        }
+
+                                        & > a:hover {
+                                            background-color: #515151;
+                                            color: #fff;
+                                            @include transition(all .2s);
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    
+                }
+
+
+            }
+
+            & > div.no-padding {
+                padding: 0;
             }
         }
 
@@ -557,4 +1043,5 @@ export default {
             }
         }
     }
+
 </style>

@@ -28,12 +28,8 @@ export default new Vuex.Store({
 			state.userInfo.status = true,
 			state.userInfo.data = info
 		},
-		onNavigation(state){
-			if(state.navigation){
-				state.navigation = false;
-			}else{
-				state.navigation = true;
-			}
+		onNavigation(state, value){
+			state.navigation = value;
 		}
 	},
 	actions: {

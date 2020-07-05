@@ -8,7 +8,7 @@
                 <div class="menu" title="메뉴">
                     <router-link to="/login" title="로그인" v-if="!login" class="btn">로그인</router-link>
                     <router-link to="/login" title="로그인" v-if="login" class="btn">안녕하세요 {{info.nickname}} 님</router-link>
-                    <a class="ham" v-on:click="onNavigation()">
+                    <a class="ham" v-on:click="onNavigation(true)">
                         <div></div>
                         <div></div>
                         <div></div>
@@ -32,8 +32,8 @@ export default {
         }
     },
     methods : {
-        onNavigation : function(){
-            this.$store.commit('onNavigation');
+        onNavigation : function(value){
+            this.$store.commit('onNavigation', value);
         }
     }
 }

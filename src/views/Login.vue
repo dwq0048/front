@@ -99,7 +99,7 @@ export default {
         'default-side': Side
     },
     methods : {
-        'login' : function(){
+        login : function(){
             let data = {
                 userid : userid.value,
                 userpw : userpw.value
