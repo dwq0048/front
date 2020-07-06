@@ -6,9 +6,9 @@
                     <router-link to="/" title="홈으로"><span>VV</span></router-link>
                 </div>
                 <div class="menu" title="메뉴">
-                    <router-link to="/login" title="로그인" v-if="!login" class="btn">로그인</router-link>
-                    <router-link to="/login" title="로그인" v-if="login" class="btn">안녕하세요 {{info.nickname}} 님</router-link>
-                    <a class="ham" v-on:click="onNavigation(true)">
+                    <router-link to="/login" title="로그인" v-if="GET_LOGIN" class="btn">로그인</router-link>
+                    <router-link to="/login" title="로그인" v-if="GET_LOGIN" class="btn">안녕하세요</router-link>
+                    <a class="ham" v-on:click="Navigation(true)">
                         <div></div>
                         <div></div>
                         <div></div>
@@ -23,17 +23,27 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
+const userStore = 'userStore';
+const helperStore = 'helperStore';
+
 export default {
     name: 'default-header',
-    data() {
-        return {
-            login: this.$store.state.userInfo.status,
-            info: this.$store.state.userInfo.data
-        }
+    computed: {
+        ...mapGetters(helperStore, [
+            'GET_NAVIGATION'
+        ]),
+        ...mapGetters(userStore, [
+            'GET_LOGIN'
+        ])
     },
     methods : {
-        onNavigation : function(value){
-            this.$store.commit('onNavigation', value);
+        ...mapActions(helperStore, [
+            'ON_NAViGATION'
+        ]),
+        Navigation : function(value){
+            this.ON_NAViGATION(true)
         }
     }
 }

@@ -206,8 +206,12 @@
 </template>
 
 <script>
+//import { mapActions, mapGetters } from 'vuex'
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBell, faHeart, faCog, faHome, faInfo, faComments } from '@fortawesome/free-solid-svg-icons'
+
+const userStore = 'userStore';
 
 export default {
     name: 'side',
@@ -234,6 +238,9 @@ export default {
         }
     },
     methods: {
+        ...mapActions(userStore, [
+            'USER_LOGIN'
+        ]),
         onNavigation : function(){
             this.close = true;
             setTimeout(() => {
@@ -255,7 +262,7 @@ export default {
                 return
             }
 
-            this.$store.dispatch('Login', data).then((req) => {
+            this.USER_LOGIN(data).then((req) => {
                 if(req.data.status == 'fail'){
                     //로그인 실패
                     this.loginFail(req.data.message);

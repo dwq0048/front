@@ -1,7 +1,7 @@
 <template>
 	<div class="home">
 		<!-- Side Menu -->
-		<default-side />
+		<navigation />
 		<!-- Side Menu End -->
 
 		<!-- Header -->
@@ -39,7 +39,7 @@
 
 <script>
 import Header from '@/components/layout/header'
-import Side from '@/components/layout/side'
+import Navigation from '@/components/layout/navigation'
 import Search from '@/components/widget/main/search'
 import Grid from '@/components/widget/main/grid-post'
 
@@ -47,7 +47,7 @@ export default {
 	name: 'Home',
 	components: {
 		'default-header': Header,
-		'default-side': Side,
+		'navigation': Navigation,
 		'search': Search,
 		'pee' : Grid
 	},

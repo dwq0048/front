@@ -1,18 +1,23 @@
 <template>
     <div class="default">
-        <div class="nav">
-            <div class="title">
-                <h1>{{ post.title }}</h1>
+        <div class="contents">
+            <div class="info">
+                <div class="title">
+                    <h1>{{ post.title }}</h1>
+                </div>
+                <div class="display">
+                    <div>
+                        <span>{{ post.board }}</span>
+                        <span>{{ post.state.date_fix }}</span>
+                        <span>{{ post.user.nickname }}</span>
+                    </div>
+                    <div>
+                        <span>좋아요</span>
+                    </div>
+                </div>
             </div>
-            <div class="menu">
-                <ul>
-                    <li>
-                        <button type="button">최신</button>
-                    </li>
-                    <li>
-                        <button type="button">인기</button>
-                    </li>
-                </ul>
+            <div class="post">
+                <div v-html="post.post"></div>
             </div>
         </div>
     </div>
@@ -43,10 +48,12 @@ export default {
             withCredentials: true,
         }).then((req) => {
             this.post = req.data.req;
+
+            console.log(this.post);
         }).catch((err) => {
             console.log(err);
         })
-    }
+    },
 }
 </script>
 
@@ -57,97 +64,68 @@ export default {
             height: auto;
         }
 
-        & > .nav {
+        & > .contents {
             & {
                 background-color: #fff;
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
-            & > .title {
+            
+            & > .info {
                 & {
-                    padding: 15px 30px;
+                    border-bottom: 1px solid #ddd;
                 }
-
-                & > h1 {
-                    font-size: #{$font-size + 6};
-                }
-            }
-            & > .menu {
-                & > ul {
+                
+                & > .title {
                     & {
-                        font-size: 0;
+                        padding: 20px 30px;
                     }
 
-                    & > li {
-                        & {
-                            display: inline-block;
-                            list-style: none;
-                            font-size: #{$font-size + 6};
-                            height: 45px;
-                        }
-
-                        & > button {
-                            & {
-                                border: none;
-                                background: none;
-                                outline: none;
-                                padding:0 30px;
-                                height: 100%;
-                                cursor: pointer;
-                            }
-                        }
+                    & > h1 {
+                        font-size: #{$font-size + 10};
                     }
                 }
-            }
-        }
 
-        & > .list {
-            & {
-                background-color: #fff;
-                margin-top: 15px;
-                @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
-            }
-            & > ul {
-                & {
-                    font-size: 0;
-                }
-                & > li {
+                & > .display {
                     & {
-                        width: 100%;
-                        height: 45px;
-                        display: table;
-                        list-style: none;
-                        font-size: #{$font-size};
-                        border-bottom: 1px solid #f1f1f1;
-                        padding: 0 10px;
+                        padding: 0px 30px 15px 30px;
+                    }
+
+                    &:after {
+                        content: " ";
+                        display: block;
+                        clear: both;
                     }
 
                     & > div {
-                        vertical-align: middle;
+                        & {
+                            float: left;
+                        }
+
+                        & > span {
+                            font-size: #{$font-size -2};
+                            color: #858585;
+                            display: inline-block;
+                            padding-right: 15px;
+                        }
+                        
                     }
 
-                    & > .num {
-                        width: 5%;
-                        height: auto;
-                        display: table-cell;
-                    }
+                    & > div:nth-child(2){
+                        & {
+                            float: right;
+                        }
 
-                    & > .title {
-                        width: 65%;
-                        height: auto;
-                        display: table-cell;
+                        & > span {
+                            padding-right: 0;
+                            padding-left: 15px;
+                        }
                     }
+                }
+            }
 
-                    & > .date {
-                        width: 10%;
-                        height: auto;
-                        display: table-cell;
-                    }
-
-                    & > .user {
-                        width: 20%;
-                        height: auto;
-                        display: table-cell;
-                    }
+            & > .post {
+                & {
+                    padding: 15px 30px;
                 }
             }
         }

@@ -74,10 +74,12 @@
 </template>
 
 <script>
-//import axios from 'axios'
+import { mapActions, mapGetters } from 'vuex'
 
 import Header from '@/components/layout/header'
 import Side from '@/components/layout/side'
+
+const userStore = 'userStore';
 
 export default {
     name: 'Login',
@@ -98,7 +100,15 @@ export default {
         'default-header': Header,
         'default-side': Side
     },
+    computed: {
+        ...mapGetters(userStore, {
+            storeUserName: 'GE_USER_NAME'
+        }),
+    },
     methods : {
+        ...mapActions(userStore, [
+            'USER_LOGIN'
+        ]),
         login : function(){
             let data = {
                 userid : userid.value,
@@ -113,7 +123,7 @@ export default {
                 return
             }
 
-            this.$store.dispatch('Login', data).then((req) => {
+            this.USER_LOGIN(data).then((req) => {
                 if(req.data.status == 'fail'){
                     //로그인 실패
                     this.loginFail(req.data.message);
