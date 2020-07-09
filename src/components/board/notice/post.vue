@@ -8,7 +8,7 @@
                 <div class="display">
                     <div>
                         <span>{{ post.board }}</span>
-                        <span>{{ post.state.date_fix }}</span>
+                        <span>{{ TimeFor(post.state.date_fix) }}</span>
                         <span>{{ post.user.nickname }}</span>
                     </div>
                     <div>
@@ -19,21 +19,76 @@
             <div class="post">
                 <div v-html="post.post"></div>
             </div>
+            <div class="love">
+                <button type="button">
+                    <i><font-awesome-icon :icon="faHeartR" /></i>
+                    <span>좋아요</span>
+                </button>
+            </div>
+            <div class="setting">
+                <div class="default_btn">
+                    <button type="button">공유하기</button>
+                    <button type="button">신고</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="comment">
+            <comment />
         </div>
     </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
+import { faHeart as faHeartS } from '@fortawesome/free-solid-svg-icons'
+
+import Comment from '@/components/board/comment/chat'
+
+const helperStore = 'helperStore'
+
 export default {
     name: 'DefaultMain',
     data() {
         return {
             id: this.$route.params.id,
-            post: {}
+            post: {},
+            faHeartR,
+            faHeartS
         }
     },
+    components: {
+        'comment' : Comment
+    },
     methods : {
-        
+        ...mapActions(helperStore, [
+            'TIME_FOR'
+        ]),
+        TimeFor(payload){
+            const today = new Date();
+            const timeValue = new Date(payload);
+    
+            const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
+            if (betweenTime < 1) return '방금전';
+            if (betweenTime < 60) {
+                return `${betweenTime}분전`;
+            }
+    
+            const betweenTimeHour = Math.floor(betweenTime / 60);
+            if (betweenTimeHour < 24) {
+                return `${betweenTimeHour}시간전`;
+            }
+    
+            const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+            if (betweenTimeDay < 365) {
+                return `${betweenTimeDay}일전`;
+            }
+    
+            return `${Math.floor(betweenTimeDay / 365)}년전`;
+        }
     },
     created: function(){
         const data = {
@@ -49,7 +104,6 @@ export default {
         }).then((req) => {
             this.post = req.data.req;
 
-            console.log(this.post);
         }).catch((err) => {
             console.log(err);
         })
@@ -102,7 +156,7 @@ export default {
                         }
 
                         & > span {
-                            font-size: #{$font-size -2};
+                            font-size: #{$font-size - 1};
                             color: #858585;
                             display: inline-block;
                             padding-right: 15px;
@@ -125,7 +179,98 @@ export default {
 
             & > .post {
                 & {
-                    padding: 15px 30px;
+                    padding: 30px;
+                    min-height: 425px;
+                }
+            }
+
+            & > .love {
+                & {
+                    text-align: center;
+                    padding: 0 0 30px 0;
+                }
+
+                & > button {
+                    & {
+                        display: inline-block;
+                        background: none;
+                        border: none;
+                        vertical-align: middle;
+                        cursor: pointer;
+                        border: 1px solid #ccc;
+                        border-radius: 10px;
+                        padding: 0 20px;
+                        margin: 0 15px;
+                        outline: none;
+                        @include transition(.2s all);
+                    }
+
+                    & > i {
+                        display: inline-block;
+                        font-size: #{$font-size + 2};
+                        line-height: 40px;
+                        color: #999;
+                        @include transition(.2s all);
+                    }
+
+                    & > span {
+                        display: inline-block;
+                        padding-left: 10px;
+                        font-size: #{$font-size + 2};
+                        line-height: 40px;
+                        color: #999;
+                    }
+
+                    &:hover {
+                        & {
+                            background-color: #f1f1f1;
+                            @include transition(.2s all);
+                        }
+                    }
+
+                    &:active {
+                        & {
+                            border: 1px solid #e02554;
+                            @include transition(.2s all);
+                        }
+                        & > i {
+                            color: #e02554;
+                            @include transition(.2s all);
+                        }
+
+                        & > span{
+                            color: #e02554;
+                            @include transition(.2s all);
+                        }
+                    }
+                }
+            }
+
+            & > .setting {
+                & {
+                    background-color: #f9f9f9;
+                    border-top: 1px solid #ddd;
+                    padding: 15px 15px;
+                    text-align: right;
+                }
+
+                & > .default_btn {
+                    & {
+                        display: inline-block;
+                    }
+
+                    & > button {
+                        & {
+                            display: inline-block;
+                            font-size: #{$font-size - 2};
+                            color: #999;
+                            margin-left: 15px;
+                            padding: 0 15px;
+                            border:none;
+                            background: none;
+                            cursor: pointer;
+                        }
+                    }
                 }
             }
         }

@@ -12,20 +12,21 @@
             </p>
         </div>
         <div class="contents">
-            <form v-on:submit.prevent="login">
-                <div class="form" :class="{ active: isError['form'] }" >
-                    <div class="input" :class="{ active: isError['userid'] }">
+            <form v-on:submit.prevent="Login">
+                <div class="form" :class="{ active: LOGIN_ALERT['ERROR'] }" >
+                    <div class="input" :class="{ active: LOGIN_ALERT['USER_ID'] }">
                         <label for="userid">User ID / E-mail</label>
                         <div class="form-input">
-                            <input type="text" placeholder="User ID / E-mail" id ="userid" v-model="userid" />
+                            <input type="text" placeholder="User ID / E-mail" v-model="USER_ID" />
                         </div>
                     </div>
-                    <div class="input" :class="{ active: isError['userpw'] }">
+                    <div class="input" :class="{ active: LOGIN_ALERT['USER_PW'] }">
                         <label for="password">Password</label>
                         <div class="form-input">
-                            <input type="password" placeholder="password" id ="userpw" v-model="userpw" />
+                            <input type="password" placeholder="password" v-model="USER_PW" />
                         </div>
                     </div>
+
                     <div class="checkbox">
                         <label>
                             <div class="form-checkbox">
@@ -53,20 +54,20 @@
                             <i>서비스 이용약관에 동의하여야 로그인이 가능합니다.</i>
                         </label>
                     </div>
+
                     <div class="submit">
-                            <div class="form-submit">
-                                <button type="submit">
-                                    LOGIN
-                                </button>
-                            </div>
+                        <div class="form-submit">
+                            <button type="submit">LOGIN</button>
+                        </div>
                     </div>
-                    <div class="alert" :class="{ active: isError['alert'] }">
-                        <p>{{ isError['message'] }}</p>
+                    <div class="alert" :class="{ active: LOGIN_ALERT['ALERT'] }">
+                        <p>{{ LOGIN_ALERT['MESSAGE'] }}</p>
                     </div>
 
                     <div class="line">
                         <p>OR</p>
                     </div>
+
                 </div>
             </form>
         </div>
@@ -77,23 +78,17 @@
 import { mapActions, mapGetters } from 'vuex'
 
 import Header from '@/components/layout/header'
-import Side from '@/components/layout/side'
+import Side from '@/components/layout/navigation'
 
-const userStore = 'userStore';
+const userStore = 'userStore'
 
 export default {
     name: 'Login',
     data() {
         return {
-            isError: {
-                alert: false,
-                userid: false,
-                userpw: false,
-                form: false,
-                message: ''
-            },
-            userid: '',
-            userpw: ''
+            LOGIN_ALERT: {},
+            USER_ID: '',
+            USER_PW: ''
         }
     },
 	components: {
@@ -101,84 +96,48 @@ export default {
         'default-side': Side
     },
     computed: {
-        ...mapGetters(userStore, {
-            storeUserName: 'GE_USER_NAME'
-        }),
+        ...mapGetters(userStore, [
+            'GET_ALERT', 'UPDATE_ALERT'
+        ])
     },
     methods : {
         ...mapActions(userStore, [
-            'USER_LOGIN'
+            'USER_ALERT'
         ]),
-        login : function(){
-            let data = {
-                userid : userid.value,
-                userpw : userpw.value
+        Login : function(){
+            const payload = {
+                USER_ID: this.USER_ID,
+                USER_PW: this.USER_PW
             }
 
-            if(!data.userid){
-                this.loginFail('userid no field');
+            if(!payload.USER_ID){
+                this.LoginFail('There is no user ID');
                 return
-            }else if(!data.userpw){
-                this.loginFail('userpw no field');
+            }else if(!payload.USER_PW){
+                this.LoginFail('There is no user PW');
                 return
             }
 
-            this.USER_LOGIN(data).then((req) => {
+            this.USER_LOGIN(payload).then((req) => {
                 if(req.data.status == 'fail'){
-                    //로그인 실패
-                    this.loginFail(req.data.message);
+                    this.LoginFail(req.data.message);
                 }else if(req.data.status == 'success'){
-                    // 로그인 성공
-                    console.log(req.data);
-					this.$store.commit('TokenInfo', req.data.info);
-					this.$router.push({ path: '/' });
+                    console.log(req);
                 }
             }).catch((err) => {
                 console.log(err);
             })
         },
-        loginFail: function(message){
-            this.reset();
-            this.isError.form = true;
-
-            switch(message){
-                case 'userid no field':
-                    this.isError.alert = true;
-                    this.isError.userid = true;
-                    this.isError.message = '아이디를 입력해주세요.';
-                    break;
-                case 'userpw no field':
-                    this.isError.userpw = true;
-                    this.isError.alert = true;
-                    this.isError.message = '비밀번호를 입력해주세요.'
-                    break;
-                case 'userid error':
-                    this.isError.alert = true;
-                    this.isError.userid = true;
-                    this.isError.userpw = true;
-                    this.isError.message = '아이디 또는 비밀번호가 틀렸습니다.';
-                    break;
-                case 'password error':
-                    this.isError.alert = true;
-                    this.isError.userid = true;
-                    this.isError.userpw = true;
-                    this.isError.message = '아이디 또는 비밀번호가 틀렸습니다.';
-                    break;
-                default:
-                    this.isError.alert = true;
-                    this.isError.message = '알 수 없는 오류입니다.';
-                    break;
-            }
+        LoginFail: function(message){
+            this.USER_ALERT(message);
+            this.LOGIN_ALERT = this.UPDATE_ALERT;
 
             window.setTimeout(() => {
-                this.isError.form = false;
+                this.LOGIN_ALERT.ERROR = false;
 			}, 300);
         },
-        reset: function(){
-            this.isError.userid = false;
-            this.isError.userpw = false;
-            this.isError.alert = false;
-            this.isError.message = '';
+        created(){
+            this.LOGIN_ALERT = this.GET_ALERT;
         }
     }
 }

@@ -3,8 +3,8 @@
         <div class="view">
             <div>
                 <div class="login">
-                    <form v-on:submit.prevent="login">
-                        <div class="form" :class="{ active: LOGIN_ALERT['ERRIR'] }">
+                    <form v-on:submit.prevent="Login">
+                        <div class="form" :class="{ active: LOGIN_ALERT['ERROR'] }">
                             <div class="form-input" :class="{ active: LOGIN_ALERT['USER_ID'] }">
                                 <input type="text" placeholder="USER ID / E-MAIL" v-model="USER_ID"/>
                             </div>
@@ -60,9 +60,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex'
 
-const userStore = 'userStore';
+const userStore = 'userStore'
 
 export default {
     name: 'nav_login',
@@ -80,7 +80,7 @@ export default {
     },
     methods: {
         ...mapActions(userStore, [
-            'USER_ALERT'
+            'USER_ALERT','USER_LOGIN'
         ]),
         Login : function(){
             const payload = {
@@ -97,12 +97,10 @@ export default {
             }
 
             this.USER_LOGIN(payload).then((req) => {
-                if(req.data.status == 'fail'){
-                    this.LoginFail(req.data.message);
-                }else if(req.data.status == 'success'){
+                if(req.data.status == 'success'){
                     console.log(req);
-					//this.$store.commit('TokenInfo', req.data.info);
-					//this.$router.push({ path: '/' });
+                }else{
+                    this.LoginFail(req.data.message);
                 }
             }).catch((err) => {
                 console.log(err);
@@ -125,9 +123,114 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    .form-input {
+        & {
+            width: 100%;
+            height: 45px;
+            border: 2px solid $bg-black-light;
+            background-color: #fff;
+        }
+
+        & > input {
+            width: 100%;
+            height: 100%;
+            padding:0 0 0 15px;
+            font-size: $font-size;
+            color: $font-color;
+            border: none;
+            background: none;
+            outline: none;
+        }
+
+    }
+
+    .form-submit {
+        & {
+            width: 100%;
+            height: 50px;
+            background-color: $bg-orange;
+            border-radius: 5px;
+            overflow: hidden;
+            cursor: pointer;
+            @include transition(all .2s);
+        }
+
+        &:hover {
+            background-color: $bg-orange-bold;
+            @include transition(all .2s);
+        }
+
+        & > button {
+            & {
+                width: 100%;
+                height: 100%;
+                background:none;
+                border:none;
+                color:#fff;
+                letter-spacing: 2px;
+                font-size: #{$font-size - 1};
+                cursor: pointer;
+                outline: none;
+                @include box-sizing(border-box);
+            }
+        }
+
+    }
+
+    .form-checkbox {
+        & {
+            display: inline-block;
+        }
+
+        & > input {
+            display: none;
+        }
+
+        & > input:checked + div {
+            & > svg {
+                display: block;
+            }
+        }
+
+        & > div {
+            & {
+                width: 10px;
+                height: 10px;
+                background-color: #f1f1f1;
+                border: 1px solid $bg-gray;
+                border-radius: 2px;
+                position: relative;
+                cursor: pointer;
+                @include transition(all .2s);
+            }
+
+            &:hover {
+                background-color: $bg-light-bold;
+                @include transition(all .2s);
+            }
+
+            &:active {
+                background-color: $bg-gray;
+                @include transition(all .2s);
+            }
+
+            & > svg {
+                & {
+                    display: none;
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    @include transform(translate(-50%, -50%));
+                    width:8px;
+                    height:8px;
+                }
+            }
+        }
+    }
+
 .login {
     & {
-        padding: 15px 0;
+        padding: 30px 0 15px 0;
     }
 
     & .form {

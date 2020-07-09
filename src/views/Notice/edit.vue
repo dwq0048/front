@@ -18,7 +18,7 @@
 <script>
 import Vue from 'vue'
 import Header from '@/components/layout/header'
-import SideNavigation from '@/components/layout/side'
+import SideNavigation from '@/components/layout/navigation'
 import Menu from '@/components/board/menu/side'
 
 import widget from '@/components/board/notice/edit'

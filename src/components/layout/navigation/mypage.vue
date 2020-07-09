@@ -25,7 +25,7 @@
                             </p>
                         </div>
                         <div class="button">
-                            <router-link to="/" title="로그아웃">로그아웃</router-link>
+                            <a title="로그아웃" v-on:click.prevent="LOGOUT">로그아웃</a>
                         </div>
                     </div>
 
@@ -39,14 +39,25 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBell, faHeart, faCog } from '@fortawesome/free-solid-svg-icons'
+
+const userStore = 'userStore';
 
 export default {
     name: 'navMyPage',
     data(){
         return {
             faBell, faHeart, faCog
+        }
+    },
+    methods: {
+        ...mapActions(userStore, [
+            'USER_LOGOUT'
+        ]),
+        LOGOUT() {
+            this.USER_LOGOUT;
         }
     }
 
@@ -60,6 +71,7 @@ export default {
             & {
                 width: 100%;
                 display: block;
+                padding: 15px 15px 0 15px;
             }
 
             & > .image {

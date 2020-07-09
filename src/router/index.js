@@ -1,8 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import token from './before/token'
-import board from './before/board'
-import boradJson from '@/assets/board.json'
+import before from './before'
 
 Vue.use(VueRouter)
 
@@ -11,31 +9,31 @@ const routes = [
 		path: '/',
 		name: 'Home',
 		component: () => import('@/views/Home'),
-		beforeEnter: token({ auth : 0 })
+		beforeEnter: before()
 	},
 	{
 		path: '/login',
 		name: 'Login',
 		component: () => import('@/views/Login'),
-		beforeEnter: token()
+		beforeEnter: before()
 	},
 	{
 		path: '/notice',
 		name: 'Notice',
 		component: () => import('@/views/Notice'),
-		beforeEnter: token({ auth : 0 })
+		beforeEnter: before()
 	},
 	{
 		path: '/notice/edit',
 		name: 'NoticeEdit',
 		component: () => import('@/views/Notice/edit'),
-		beforeEnter: token({ auth : 1 })
+		beforeEnter: before()
 	},
 	{
 		path: '/notice/post/:id',
 		name: 'NoticePost',
 		component: () => import('@/views/Notice/post'),
-		beforeEnter: token({ auth : 0 })
+		beforeEnter: before()
 	}
 ];
 

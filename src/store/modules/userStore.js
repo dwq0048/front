@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 const User = {
 	namespaced: true,
 	state: {
@@ -17,8 +19,7 @@ const User = {
 			USER_PW: false,
 			ERROR: false,
 			MESSAGE: ''
-		},
-		//navigation : false
+		}
 	},
 	getters: {
 		GET_LOGIN: state => state.IS_LOGIN,
@@ -41,15 +42,16 @@ const User = {
 		SET_ALERT(state, payload){
 			state.LOGIN_ALERT = payload
 		},
-		//onNavigation(state, value){
-		//	state.navigation = value;
-		//}
+		SET_LOGOUT(state, payload){
+			state.IS_LOGIN = false;
+			state.USER_INFO = {};
+		}
 	},
 	actions: {
 		USER_LOGIN: function({commit}, payload){
 			const SEND = {
-				userid: payload.userid,
-				userpw: payload.userpw
+				USER_ID: payload.USER_ID,
+				USER_PW: payload.USER_PW
 			}
 
 			return new Promise((resolve, reject) => {
@@ -65,8 +67,12 @@ const User = {
 				})
 			});
 		},
+		USER_LOGOUT: function({commit}, payload){
+			document.cookie = '_SESSION' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+			commit('SET_LOGOUT');
+		},
 		USER_ALERT: function({commit}, payload){
-			const object = {};
+			let object = {};
 			const update = (alert, userid, userpw, message) => {
 				return {
 					ALERT: alert,
@@ -91,14 +97,39 @@ const User = {
 					object = update(true,true,true,'아이디 또는 비밀번호가 틀렸습니다.');
                     break;
                 default:
-					object = update(false,false,true,'알 수 없는 오류입니다.');
+					object = update(false,false,false,'알 수 없는 오류입니다.');
                     break;
 			}
 			
 			commit('SET_ALERT', object)
 		},
 		USER_DATA: function({commit}, payload){
-			commit('SET_STATUS', payload)
+			commit('SET_STATUS', payload);
+		},
+		USER_TOKEN: function({commit}, payload){
+			return new Promise((resolve, reject) => {
+				axios({
+					method: 'post',
+					url: `/api/1/auth/token`,
+					withCredentials: true,
+				}).then((req) => {
+					console.log(req);
+					if(req.data.info.constructor == Object){
+						if(req.data.message == 'Token authentication complete' || req.data.message == 'Issued Success'){
+							const user = req.data.info;
+							commit('SET_STATUS', user);
+
+							resolve('success');
+						}else{
+							resolve('fail');
+						}
+					}else{
+						reject('fail')
+					}
+				}).catch((err) => {
+					reject('fail')
+				});
+			});
 		}
 	}
 }

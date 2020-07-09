@@ -2,9 +2,14 @@
     <div id="side" v-bind:class="{ active : GET_NAVIGATION, close : TO_CLOSE }">
         <div class="close" title="닫기" v-on:click="Navigation(false)"></div>
         <div class="contents" ref="side">
+            <div class="banner">
+                <button v-on:clikc="Navigation(false)">
+                    <i><font-awesome-icon :icon="faTimes" /></i>
+                </button>
+            </div>
             <ul>
-                <nav-login />
-                <nav-mypage />
+                <nav-login v-if="!GET_LOGIN" />
+                <nav-mypage v-if="GET_LOGIN" />
                 <nav-menu />
             </ul>
 
@@ -14,6 +19,8 @@
 </template>
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { mapActions, mapGetters } from 'vuex'
 
 import NavLogin from './login'
@@ -33,10 +40,14 @@ export default {
     data(){
         return {
             TO_CLOSE: false,
-            styleObject: {}
+            styleObject: {},
+            faTimes
         }
     },
     computed: {
+        ...mapGetters(userStore, [
+            'GET_LOGIN'
+        ]),
         ...mapGetters(helperStore, [
             'GET_NAVIGATION'
         ])
@@ -77,110 +88,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    .form-input {
-        & {
-            width: 100%;
-            height: 45px;
-            border: 2px solid $bg-black-light;
-            background-color: #fff;
-        }
-
-        & > input {
-            width: 100%;
-            height: 100%;
-            padding:0 0 0 15px;
-            font-size: $font-size;
-            color: $font-color;
-            border: none;
-            background: none;
-            outline: none;
-        }
-
-    }
-
-    .form-submit {
-        & {
-            width: 100%;
-            height: 50px;
-            background-color: $bg-orange;
-            border-radius: 5px;
-            overflow: hidden;
-            cursor: pointer;
-            @include transition(all .2s);
-        }
-
-        &:hover {
-            background-color: $bg-orange-bold;
-            @include transition(all .2s);
-        }
-
-        & > button {
-            & {
-                width: 100%;
-                height: 100%;
-                background:none;
-                border:none;
-                color:#fff;
-                letter-spacing: 2px;
-                font-size: #{$font-size - 1};
-                cursor: pointer;
-                outline: none;
-                @include box-sizing(border-box);
-            }
-        }
-
-    }
-
-    .form-checkbox {
-        & {
-            display: inline-block;
-        }
-
-        & > input {
-            display: none;
-        }
-
-        & > input:checked + div {
-            & > svg {
-                display: block;
-            }
-        }
-
-        & > div {
-            & {
-                width: 10px;
-                height: 10px;
-                background-color: #f1f1f1;
-                border: 1px solid $bg-gray;
-                border-radius: 2px;
-                position: relative;
-                cursor: pointer;
-                @include transition(all .2s);
-            }
-
-            &:hover {
-                background-color: $bg-light-bold;
-                @include transition(all .2s);
-            }
-
-            &:active {
-                background-color: $bg-gray;
-                @include transition(all .2s);
-            }
-
-            & > svg {
-                & {
-                    display: none;
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    @include transform(translate(-50%, -50%));
-                    width:8px;
-                    height:8px;
-                }
-            }
-        }
-    }
 
     #side {
         & {
@@ -227,6 +134,44 @@ export default {
                     background-color: #ee8243;
                     @include transition(.2s all);
                     z-index: 10;
+                }
+            }
+
+            & > .banner {
+                & {
+                    width: 100%;
+                    height: 50px;
+                    background-color: $bg-blue;
+                }
+
+                & > button {
+                    & {
+                        float: right;
+                        display:block;
+                        width: 50px;
+                        height: 50px;
+                        background: none;
+                        border: none;
+                        outline: none;
+                        cursor: pointer;
+                        padding: 0;
+                        position: relative;
+                        @include transform(rotate(0deg));
+                        @include transition(.2s all);
+                    }
+
+                    & > i {
+                        font-size: 26px;
+                        color: #fff;
+                        left: 50%; top: 50%;
+                        position:absolute;
+                        @include transform(translate(-50%, -50%) rotate(0deg));
+                    }
+
+                    &:hover > i {
+                        @include transform(translate(-50%, -50%) rotate(360deg));
+                        @include transition(.2s all);
+                    }
                 }
             }
 

@@ -6,7 +6,7 @@
                     <router-link to="/" title="홈으로"><span>VV</span></router-link>
                 </div>
                 <div class="menu" title="메뉴">
-                    <router-link to="/login" title="로그인" v-if="GET_LOGIN" class="btn">로그인</router-link>
+                    <router-link to="/login" title="로그인" v-if="!GET_LOGIN" class="btn">로그인</router-link>
                     <router-link to="/login" title="로그인" v-if="GET_LOGIN" class="btn">안녕하세요</router-link>
                     <a class="ham" v-on:click="Navigation(true)">
                         <div></div>
@@ -40,10 +40,10 @@ export default {
     },
     methods : {
         ...mapActions(helperStore, [
-            'ON_NAViGATION'
+            'ON_NAVIGATION'
         ]),
         Navigation : function(value){
-            this.ON_NAViGATION(true)
+            this.ON_NAVIGATION(true)
         }
     }
 }

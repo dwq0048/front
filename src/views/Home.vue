@@ -29,6 +29,7 @@
 				</div>
 
 				<pee />
+				
 			
 			</div>
 			<!-- Pee End -->
@@ -51,6 +52,7 @@ export default {
 		'search': Search,
 		'pee' : Grid
 	},
+
 }
 
 </script>

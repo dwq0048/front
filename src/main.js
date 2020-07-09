@@ -2,8 +2,8 @@ import Vue from 'vue'
 import axios from 'axios'
 
 import App from '@/App.vue'
-import router from '@/router'
 import store from '@/store'
+import router from '@/router'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { fas } from '@fortawesome/free-solid-svg-icons'
@@ -27,8 +27,10 @@ if(process.env.NODE_ENV == 'developer'){
   axios.defaults.baseURL = 'http://127.0.0.1:3000';
 }
 
+console.log('askdjsadasdkjlk');
+
 new Vue({
-  router,
   store,
+  router,
   render: h => h(App)
 }).$mount('#app')

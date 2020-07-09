@@ -206,7 +206,7 @@
 </template>
 
 <script>
-//import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faBell, faHeart, faCog, faHome, faInfo, faComments } from '@fortawesome/free-solid-svg-icons'
