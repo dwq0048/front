@@ -20,12 +20,12 @@ import Header from '@/components/layout/header'
 import Navigation from '@/components/layout/navigation'
 
 import MenuSkin from '@/components/board/menu_skin/sidePack01'
-import WidgetSkin from '@/components/board/main_skin/defaultPack01/post'
+import WidgetSkin from '@/components/board/main_skin/defaultPack01/edit'
 
 import { config } from './config'
 
 export default {
-        name: 'boardNoticePost',
+        name: 'BoardFreeEdit',
         props: ['option'],
         components: {
             'layout-header': Header,
@@ -43,4 +43,5 @@ export default {
 
 <style lang="scss" scoped>
     @import './style.scss';
+
 </style>

@@ -25,7 +25,7 @@
                             </p>
                         </div>
                         <div class="button">
-                            <a title="로그아웃" v-on:click.prevent="LOGOUT">로그아웃</a>
+                            <button type="button" v-on:click="LOGOUT">로그아웃</button>
                         </div>
                     </div>
 
@@ -58,6 +58,8 @@ export default {
         ]),
         LOGOUT() {
             this.USER_LOGOUT;
+
+            console.log('adsakjl');
         }
     }
 
@@ -148,12 +150,17 @@ export default {
                     margin-top: 20px;
                 }
 
-                & > a {
+                & > button {
                     width: 100%;
                     font-size: #{$font-size - 2};
                     text-align: center;
+                    margin: 0;
                     padding: 10px;
                     display: block;
+                    border:none;
+                    background: none;
+                    outline: none;
+                    cursor: pointer;
                     background-color: #555;
                     color: #f1f1f1;
                     text-decoration: none;

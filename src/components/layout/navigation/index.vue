@@ -28,7 +28,6 @@ import NavMyPage from './mypage'
 import NavMenu from './menu'
 
 const userStore = 'userStore'
-const helperStore = 'helperStore'
 
 export default {
     name: 'navigation',
@@ -48,12 +47,12 @@ export default {
         ...mapGetters(userStore, [
             'GET_LOGIN'
         ]),
-        ...mapGetters(helperStore, [
+        ...mapGetters([
             'GET_NAVIGATION'
         ])
     },
     methods: {
-        ...mapActions(helperStore, [
+        ...mapActions([
             'ON_NAVIGATION'
         ]),
         Navigation(payload){

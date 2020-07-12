@@ -1,23 +1,14 @@
 import Store from '../../store'
-import { mapActions, mapGetters } from 'vuex'
 
 const Before = (object) => (to, from, next) => {
-	Store.dispatch('helperStore/ON_NAVIGATION', false);
+	Store.dispatch('ON_NAVIGATION', false, { root : true });
 	Store.dispatch('userStore/USER_TOKEN').then((req) => {
-		console.log(req);
+		next();
 	}).catch((err) => {
-		console.log(err);
+		next();
 	});
 
 	next();
-}
-
-const StoreGetter = (name, getter) => {
-	return Store.getters[name + '/' + getter]
-}
-
-const StoreActions = (name, action) => {
-	return Store._actions[name + '/' + action]
 }
 
 export default Before

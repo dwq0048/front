@@ -118,38 +118,65 @@
 <script>
 export default {
     name: 'GridPost',
+    data() {
+        return {
+            Screen: 0,
+            cntWidth: 0,
+            ElementCnt: 0,
+            imgWidth: 0,
+            margin: 0,
+            option: []
+        }
+    },
     mounted(){
         let element = this.$el.querySelectorAll('.grid__item');
-        let Screen = window.innerWidth;
-        let cntWidth = Math.floor(Screen / 300);
-        let ElementCnt = element.length;
-        let imgWidth = 300;
-        let margin = 50;
-        let option = [];
-        for(let i=0; i<cntWidth; i++){
-            option.push({ name: i, height: 0, meta: [] })
-        }
-        let min = option[0];
 
-        for(let i=0; i<ElementCnt; i++){
-            for(let j=0; j<option.length; j++){
-                if(min.height > option[j].height){
-                    min = option[j];
+        this.Screen = window.innerWidth;
+        this.cntWidth = Math.floor(this.Screen / 300);
+        this.ElementCnt = element.length;
+        this.imgWidth = 300;
+        this.margin = 50;
+        this.option = [];
+
+        const ResizeEvent = () => {
+            element = this.$el.querySelectorAll('.grid__item');
+
+            for(let i=0; i<this.cntWidth; i++){
+                this.option.push({ name: i, height: 0, meta: [] })
+            }
+            let min = this.option[0];
+
+            for(let i=0; i<this.ElementCnt; i++){
+                for(let j=0; j<this.option.length; j++){
+                    if(min.height > this.option[j].height){
+                        min = this.option[j];
+                    }
                 }
-            }
 
-            if(min.name != 0){
-                element[i].style.left = `${ ( min.name * imgWidth ) }px`;
-            }
+                if(min.name != 0){
+                    element[i].style.left = `${ ( min.name * this.imgWidth ) }px`;
+                }
 
-            if(option[min.name].height != 0){
-                element[i].style.top = `${ ( option[min.name].height ) }px`;
-            }
+                if(this.option[min.name].height != 0){
+                    element[i].style.top = `${ ( this.option[min.name].height ) }px`;
+                }
 
-            option[min.name].height = ( option[min.name].height + element[i].offsetHeight + margin );
-            option[min.name].meta.push( i );
+                this.option[min.name].height = ( this.option[min.name].height + element[i].offsetHeight + this.margin );
+                this.option[min.name].meta.push( i );
+            }
         }
 
+        ResizeEvent();
+        window.addEventListener('resize', () => {
+            this.Screen = window.innerWidth;
+            this.cntWidth = Math.floor(this.Screen / 300);
+            this.ElementCnt = element.length;
+            this.imgWidth = 300;
+            this.margin = 50;
+            this.option = [];
+
+            ResizeEvent();
+        });
 
     }
 }

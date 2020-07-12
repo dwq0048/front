@@ -113,7 +113,6 @@ const User = {
 					url: `/api/1/auth/token`,
 					withCredentials: true,
 				}).then((req) => {
-					console.log(req);
 					if(req.data.info.constructor == Object){
 						if(req.data.message == 'Token authentication complete' || req.data.message == 'Issued Success'){
 							const user = req.data.info;

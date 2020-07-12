@@ -17,6 +17,8 @@ const routes = [
 		component: () => import('@/views/Login'),
 		beforeEnter: before()
 	},
+
+	// 공지사항 게시판
 	{
 		path: '/notice',
 		name: 'Notice',
@@ -33,6 +35,26 @@ const routes = [
 		path: '/notice/post/:id',
 		name: 'NoticePost',
 		component: () => import('@/views/Notice/post'),
+		beforeEnter: before()
+	},
+
+	// 자유게시판
+	{
+		path: '/free',
+		name: 'Free',
+		component: () => import('@/views/Free'),
+		beforeEnter: before()
+	},
+	{
+		path: '/free/edit',
+		name: 'FreeEdit',
+		component: () => import('@/views/Free/edit'),
+		beforeEnter: before()
+	},
+	{
+		path: '/free/post/:id',
+		name: 'FreePost',
+		component: () => import('@/views/Free/post'),
 		beforeEnter: before()
 	}
 ];

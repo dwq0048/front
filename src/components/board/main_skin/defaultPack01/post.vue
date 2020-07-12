@@ -7,8 +7,8 @@
                 </div>
                 <div class="display">
                     <div>
-                        <span>{{ post.board }}</span>
-                        <span>{{ TimeFor(post.state.date_fix) }}</span>
+                        <span>{{ post.board.name }}</span>
+                        <span>{{ post.state.date_fix }}</span>
                         <span>{{ post.user.nickname }}</span>
                     </div>
                     <div>
@@ -34,7 +34,7 @@
         </div>
 
         <div class="comment">
-            <comment />
+            <comment :info="info"/>
         </div>
     </div>
 </template>
@@ -46,16 +46,40 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
 import { faHeart as faHeartS } from '@fortawesome/free-solid-svg-icons'
 
-import Comment from '@/components/board/comment/chat'
+import { SET_TIME } from '@/store/helper'
+import { SET_BOARD } from '@/store/helper'
 
-const helperStore = 'helperStore'
+import Comment from '@/components/board/comment_skin/chatPack01'
 
 export default {
     name: 'DefaultMain',
+    props: ['info'],
     data() {
         return {
             id: this.$route.params.id,
-            post: {},
+            board: this.info.board,
+            post: {
+                title: '',
+                board: '',
+                post: '',
+                user: {
+                    name: '',
+                    nickname: '',
+                    userKey: '',
+                    userid: '',
+                },
+                state: {
+                    date: '',
+                    date_fix: '',
+                },
+                type: {
+                    password: '',
+                    skin: '',
+                    state: '',
+                },
+                files: [],
+                images: [],
+            },
             faHeartR,
             faHeartS
         }
@@ -64,31 +88,7 @@ export default {
         'comment' : Comment
     },
     methods : {
-        ...mapActions(helperStore, [
-            'TIME_FOR'
-        ]),
-        TimeFor(payload){
-            const today = new Date();
-            const timeValue = new Date(payload);
-    
-            const betweenTime = Math.floor((today.getTime() - timeValue.getTime()) / 1000 / 60);
-            if (betweenTime < 1) return '방금전';
-            if (betweenTime < 60) {
-                return `${betweenTime}분전`;
-            }
-    
-            const betweenTimeHour = Math.floor(betweenTime / 60);
-            if (betweenTimeHour < 24) {
-                return `${betweenTimeHour}시간전`;
-            }
-    
-            const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
-            if (betweenTimeDay < 365) {
-                return `${betweenTimeDay}일전`;
-            }
-    
-            return `${Math.floor(betweenTimeDay / 365)}년전`;
-        }
+
     },
     created: function(){
         const data = {
@@ -103,7 +103,25 @@ export default {
             withCredentials: true,
         }).then((req) => {
             this.post = req.data.req;
+            this.post.state.date_fix = SET_TIME(this.post.state.date_fix);
+            this.post.board = {
+                original: this.post.board,
+                name: SET_BOARD.category(this.post.board)
+            }
 
+            console.log(this.post);
+
+            const element = document.createElement('div');
+            element.innerHTML = this.post.post;
+            for(let i=0; i<this.post.images.length; i++){
+                const src = element.querySelectorAll(`[data-index]`);
+                for(let j=0; j<src.length; j++){
+                    const index = src[j].getAttribute("data-index");
+                    src[j].setAttribute("src", `http://127.0.0.1:3000/images/${this.post.images[index]}`);
+                }
+            }
+
+            this.post.post = element.outerHTML;
         }).catch((err) => {
             console.log(err);
         })

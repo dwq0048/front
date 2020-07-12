@@ -1,41 +1,43 @@
 <template>
     <div class="board">
-        <side-navigation />
-        <default-header />
+        <layout-navigation />
+        <layout-header />
 
         <div class="title"></div>
         <div class="contents">
             <div class="nav">
-                <side-menu />
+                <menu-skin />
             </div>
             <div class="board">
-                <widget />
+                <widget-skin :info="info" />
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import Vue from 'vue'
 import Header from '@/components/layout/header'
-import SideNavigation from '@/components/layout/navigation'
-import Menu from '@/components/board/menu/side'
+import Navigation from '@/components/layout/navigation'
 
-import widget from '@/components/board/notice'
+import MenuSkin from '@/components/board/menu_skin/sidePack01'
+import WidgetSkin from '@/components/board/main_skin/defaultPack01'
+
+import { config } from './config'
 
 export default {
-        name: 'notice',
+        name: 'BoardNotice',
         props: ['option'],
         components: {
-            'default-header': Header,
-            'side-navigation': SideNavigation,
-            'side-menu' : Menu,
-            'widget' : widget
+            'layout-header': Header,
+            'layout-navigation': Navigation,
+            'menu-skin' : MenuSkin,
+            'widget-skin' : WidgetSkin
         },
-        /*
-        created(){
-            Vue.component('widget', () => import(`@/components/board/main/${this.option}/index`))
-        }*/
+        data(){
+            return {
+                info: config
+            }
+        }
 }
 </script>
 

@@ -1,12 +1,7 @@
 <template>
 	<div class="home">
-		<!-- Side Menu -->
-		<navigation />
-		<!-- Side Menu End -->
-
-		<!-- Header -->
-		<default-header />
-		<!-- Header End -->
+		<layout-navigation />
+		<layout-header />
 
 		<div class="contents">
 
@@ -15,17 +10,19 @@
 				<div class="title">
 					<h1>VV</h1>
 				</div>
-				<search />
+				<layout-search />
 			</div>
 			<!-- Title End -->
 
 			<!-- Pee -->
 			<div class="section-2">
 				<div class="title">
+					<!--
 					<div>
 						<h1>찰칵찰칵</h1>
 						<router-link to="/vrchat/post" title="업로드">업로드 하기</router-link>
 					</div>
+					-->
 				</div>
 
 				<pee />
@@ -47,12 +44,11 @@ import Grid from '@/components/widget/main/grid-post'
 export default {
 	name: 'Home',
 	components: {
-		'default-header': Header,
-		'navigation': Navigation,
-		'search': Search,
+		'layout-header': Header,
+		'layout-navigation': Navigation,
+		'layout-search': Search,
 		'pee' : Grid
-	},
-
+	}
 }
 
 </script>

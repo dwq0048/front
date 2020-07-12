@@ -26,12 +26,11 @@
 import { mapActions, mapGetters } from 'vuex'
 
 const userStore = 'userStore';
-const helperStore = 'helperStore';
 
 export default {
     name: 'default-header',
     computed: {
-        ...mapGetters(helperStore, [
+        ...mapGetters([
             'GET_NAVIGATION'
         ]),
         ...mapGetters(userStore, [
@@ -39,7 +38,7 @@ export default {
         ])
     },
     methods : {
-        ...mapActions(helperStore, [
+        ...mapActions([
             'ON_NAVIGATION'
         ]),
         Navigation : function(value){

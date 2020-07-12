@@ -2,7 +2,7 @@
     <div class="default">
         <div class="nav">
             <div class="title">
-                <h1>공지사항</h1>
+                <h1>{{ title }}</h1>
             </div>
             <div class="menu">
                 <ul>
@@ -22,10 +22,10 @@
                         <p>{{ ((page * 15)+i)+1 }}</p>
                     </div>
                     <div class="title">
-                        <p><router-link :to="'/notice/post/'+item._id">{{ item.title }}</router-link></p>
+                        <p><router-link :to="'/'+info.board+'/post/'+item._id">{{ item.title }}</router-link></p>
                     </div>
                     <div class="date">
-                        <p>{{ dateFormat(item.state.date) }}</p>
+                        <p>{{ item.state.date }}</p>
                     </div>
                     <div class="user">
                         <p>{{ item.user.name }}</p>
@@ -37,35 +37,33 @@
 </template>
 
 <script>
+import { SET_BOARD } from '@/store/helper/'
+
 export default {
     name: 'DefaultMain',
+    props: ['info'],
     data() {
         return {
             list : [],
-            page : 0
+            page : 0,
+            title: ''
         }
     },
     methods : {
-        dateFormat: function(data){
-            const date = new Date(data);
-            var year = date.getFullYear();              //yyyy
-            var month = (1 + date.getMonth());          //M
-            month = month >= 10 ? month : '0' + month;  //month 두자리로 저장
-            var day = date.getDate();                   //d
-            day = day >= 10 ? day : '0' + day;          //day 두자리로 저장
-            return  year + '-' + month + '-' + day;
-        }
+        
     },
     created: function(){
+        this.title = SET_BOARD.category(this.info.board);
+
         const data = {
-            board: 'notice',
+            board: this.info.board,
             page: this.page,
             view: 15
         }
 
         this.$axios({
             method: 'post',
-            url: `/api/1/board/list/notice`,
+            url: `/api/1/board/list/${this.info.board}`,
             data: data,
             withCredentials: true,
         }).then((req) => {

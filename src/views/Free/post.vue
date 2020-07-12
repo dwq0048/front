@@ -25,7 +25,7 @@ import WidgetSkin from '@/components/board/main_skin/defaultPack01/post'
 import { config } from './config'
 
 export default {
-        name: 'boardNoticePost',
+        name: 'BoardFreePost',
         props: ['option'],
         components: {
             'layout-header': Header,

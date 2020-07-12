@@ -32,7 +32,7 @@
                 <div>커뮤니티</div>
                 <ul>
                     <li>
-                        <router-link to="/">자유게시판</router-link>
+                        <router-link to="/free">자유게시판</router-link>
                         <router-link to="/">VR 포토</router-link>
                         <router-link to="/">VR 영상</router-link>
                     </li>
