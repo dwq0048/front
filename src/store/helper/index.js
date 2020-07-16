@@ -31,6 +31,18 @@ const SET_BOARD = {
             default:
                 return 'NULL';
         }
+    },
+    encodeBase64ImageFile: function(image) {
+        return new Promise((resolve, reject) => {
+            let reader = new FileReader()
+            reader.readAsDataURL(image)
+            reader.onload = (event) => {
+                resolve(event.target.result)
+            }
+            reader.onerror = (error) => {
+                reject(error)
+            }
+        })
     }
 }
 
