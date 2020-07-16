@@ -56,7 +56,15 @@ const routes = [
 		name: 'FreePost',
 		component: () => import('@/views/Free/post'),
 		beforeEnter: before()
-	}
+	},
+
+	// 포토게시판
+	{
+		path: '/photo/edit',
+		name: 'PhotoEdit',
+		component: () => import('@/views/photo/edit'),
+		beforeEnter: before()
+	},
 ];
 
 /*

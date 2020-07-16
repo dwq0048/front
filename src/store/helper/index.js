@@ -26,10 +26,8 @@ const SET_BOARD = {
         switch(payload){
             case 'notice':
                 return '공지사항';
-                break;
             case 'free':
                 return '자유게시판';
-                break;
             default:
                 return 'NULL';
         }

@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { SET_TIME } from '../helper'
+import { SET_TIME, SET_BOARD } from '../helper'
 
 const Post = {
     namespaced: true,
@@ -15,6 +15,56 @@ const Post = {
         }
     },
     actions: {
+        POST_LIST({commit}, payload){
+            return new Promise((resolve, reject) => {
+                axios({
+                    method: 'post',
+                    url: `/api/1/board/list/${payload.board}`,
+                    data: payload,
+                    withCredentials: true,
+                }).then((req) => {
+                    req.data.data.map(item => {
+                        item.state.displayDate = SET_TIME(item.state.date_fix)
+                    });
+
+                    resolve(req.data.data);
+                }).catch((err) => {
+                    reject(err);
+                })
+            });
+        },
+        POST_VIEW({commit}, payload){
+            return new Promise((resolve, reject) => {
+                axios({
+                    method: 'post',
+                    url: `/api/1/board/view/${payload.id}`,
+                    data: payload,
+                    withCredentials: true,
+                }).then((req) => {
+                    let post = req.data.req;
+                    post.state.displayDate = SET_TIME(post.state.date_fix);
+                    post.board = {
+                        original: post.board,
+                        name: SET_BOARD.category(post.board)
+                    }
+        
+                    const element = document.createElement('div');
+                    element.innerHTML = post.post;
+                    for(let i=0; i<post.images.length; i++){
+                        const src = element.querySelectorAll(`[data-index]`);
+                        for(let j=0; j<src.length; j++){
+                            const index = src[j].getAttribute("data-index");
+                            src[j].setAttribute("src", `http://127.0.0.1:3000/images/${post.images[index]}`);
+                        }
+                    }
+                    post.post = element.outerHTML;
+
+                    resolve(post)
+                }).catch((err) => {
+                    reject(err)
+                })
+            })
+        },
         COMMENT_POST({commit}, payload){
             return new Promise((resolve, reject) => {
                 const SEND = {
