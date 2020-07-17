@@ -21,6 +21,27 @@ const SET_TIME = function(payload) {
     return `${Math.floor(betweenTimeDay / 365)}년전`;
 }
 
+const SET_SCRIPT = {
+    addClass: (payload) => {
+        const array = payload.el.className.split(" ");
+
+        if (array.indexOf(payload.class) == -1) {
+            payload.el.className += " " + payload.class;
+        }else {
+            payload.el.className += payload.class;
+        }
+    },
+    removeClass: (payload) => {
+        const check = new RegExp("(\\s|^)" + payload.class + "(\\s|$)");
+        payload.el.className = payload.el.className.replace(check, " ").trim();
+        const array = payload.el.className.split(" ");
+
+        if (array.indexOf(payload.class) == -1) {
+            payload.el.className = payload.el.className.replace(check, "").trim();
+        }
+    }
+}
+
 const SET_BOARD = {
     category: (payload) => {
         switch(payload){
@@ -46,4 +67,4 @@ const SET_BOARD = {
     }
 }
 
-export { SET_TIME, SET_BOARD }
+export { SET_TIME, SET_BOARD, SET_SCRIPT }

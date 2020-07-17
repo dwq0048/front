@@ -2,13 +2,24 @@
     <div class="post">
 		<input type="file" ref="UploadImage" multiple @change="UpdateImage($event.target.name, $event.target.files)">
     	<div class="post-title">
-			<div class="thumbnail" v-if="!thumbnail">
+			<div class="title">
+				<h1>내용</h1>
+				<button type="button" title="사진 추가" @click="tempImage">
+					<i><font-awesome-icon :icon="faPlus" /></i>
+				</button>
+			</div>
+
+			<div class="thumbnail" v-if="!thumbnail" title="이미지 업로드">
 				<div>
-					<i><font-awesome-icon :icon="faImage" /></i>
+					<i class="img"><font-awesome-icon :icon="faImage" /></i>
+					<i class="upload"><font-awesome-icon :icon="faFileUpload" /></i>
+					<div>
+						<p>이미지<br>업로드</p>
+					</div>
 				</div>
 			</div>
 
-			<div class="thumbnail" v-if="thumbnail">
+			<div class="thumbnail active" v-if="thumbnail">
 				<div>
 					<img :src="imageStorage[thumbnail.num].base" />
 				</div>
@@ -23,21 +34,57 @@
 
 		<div class="post-photo">
 			<div class="title">
-				<h1>사진 리스트</h1>
+				<h1>사진 수정</h1>
 				<button type="button" title="사진 추가" @click="tempImage">
 					<i><font-awesome-icon :icon="faPlus" /></i>
+				</button>
+			</div>
+			<div class="setting">
+				<button type="button">
+					<i><font-awesome-icon :icon="faTrashAlt" /></i>
+					<span>선택 삭제</span>
+				</button>
+				<button type="button">
+					<i><font-awesome-icon :icon="faExclamationCircle" /></i>
+					<span>선택 해제</span>
+				</button>
+				<button type="button">
+					<i><font-awesome-icon :icon="faCheckCircle" /></i>
+					<span>모두 선택</span>
 				</button>
 			</div>
 			<div class="list">
 				<ul>
 					<li v-for="(item, i) in imageStorage" :key="i">
 						<div>
-							<img :src="item.base" />
+							<div>
+								<img :src="item.base" />
+								<div class="bg"></div>
+								<div class="setting">
+									<button type="button" title="이미지 사이즈 변경">
+										<span><i><font-awesome-icon :icon="faCropAlt" /></i></span>
+									</button>
+									<button type="button" title="대표 이미지 선택">
+										<span><i><font-awesome-icon :icon="faCrown" /></i></span>
+									</button>
+									<button type="button" title="순서 변경">
+										<span><i><font-awesome-icon :icon="faArrowsAlt" /></i></span>
+									</button>
+								</div>
+								<label class="check">
+									<input type="checkbox">
+									<div>
+										<i><font-awesome-icon :icon="faCheck" /></i>
+									</div>
+								</label>
+							</div>
 						</div>
 					</li>
 					<li class="active" @click="tempImage">
 						<div title="사진 추가">
-							<i><font-awesome-icon :icon="faImages" /></i>
+							<div>
+								<i><font-awesome-icon :icon="faImages" /></i>
+							</div>
 						</div>
 					</li>
 				</ul>
@@ -70,13 +117,15 @@
 							<div class="child tag" v-if="item.value">
 								<div>
 									<label>
-										<div>
+										<div contenteditable>
 											<div v-for="(tags, i) in item.array" :key="i">
 												<p><span>#</span>{{ tags.name }}</p>
 											</div>
-											<div v-on:keydown.32.capture="displayTag(item.name)" class="active">
-												<p><span>#</span><i placeholder="입력해주세요..." contenteditable></i></p>
+											<!--
+											<div v-on:keydown.32.capture="displayTag(item.name)" ref="listag" class="active">
+												<p><span>#</span><i contenteditable></i></p>
 											</div>
+											-->
 										</div>
 									</label>
 								</div>
@@ -91,9 +140,9 @@
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faImage, faImages, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faImage, faImages, faFileUpload, faPlus, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt } from '@fortawesome/free-solid-svg-icons'
 
-import { SET_BOARD } from '@/store/helper'
+import { SET_BOARD, SET_SCRIPT } from '@/store/helper'
 
 const sanitizeHtml = require('sanitize-html');
 
@@ -104,37 +153,13 @@ export default {
 	},
 	data() {
 		return {
-			faImage, faPlus, faImages,
+			faImage, faPlus, faImages, faFileUpload, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt,
 
 			imageStorage: [],
 			baseStorage: [],
 			thumbnail: false,
 
 			setting : [
-				{
-					name: 'tag',
-					display: '테그 설정',
-					child: [
-						{
-							name: 'map',
-							display: '맵 테그',
-							value: true,
-							array: [{
-								name: 'Vrchat'
-							}]
-						},
-						{
-							name: 'player',
-							display: '플레이어 테그 / 언급',
-							value: false
-						},
-						{
-							name: 'tag',
-							display: '자유 테그',
-							value: false
-						},
-					]
-				},
 				{
 					name: 'detail',
 					display: '세부 설정',
@@ -190,6 +215,20 @@ export default {
 			});
 
 		},
+	},
+	mounted() {
+		/*
+		const tag = this.$refs.listag[0];
+		tag.addEventListener('focusin', () => {
+			console.log('in')
+			SET_SCRIPT.addClass({ el: tag, class: 'focused' })
+		});
+		
+		tag.addEventListener('focusout', () => {
+			console.log('out');
+			SET_SCRIPT.removeClass({ el: tag, class: 'focused' })
+		});
+		*/
 	}
 }
 </script>
@@ -220,14 +259,36 @@ export default {
 			}
 
 			& > div {
-				& {
-					float: left;
+
+				&.title {
+					& > h1 {
+						font-size: #{$font-size + 4};
+						color: #555;
+						font-weight: bold;
+						padding-bottom: 15px;
+						display: inline-block;
+					}
+
+					& > button {
+						& {
+							font-size: #{$font-size + 2};
+							border: none;
+							background: none;
+							outline: none;
+							float: right;
+							color: #ccc;
+							cursor: pointer;
+							padding: 10px 15px;
+						}
+					}
 				}
 
 				&.thumbnail {
 					& {
 						width: 20%;
 						height: auto;
+						cursor: pointer;
+						float: left;
 					}
 
 					& > div {
@@ -238,6 +299,7 @@ export default {
 							background-color: #f1f1f1;
 							border: 2px solid #ccc;
 							border-style: dashed;
+							@include transition(.2s all);
 						}
 
 						&:after {
@@ -249,16 +311,86 @@ export default {
 						& > i {
 							position: absolute;
 							left: 50%; top: 50%;
-							@include transform(translate(-50%, -50%));
 							font-size: #{$font-size + 15};
 							color: #ccc;
+							opacity: 1;
+							@include transform(translate(-50%, -50%));
+							@include transition(.2s all);
+						}
+
+						& > i.upload {
+							opacity: 0;
 						}
 
 						& > img {
+							height: 100%;
 							position: absolute;
 							left: 50%; top: 50%;
 							@include transform(translate(-50%, -50%));
-							height: 100%;
+						}
+
+						& > div {
+							& {
+								width: 100%; height: 100%;
+								position: absolute;
+								left: 50%; top: 50%;
+								background-color: rgba(0,0,0,0.5);
+								opacity: 0;
+								@include transition(.2s all);
+								@include transform(translate(-50%, -50%));
+							}
+
+							& > p {
+								& {
+									position: absolute;
+									left: 50%; top: 50%;
+									font-size: #{$font-size + 2};
+									color: #f1f1f1;
+									font-weight: bold;
+									@include transform(translate(-50%, -50%));
+								}
+								
+							}
+						}
+					}
+
+					&.active {
+						& > div {
+							& {
+								border: 1px solid #ddd;
+								border-radius: 3px;
+							}
+						}
+					}
+
+					&:hover {
+						& > div {
+							& {
+								border: 2px solid $bg-orange;
+								border-style: dashed;
+								@include transition(.2s all);
+							}
+
+							& > i {
+								& {
+									@include transition(.2s all);
+								}
+
+								&.img {
+									opacity: 0;
+								}
+
+								&.upload {
+									color: $bg-orange;
+									opacity: 1;
+								}
+							}
+
+							& > div {
+								opacity: 0;
+								display: none;
+								@include transition(.2s all);
+							}
 						}
 					}
 
@@ -268,6 +400,7 @@ export default {
 					& {
 						width: 80%;
 						height: auto;
+						float: left;
 					}
 
 					& > div {
@@ -331,14 +464,62 @@ export default {
 				}
 			}
 
+			& > .setting {
+				& {
+					width: 100%;
+					padding-bottom: 15px;
+				}
+
+				&:after {
+					content: " ";
+					display: block;
+					clear: both;
+				}
+
+				& > button {
+					& {
+						float: right;
+						border: 0;
+						background: none;
+						outline: none;
+						font-size: #{$font-size};
+						font-weight: bold;
+						color: #999;
+						cursor: pointer;
+						@include transition(.2s all);
+					}
+
+					& > i {
+						& {
+							vertical-align: middle;
+						}
+					}
+
+					& > span {
+						& {
+							padding-left: 7px;
+							vertical-align: middle;
+							font-size: #{$font-size - 2};
+						}
+					}
+
+					&:hover {
+						& {
+							color: #555;
+							@include transition(.2s all);
+						}
+					}
+				}
+			}
+
 			& > .list {
+
 				& > ul {
 					& {
 						width: 100%;
 						font-size: 0;
 						text-decoration: none;
-						white-space: nowrap;
-						overflow-x: hidden;
+						margin-left: -15px;
 					}
 
 					& > li {
@@ -346,38 +527,209 @@ export default {
 							width: 20%;
 							height: auto;
 							display: inline-block;
-							margin-right:15px;
+							padding-left: 15px;
+							padding-bottom: 15px;
 						}
 
 						& > div {
 							& {
 								width: 100%;
 								height: auto;
-								position: relative;
-								background-color: #f1f1f1;
-								overflow: hidden;
+								background-color: #ddd;
+								border-radius: 3px;
 							}
 
-							&:after {
-								content: " ";
-								display: block;
-								padding-bottom: 100%;
-							}
+							& > div:nth-child(1) {
+								& {
+									width: 100%;
+									height: auto;
+									position: relative;
+									background-color: #f1f1f1;
+									overflow: hidden;
+									border: 1px solid #ddd;
+									border-radius: 3px;
+								}
 
-							& > i {
-								position: absolute;
-								left: 50%; top: 50%;
-								@include transform(translate(-50%, -50%));
-								font-size: #{$font-size + 20};
-								color: #ccc;
-							}
+								&:after {
+									content: " ";
+									display: block;
+									padding-bottom: 100%;
+								}
 
-							& > img {
-								height: 100%;
-								position: absolute;
-								left: 50%; top: 50%;
-								@include transform(translate(-50%, -50%));
-								object-fit: cover;
+								& > i {
+									position: absolute;
+									left: 50%; top: 50%;
+									@include transform(translate(-50%, -50%));
+									font-size: #{$font-size + 20};
+									color: #ccc;
+								}
+
+								& > img {
+									height: 100%;
+									position: absolute;
+									left: 50%; top: 50%;
+									@include transform(translate(-50%, -50%));
+									object-fit: cover;
+								}
+
+								& > div.bg {
+									& {
+										position: absolute;
+										left: 50%; top: 50%;
+										width: 100%; height: 100%;
+										background-color: rgba(0,0,0,0.5);
+										z-index: 1;
+										opacity: 0;
+										@include transform(translate(-50%, -50%));
+										@include transition(.2s all);
+									}
+								}
+
+								& > div.setting {
+									& {
+										position: absolute;
+										width: 100%; height: auto;
+										padding: 5px;
+										left: 0; bottom: 0;
+										z-index: 3;
+										background-color: rgba(0,0,0,0.3);
+									}
+
+									&:after {
+										content: " ";
+										display: block;
+										clear: both;
+									}
+
+									& > button {
+										& {
+											border: 0;
+											padding: 3px 10px;
+											background: none;
+											outline: none;
+											cursor: pointer;
+											float: right;
+										}
+
+										& > span {
+											& {
+												position: relative;
+												display: inline-block;
+												color: #fff;
+											}
+
+											& > i {
+												display: inline-block;
+												@include transform(scale(1));
+												@include transition(.2s all);
+											}
+										}
+
+										&:hover {
+											& > span > i {
+												@include transform(scale(1.1));
+												@include transition(.2s all);
+											}
+										}
+									}
+								}
+
+								& > label {
+									& {
+										display: block;
+										cursor: pointer;
+										width: 100%; height: 100%;
+										position: absolute;
+										left: 50%; top: 50%;
+										z-index: 2;
+										@include transform(translate(-50%, -50%));
+									}
+
+									&:after {
+										content: " ";
+										display: block;
+										clear: both;
+									}
+
+									& > input[type=checkbox] {
+										display: none;
+									}
+
+									& > div {
+										& {
+											background: none;
+											border: none;
+											outline: none;
+											width: 23px;
+											height: 23px;
+											background-color: #f9f9f9;
+											border: 2px solid #ddd;
+											border-radius: 50%;
+											float: right;
+											margin-right: 10px;
+											margin-top: 10px;
+											position: relative;
+											@include box-shadow(3px 3px 3px rgba(0,0,0,0.1));
+											@include transition(.2s all);
+										}
+
+										& > i {
+											& {
+												position: absolute;
+												font-size: #{$font-size};
+												color: #f1f1f1;
+												left: 50%; top: 50%;
+												@include transform(translate(-50%, -50%));
+											}
+										}
+									}
+
+									& > input[type=checkbox]:checked + div {
+										border: 1px solid $bg-orange!important;
+										@include transition(.2s all);
+									}
+
+									& > input[type=checkbox]:checked + div > i {
+										color: $bg-orange!important;
+										@include transition(.2s all);
+									}
+								
+								}
+
+								&:hover{
+									& > div {
+										&.bg {
+											& {
+												opacity: 1;
+												@include transition(.2s all);
+											}
+										}
+
+										&.setting {
+											& {
+												background-color: #333;
+												@include transition(.2s all);
+											}
+										}
+									}
+
+									& > label {
+										& > div {
+											& {
+												background-color: #fff;
+												@include transition(.2s all);
+											}
+											
+											& > i {
+												& {
+													color: #ccc;
+													@include transition(.2s all);
+												}
+											}
+										}
+									}
+								}
+
 							}
 						}
 
@@ -624,9 +976,21 @@ export default {
 												}
 
 												&.active {
+													& {
+														opacity: 0;
+														@include transition(.2s all);
+													}
+
 													& > p {
 														background-color: $bg-orange;
 														min-width: 15px;
+													}
+												}
+
+												&.focused {
+													& {
+														opacity: 1;
+														@include transition(.2s all);
 													}
 												}
 											}
