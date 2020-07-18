@@ -24,20 +24,6 @@
                                     <p>자동 로그인</p>
                                 </label>
                             </div>
-                            <div class="checkbox">
-                                <label>
-                                    <div class="form-checkbox">
-                                        <input type="checkbox" />
-                                        <div>
-                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 10 10">
-                                                <path d="M 1,6 3,8 8,1" style="stroke:#000; stroke-width:2; fill:none;" />
-                                            </svg>
-                                        </div>
-                                    </div>
-                                    <p>서비스 이용약관 동의</p>
-                                </label>
-                            </div>
-
                             <div class="form-submit">
                                 <button type="submit">LOGIN</button>
                             </div>

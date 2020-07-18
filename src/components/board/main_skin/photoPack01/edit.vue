@@ -1,6 +1,20 @@
 <template>
     <div class="post">
 		<input type="file" ref="UploadImage" multiple @change="UpdateImage($event.target.name, $event.target.files)">
+		<div class="post-nav">
+			<div>
+				<button type="button" class="prev" title="목록으로">
+					<i><font-awesome-icon :icon="faAngleLeft" /></i>
+				</button>
+				<div>
+					<h1>새 게시물</h1>
+				</div>
+				<button type="button" class="write" title="공유하기">
+					<i><font-awesome-icon :icon="faEdit" /></i>
+				</button>
+			</div>
+		</div>
+
     	<div class="post-title">
 			<div class="title">
 				<h1>내용</h1>
@@ -9,7 +23,7 @@
 				</button>
 			</div>
 
-			<div class="thumbnail" v-if="!thumbnail" title="이미지 업로드">
+			<div class="thumbnail" v-if="!thumbnail" title="사진 추가" @click="tempImage()">
 				<div>
 					<i class="img"><font-awesome-icon :icon="faImage" /></i>
 					<i class="upload"><font-awesome-icon :icon="faFileUpload" /></i>
@@ -40,15 +54,15 @@
 				</button>
 			</div>
 			<div class="setting">
-				<button type="button">
+				<button type="button" @click="CheckDelete()">
 					<i><font-awesome-icon :icon="faTrashAlt" /></i>
 					<span>선택 삭제</span>
 				</button>
-				<button type="button">
+				<button type="button" @click="CheckDisabled()">
 					<i><font-awesome-icon :icon="faExclamationCircle" /></i>
 					<span>선택 해제</span>
 				</button>
-				<button type="button">
+				<button type="button" @click="CheckAll()">
 					<i><font-awesome-icon :icon="faCheckCircle" /></i>
 					<span>모두 선택</span>
 				</button>
@@ -72,7 +86,7 @@
 									</button>
 								</div>
 								<label class="check">
-									<input type="checkbox">
+									<input type="checkbox" v-model="photoList" :value="i" @change="CheckChange(i)">
 									<div>
 										<i><font-awesome-icon :icon="faCheck" /></i>
 									</div>
@@ -83,7 +97,8 @@
 					<li class="active" @click="tempImage">
 						<div title="사진 추가">
 							<div>
-								<i><font-awesome-icon :icon="faImages" /></i>
+								<i class="img"><font-awesome-icon :icon="faImages" /></i>
+								<i class="upload"><font-awesome-icon :icon="faFileUpload" /></i>
 							</div>
 						</div>
 					</li>
@@ -140,7 +155,7 @@
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faImage, faImages, faFileUpload, faPlus, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt } from '@fortawesome/free-solid-svg-icons'
+import { faImage, faImages, faFileUpload, faPlus, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit } from '@fortawesome/free-solid-svg-icons'
 
 import { SET_BOARD, SET_SCRIPT } from '@/store/helper'
 
@@ -153,7 +168,7 @@ export default {
 	},
 	data() {
 		return {
-			faImage, faPlus, faImages, faFileUpload, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt,
+			faImage, faPlus, faImages, faFileUpload, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit,
 
 			imageStorage: [],
 			baseStorage: [],
@@ -181,7 +196,8 @@ export default {
 						},
 					]
 				}
-			]
+			],
+			photoList: []
 		}
 	},
 	methods: {
@@ -202,7 +218,37 @@ export default {
 			const elem = this.$refs.UploadImage;
 			elem.click();
 		},
+		CheckAll(){
+			let index = 0;
+			this.imageStorage.map(item => {
+				this.photoList.push(index);
+				item.checked = true;
+				index++;
+			})
+		},
+		CheckDisabled(){
+			this.imageStorage.map(item => {
+				if(item.checked == true){
+					item.checked = false;
+				}
+			})
+			this.photoList = [];
+		},
+		CheckChange(index){
+			if(this.imageStorage[index].checked == true){
+				this.imageStorage[index].checked = false
+			}else {
+				this.imageStorage[index].checked = true
+			}
+		},
+		CheckDelete(){
+			for(let i=0; i<this.photoList.length; i++){
+				this.imageStorage.splice(this.photoList[i], 1);
+			}
+			this.CheckDisabled();
+		},
 		UpdateImage(name, file){
+			this.CheckDisabled();
 			for(let i=0;i<file.length;i++){
 				this.SETBASE(file[i]);
 			}
@@ -211,7 +257,8 @@ export default {
 			return await SET_BOARD.encodeBase64ImageFile(payload).then((req) => {
 				if(this.thumbnail == false){ this.thumbnail = { num : 0 }; }
 				payload.base = req;
-				this.imageStorage.push(payload);	
+				payload.checked = false;
+				this.imageStorage.push(payload);
 			});
 
 		},
@@ -243,13 +290,95 @@ export default {
 			background-color: #fff;
 			border:1px solid #ccc;
 			@include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
-			padding: 30px;
+		}
+
+		& > .post-nav {
+			& {
+				width: 100%;
+				height: 50px;
+				border-bottom: 1px solid #ccc;
+			}
+
+			& > div {
+				& {
+					width: 100%;
+					height: 100%;
+					position: relative;
+				}
+
+				& > div {
+					& {
+						position: absolute;
+						width: 100%;
+						height: 100%;
+						left: 0; top: 0;
+						z-index: 1;
+					}
+
+					& > h1 {
+						& {
+							font-size: #{$font-size + 2};
+							font-weight: bold;
+							text-align: center;
+							line-height: 49px;
+							vertical-align: middle;
+						}
+					}
+				}
+				& > button {
+					& {
+						border: none;
+						background: none;
+						outline: none;
+						cursor: pointer;
+						font-size: #{$font-size + 8};
+						color: #999;
+						z-index: 2
+					}
+
+					&.prev {
+						& {
+							width: 50px;
+							height: 100%;
+							border-right: 1px solid #ccc;
+							position: absolute;
+							left: 0; top: 0;
+							@include transition(.2s all);
+						}
+					}
+
+					&.write {
+						& {
+							width: 70px;
+							height: 100%;
+							position: absolute;
+							right: 0; top: 0;
+							font-size: #{$font-size + 4};
+							color: $bg-blue;
+							@include transition(.2s all);
+						}
+					}
+
+					&:hover {
+						&.prev {
+							color: #555;
+							@include transition(.2s all);
+						}
+
+						&.write {
+							color: $bg-blue-bold;
+							@include transition(.2s all);
+						}
+					}
+				}
+			}
 		}
 
 		& > .post-title {
 			& {
 				width: 100%;
 				height: auto;
+				padding: 30px 30px 0 30px;
 			}
 
 			&:after {
@@ -439,6 +568,7 @@ export default {
 			& {
 				width: 100%;
 				margin-top: 30px;
+				padding: 0 30px;
 			}
 
 			& > .title {
@@ -740,6 +870,50 @@ export default {
 									border: 2px solid #ccc;
 									border-style: dashed;
 								}
+
+								& > div {
+									& {
+										border: 0;
+									}
+
+									& > .img {
+										& {
+											opacity: 1;
+											@include transition(.2s all);
+										}
+									}
+
+									& > .upload {
+										& {
+											opacity: 0;
+											@include transition(.2s all);
+											color: $bg-orange;
+										}
+									}
+								}
+
+								&:hover {
+									& {
+										border: 2px solid $bg-orange;
+										border-style: dashed;
+									}
+
+									& > div {
+										& > .img {
+											& {
+												opacity: 0;
+												@include transition(.2s all);
+											}
+										}
+
+										& > .upload {
+											& {
+												opacity: 1;
+												@include transition(.2s all);
+											}
+										}
+									}
+								}
 							}
 						}
 
@@ -752,6 +926,7 @@ export default {
 			& {
 				width: 100%;
 				margin-top: 30px;
+				padding: 0 30px;
 			}
 
 			& > div {

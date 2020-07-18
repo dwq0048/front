@@ -27,38 +27,27 @@
                         </div>
                     </div>
 
-                    <div class="checkbox">
-                        <label>
-                            <div class="form-checkbox">
-                                <input type="checkbox" />
-                                <div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 10 10">
-                                        <path d="M 1,6 3,8 8,1" style="stroke:#000; stroke-width:2; fill:none;" />
-                                    </svg>
+                    <div>
+                        <div class="checkbox">
+                            <label>
+                                <div class="form-checkbox">
+                                    <input type="checkbox" />
+                                    <div>
+                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 10 10">
+                                            <path d="M 1,6 3,8 8,1" style="stroke:#000; stroke-width:2; fill:none;" />
+                                        </svg>
+                                    </div>
                                 </div>
-                            </div>
-                            <p>자동 로그인</p>
-                        </label>
+                                <p>자동 로그인</p>
+                            </label>
+                        </div>
+                        <router-link to="/">아 비번 뭐였지</router-link>
                     </div>
-                    <div class="checkbox">
-                        <label>
-                            <div class="form-checkbox">
-                                <input type="checkbox" />
-                                <div>
-                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 10 10">
-                                        <path d="M 1,6 3,8 8,1" style="stroke:#000; stroke-width:2; fill:none;" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <p>서비스 이용약관</p>
-                            <i>서비스 이용약관에 동의하여야 로그인이 가능합니다.</i>
-                        </label>
-                    </div>
-
                     <div class="submit">
                         <div class="form-submit">
                             <button type="submit">LOGIN</button>
                         </div>
+                        <router-link to="/">계정이 없으십니까?</router-link>
                     </div>
                     <div class="alert" :class="{ active: LOGIN_ALERT['ALERT'] }">
                         <p>{{ LOGIN_ALERT['MESSAGE'] }}</p>
