@@ -15,6 +15,21 @@ const Post = {
         }
     },
     actions: {
+        POST({commit}, payload){
+            return new Promise((resolve, reject) => {
+                axios({
+                    method: 'post',
+                    url: `/api/1/board/post`,
+                    data: payload,
+                    headers: {'Content-Type': 'multipart/form-data'},
+                    withCredentials: true,
+                }).then((req) => {
+                    resolve(req);
+                }).catch((err) => {
+                    reject(err);
+                })
+            })
+        },
         POST_LIST({commit}, payload){
             return new Promise((resolve, reject) => {
                 axios({
