@@ -25,9 +25,10 @@
 					</button>
 				</div>
 
-				<div class="thumbnail" v-if="!thumbState" title="사진 추가">
+				<div class="thumbnail" v-if="!thumbState">
 					<div>
-						<i class="img"><font-awesome-icon :icon="faTimesCircle" /></i>
+						<i class="img"><font-awesome-icon :icon="faImage" /></i>
+						<span>썸네일이 없어요</span>
 					</div>
 				</div>
 
@@ -39,7 +40,7 @@
 
 				<div class="textarea">
 					<div>
-						<textarea placeholder="내용을 입력해 주세요...." v-model="message"></textarea>
+						<editor-content :editor="editor" />
 					</div>
 				</div>
 			</div>
@@ -67,7 +68,9 @@
 						<li v-for="(item, i) in imageStorage" :key="i">
 							<div :class="{ thumb : (i == thumbnail.num) }">
 								<div>
-									<img :src="item.base" />
+									<img v-if="!item.isCrop" :src="item.base" />
+									<img v-if="item.isCrop" :src="item.crop.base" />
+
 									<div class="bg"></div>
 									<div class="setting">
 										<button type="button" title="이미지 사이즈 변경" @click="crop(i)">
@@ -108,8 +111,11 @@
 				<div v-for="(title, i) in setting" :key="i">
 					<div class="title">
 						<h1>{{ title.display }}</h1>
+						<button type="button" @click="RotateMenu(i)" :class="{ active : setting[i].state }">
+							<i><font-awesome-icon :icon="faAngleLeft" /></i>
+						</button>
 					</div>
-					<ul>
+					<ul :class="{ active : setting[i].state }" ref="settingRef">
 						<li v-for="(item, i) in title.child" :key="i">
 							<div>
 								<label>
@@ -127,22 +133,6 @@
 										</div>
 									</div>
 								</label>
-								<div class="child tag" v-if="item.value">
-									<div>
-										<label>
-											<div contenteditable>
-												<div v-for="(tags, i) in item.array" :key="i">
-													<p><span>#</span>{{ tags.name }}</p>
-												</div>
-												<!--
-												<div v-on:keydown.32.capture="displayTag(item.name)" ref="listag" class="active">
-													<p><span>#</span><i contenteditable></i></p>
-												</div>
-												-->
-											</div>
-										</label>
-									</div>
-								</div>
 							</div>
 						</li>
 					</ul>
@@ -159,15 +149,15 @@
 					<div>
 						<h1>이미지 자르기</h1>
 					</div>
-					<button type="button" class="write">
+					<button type="button" class="write" @click="cropResult(cropImage.index)">
 						<p>적용하기</p>
 					</button>
 				</div>
 			</div>
 			<div class="post-content">
 				<div>
-					<div class="background" :style="{backgroundImage: 'url('+ cropImage +')'}"></div>
-					<cropper classname="cropper" :src="cropImage" :stencilProps="{ minAspectRatio: 8/8, maxAspectRatio: 8/8 }" ref="cropper"></cropper>
+					<div class="background" :style="{backgroundImage: 'url('+ cropImage.base +')'}"></div>
+					<cropper classname="cropper" :src="cropImage.base" :stencilProps="{ minAspectRatio: 8/8, maxAspectRatio: 8/8 }" ref="cropper"></cropper>
 				</div>
 			</div>
 		</div>
@@ -177,8 +167,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faImage, faImages, faFileUpload, faPlus, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faImage, faImages, faFileUpload, faPlus, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit, faTimes } from '@fortawesome/free-solid-svg-icons'
 
+import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
 import draggable from 'vuedraggable'
 import { Cropper } from 'vue-advanced-cropper'
 import { SET_BOARD, SET_SCRIPT } from '@/store/helper'
@@ -189,11 +180,12 @@ export default {
     name: 'DefaultPost',
     components: {
 		FontAwesomeIcon,
-		draggable
+		draggable,
+		EditorContent
 	},
 	data() {
 		return {
-			faImage, faPlus, faImages, faFileUpload, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit, faTimesCircle,
+			faImage, faPlus, faImages, faFileUpload, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit, faTimes,
 
 			imgIndex: 0,
 			imageStorage: [],
@@ -226,6 +218,7 @@ export default {
 				{
 					name: 'detail',
 					display: '세부 설정',
+					state: false,
 					child: [
 						{
 							name: 'PrivateUser',
@@ -245,6 +238,16 @@ export default {
 					]
 				}
 			],
+			editor: new Editor({
+    			extensions: [],
+				content: `
+					<h1>Yay Headlines!</h1>
+					<p>All these <strong>cool tags</strong> are working now.</p>
+				`,
+				onUpdate: ({ getHTML }) => {
+					//this.postData = getHTML();
+				},
+			}),
 		}
 	},
 	methods: {
@@ -275,7 +278,6 @@ export default {
 				item.checked = true;
 				index++;
 			})
-
 		},
 		CheckDisabled(){
 			this.imageStorage.map(item => {
@@ -286,7 +288,6 @@ export default {
 			this.photoList = [];
 		},
 		CheckChange(index){
-			console.log(this.photoList);
 			if(this.imageStorage[index].checked == true){
 				this.imageStorage[index].checked = false
 			}else {
@@ -294,24 +295,61 @@ export default {
 			}
 		},
 		CheckDelete(){
-			for(let i=0; i<this.photoList.length; i++){
-				this.imageStorage.splice(this.photoList[i], 1);
+			const array = [];
+
+			this.imageStorage.filter((item) => {
+				if(item.checked != true){
+					array.push(item)
+				}
+			});
+
+			this.imageStorage = array;
+			this.photoList = [];
+			if(this.imageStorage.length > 0){
+				this.thumbnail = {
+					num : 0,
+					base : this.imageStorage[0].base
+				}
+			}else{
+				this.thumbnail = {
+					num : false,
+					base : ''
+				}
+				this.thumbState = false;
 			}
+
 			this.CheckDisabled();
 		},
 		crop(index){
 			const crop = this.imageStorage[index];
-			this.cropImage = crop.base;
-			this.$refs.cropper.setCoordinates([
-				(coordinates, imageSize) => ({
-					width: (imageSize.width > imageSize.height) ? imageSize.height : imageSize.width,
-					height: (imageSize.width < imageSize.height) ? imageSize.width : imageSize.height,
-				}),
-				(coordinates, imageSize) => ({
-					left: imageSize.width/2 - coordinates.width/2,
-					top: imageSize.height/2 - coordinates.height/2,
-				})
-			])
+			this.cropImage = {
+				index : index,
+				base : crop.base
+			};
+
+			if(!crop.isCrop){
+				this.$refs.cropper.setCoordinates([
+					(coordinates, imageSize) => ({
+						width: (imageSize.width > imageSize.height) ? imageSize.height : imageSize.width,
+						height: (imageSize.width < imageSize.height) ? imageSize.width : imageSize.height,
+					}),
+					(coordinates, imageSize) => ({
+						left: imageSize.width/2 - coordinates.width/2,
+						top: imageSize.height/2 - coordinates.height/2,
+					})
+				])
+			}else{
+				this.$refs.cropper.setCoordinates([
+					(coordinates, imageSize) => ({
+						width: crop.crop.positon.width,
+						height: crop.crop.positon.height,
+					}),
+					(coordinates, imageSize) => ({
+						left: crop.crop.positon.left,
+						top: crop.crop.positon.top,
+					})
+				])
+			}
 
 			this.cropToggle(true);
 		},
@@ -332,9 +370,9 @@ export default {
 
 					this.slide.crop.display = true;
 					this.slide.crop.absolute = false;
-				},500, () => {
-					this.$refs.post.style.height = '';
-				});
+
+					delHeight();
+				},500);
 			}else {
 				this.$refs.post.style.height = this.$refs.postContent.offsetHeight+'px';
 				this.slide.content.move = true;
@@ -344,10 +382,30 @@ export default {
 				setTimeout(() => {
 					this.$refs.post.style.height = this.$refs.postCrop.offsetHeight+'px';
 					//this.slide.content.display = true;
-				},500, () => {
-					this.$refs.post.style.height = '';
-				})
+
+					//delHeight();
+				},500);
 			}
+
+			const delHeight = () => {
+				setTimeout(() => {
+					this.$refs.post.style.height = '';
+				}, 200)
+			}
+		},
+		cropResult(index) {
+			const { coordinates, canvas, } = this.$refs.cropper.getResult();
+			this.imageStorage[index].isCrop = true;
+			this.imageStorage[index].crop = {
+				position : coordinates,
+				base : canvas.toDataURL()
+			}
+
+			if(this.thumbnail.num == index){
+				this.SetThumb(index);
+			}
+
+			this.cropToggle(false);
 		},
 		UpdateImage(name, file){
 			this.CheckDisabled();
@@ -356,10 +414,17 @@ export default {
 			}
 		},
 		SetThumb(payload){
-			this.thumbnail = {
-				num : payload,
-				base : this.imageStorage[payload].base
-			};
+			if(!this.imageStorage[payload].isCrop){
+				this.thumbnail = {
+					num : payload,
+					base : this.imageStorage[payload].base,
+				};
+			} else {
+				this.thumbnail = {
+					num : payload,
+					base : this.imageStorage[payload].crop.base,
+				};
+			}
 			this.thumbState = true;
 		},
 		photoMove(evt){
@@ -387,11 +452,31 @@ export default {
 
 			console.log(this.thumbnail.num);
 		},
+		RotateMenu(index){
+			const element = this.setting[index];
+			if(element.state){
+				this.setting[index].state = false;
+			} else {
+				this.setting[index].state = true;
+			}
+
+			console.log(this.setting[index]);
+		},
 		async SETBASE(payload){
 			return await SET_BOARD.encodeBase64ImageFile(payload).then((req) => {
 				payload.index = this.imgIndex;
 				payload.base = req;
 				payload.checked = false;
+				payload.iscrop = false;
+				payload.crop = {
+					position : {
+						width: 0,
+						height: 0,
+						left: 0,
+						top: 0,
+					},
+					base : ''
+				}
 				this.imgIndex++;
 				this.imageStorage.push(payload);
 
@@ -444,12 +529,12 @@ export default {
 		});
 		*/
 
-		// 썸네일 대표 이미지						o
-		// 내용 - 썸네일 이미지 없음만 표시
-		// 내용 - + 옆에 사진 추가 버튼
-		// 사진 수정 - 오른쪽 + 삭제
-		// 세부 설정 - 열고 닫기 기능 + padding
-		// 이미지 삭제 index 설정
+		// 썸네일 대표 이미지							o
+		// 내용 - 썸네일 이미지 없음만 표시				 o
+		// 내용 - + 옆에 사진 추가 버튼					 o
+		// 사진 수정 - 오른쪽 + 삭제					o
+		// 세부 설정 - 열고 닫기 기능 + padding			o
+		// 이미지 삭제 index 설정						o
 		// 이미지 수정 후 base64 수정
 	}
 }
@@ -481,6 +566,7 @@ export default {
 				position: relative;
 				vertical-align: top;
 				white-space: normal;
+				padding-bottom: 30px;
 				@include transition(.5s all);
 			}
 
@@ -597,7 +683,7 @@ export default {
 								background: none;
 								outline: none;
 								float: right;
-								color: $bg-blue;
+								color: #999;
 								cursor: pointer;
 								padding: 10px 15px;
 								@include transition(.2s all);
@@ -620,7 +706,7 @@ export default {
 
 							&:hover {
 								& {
-									color: $bg-blue-bold;
+									color: #555;
 									@include transition(.2s all);
 								}
 							}
@@ -652,12 +738,48 @@ export default {
 							}
 
 							& > i {
-								position: absolute;
-								left: 50%; top: 50%;
-								font-size: #{$font-size + 20};
-								color: #ccc;
-								@include transform(translate(-50%, -50%));
-								@include transition(.2s all);
+								& {
+									position: absolute;
+									left: 50%; top: 50%;
+									font-size: #{$font-size + 15};
+									color: #ccc;
+									@include transform(translate(-50%, -50%));
+								}
+
+								&.img {
+									& {
+										z-index: 1;
+										font-size: #{$font-size + 20};
+									}
+								}
+
+								&.time {
+									& {
+										z-index: 2;
+										color: #f1f1f1;
+										margin-left: 5px;
+										margin-top: 1px;
+									}
+								}
+
+								&.times {
+									& {
+										z-index: 3;
+									}
+								}
+							}
+
+							& > span {
+								& {
+									position: absolute;
+									left: 50%; top: 50%;
+									color: #ccc;
+									margin-top: 30px;
+									white-space: nowrap;
+									font-size: #{font-size};
+									font-weight: bold;
+									@include transform(translate(-50%, -50%));
+								}
 							}
 
 							& > img {
@@ -726,18 +848,12 @@ export default {
 								padding-bottom: 25%;
 							}
 
-							& > textarea {
+							& > div {
 								position: absolute;
 								width: 100%;
 								height: 100%;
-								background: none;
-								border: none;
-								display: block;
+								overflow-y: scroll;
 								outline: none;
-								left: 0; top: 0;
-								resize: none;
-								padding: 15px;
-								font-size: #{$font-size};
 							}
 						}
 					}
@@ -1148,13 +1264,58 @@ export default {
 							padding-bottom: 15px;
 						}
 
+						&:after {
+							content: " ";
+							display: block;
+							clear: both;
+						}
+
 						& > h1 {
 							& {
 								font-size: #{$font-size + 4};
 								color: #555;
 								font-weight: bold;
+								float: left;
+								vertical-align: middle;
 							}
 						}
+
+						& > button {
+							& {
+								float: right;
+								border: none;
+								background: none;
+								outline: none;
+								font-size: #{$font-size + 15};
+								color: #ccc;
+								padding: 0 30px;
+								cursor: pointer;
+								vertical-align: middle;
+								margin-top: -5px;
+								@include transition(.2s all);
+							}
+
+							& > i {
+								display: block;
+								@include transform(rotate(-90deg));
+								@include transition(.2s all);
+							}
+
+							&:hover {
+								& {
+									color: #555;
+									@include transition(.2s all);
+								}
+							}
+
+							&.active {
+								& > i {
+									@include transform(rotate(90deg));
+									@include transition(.2s all);
+								}
+							}
+						}
+						
 					}
 
 					&:nth-child(1) > .title {
@@ -1167,6 +1328,8 @@ export default {
 						& {
 							font-size: 0;
 							width: 100%;
+							height: auto;
+							@include transition(.2s all);
 						}
 
 						& > li {
@@ -1386,6 +1549,12 @@ export default {
 								}
 							}
 						}
+
+						&.active {
+							& {
+								display: none;
+							}
+						}
 					}
 				}
 
@@ -1573,5 +1742,27 @@ export default {
 			}
 		}
 
+	}
+</style>
+<style lang="scss">
+	.vue-bounding-box {
+		& {
+			border: 1px dashed $bg-blue;
+		}
+	}
+
+	.vue-square-handler {
+		& {
+			border: 2px solid $bg-orange;
+			background-color: #f1f1f1;
+		}
+	}
+
+	.ProseMirror {
+		& {
+			outline: none;
+			padding: 15px;
+			min-height: 100%;
+		}
 	}
 </style>
