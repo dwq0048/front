@@ -170,6 +170,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faImage, faImages, faFileUpload, faPlus, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
+import { Placeholder } from 'tiptap-extensions'
 import draggable from 'vuedraggable'
 import { Cropper } from 'vue-advanced-cropper'
 import { SET_BOARD, SET_SCRIPT } from '@/store/helper'
@@ -239,13 +240,18 @@ export default {
 				}
 			],
 			editor: new Editor({
-    			extensions: [],
-				content: `
-					<h1>Yay Headlines!</h1>
-					<p>All these <strong>cool tags</strong> are working now.</p>
-				`,
+    			extensions: [
+					new Placeholder({
+						emptyEditorClass: 'is-editor-empty',
+						emptyNodeClass: 'is-empty',
+						emptyNodeText: '내용을 입력해주세요  #vrcaht  #화본역',
+						showOnlyWhenEditable: true,
+						showOnlyCurrent: true,
+					}),
+				],
+				//content: ``,
 				onUpdate: ({ getHTML }) => {
-					//this.postData = getHTML();
+					this.message = getHTML();
 				},
 			}),
 		}
@@ -492,21 +498,35 @@ export default {
 		submit() {
 			const data = {
 				position: 'photo',
-				title: '',
-				post: message
+				title: 'null',
+				post: this.message,
 			}
 
 			const IMG = this.imageStorage;
-
+			const meta = {};
+			meta.imgMeta = [];
+			meta.thumbnail = {};
+			
 			const fs = new FormData();
 			fs.append('position', data.position);
 			fs.append('title', data.title);
 			fs.append('post', data.post);
+
 			for(let i=0;i<IMG.length;i++){
+				delete IMG[i].crop.base;
+				
+				meta.imgMeta.push({
+					isCrop: (IMG[i].isCrop)? true : false,
+					crop: IMG[i].crop
+				});
+
 				delete IMG[i].base;
 				delete IMG[i].checked;
 				fs.append('images', IMG[i]);
 			}
+
+			meta.thumbnail.num = this.thumbnail.num;
+			fs.append('meta', JSON.stringify(meta));
 
 			this.POST(fs).then((req) => {
 				console.log(req);
@@ -1764,5 +1784,13 @@ export default {
 			padding: 15px;
 			min-height: 100%;
 		}
+	}
+
+	p.is-editor-empty:first-child::before {
+		content: attr(data-empty-text);
+		float: left;
+		color: #aaa;
+		pointer-events: none;
+		height: 0;
 	}
 </style>
