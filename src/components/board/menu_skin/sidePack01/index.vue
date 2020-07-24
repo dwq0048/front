@@ -51,7 +51,11 @@ export default {
 <style lang="scss" scoped>
     .menu {
         & {
+            width: 300px;
             background-color: #fff;
+            position: relative;
+            left: 0;
+            @include transition(.2s all);
         }
 
         & > ul {
@@ -128,4 +132,16 @@ export default {
         }
         
     }
+
+/*
+@keyframes menu {
+    100% {
+
+    }
+
+    0% {
+        display: none;
+    }
+}
+*/
 </style>

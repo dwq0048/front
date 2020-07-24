@@ -60,6 +60,12 @@ const routes = [
 
 	// 포토게시판
 	{
+		path: '/photo',
+		name: 'Photo',
+		component: () => import('@/views/photo/index.vue'),
+		beforeEnter: before()
+	},
+	{
 		path: '/photo/edit',
 		name: 'PhotoEdit',
 		component: () => import('@/views/photo/edit'),

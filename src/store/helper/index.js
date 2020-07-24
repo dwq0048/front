@@ -49,6 +49,8 @@ const SET_BOARD = {
                 return '공지사항';
             case 'free':
                 return '자유게시판';
+            case 'photo':
+                return 'VR 포토';
             default:
                 return 'NULL';
         }

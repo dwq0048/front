@@ -1,6 +1,6 @@
 <template>
     <div class="default">
-        <div class="nav">
+        <div class="nav" :class="{ active: ACTIVE.wild  }">
             <div class="title">
                 <h1>{{ title }}</h1>
             </div>
@@ -15,51 +15,48 @@
                 </ul>
                 <ul class="right">
                     <li>
-                        <button type="button" title="리스트" :class="{ active: ACTIVE.list  }">
-                            <i><font-awesome-icon :icon="faThList" /></i>
+                        <button type="button" title="와일드" :class="{ active: ACTIVE.wild  }" @click="postType('wild')">
+                            <i><font-awesome-icon :icon="faTh" /></i>
                         </button>
-                        <button type="button" title="그리드" :class="{ active: ACTIVE.grid  }">
+                        <button type="button" title="그리드" :class="{ active: ACTIVE.grid  }" @click="postType('grid')">
                             <i><font-awesome-icon :icon="faThLarge" /></i>
+                        </button>
+                        <button type="button" title="메뉴 숨기기" class="menu-hidden" :class="{ active: HIDDEN }" @click="menuType()">
+                            <i :class="{ active: HIDDEN }"><font-awesome-icon :icon="faCaretSquareDown" /></i>
                         </button>
                     </li>
                 </ul>
             </div>
         </div>
-        <div class="list">
-            <ul v-if="false">
+        <div>
+            <ul class="grid" :class="{ active: ACTIVE.grid, hidden : HIDDEN }">
                 <li v-for="(item, i) in list" :key="i">
-                    <div class="num">
-                        <p>{{ ((page * 15)+i)+1 }}</p>
-                    </div>
-                    <div class="title">
-                        <p><router-link :to="'/'+info.board+'/post/'+item._id">{{ item.title }}</router-link></p>
-                    </div>
-                    <div class="date">
-                        <p>{{ item.state.date_fix }}</p>
-                    </div>
-                    <div class="user">
-                        <p>{{ item.user.name }}</p>
-                    </div>
-                </li>
-            </ul>
-            <ul class="grid">
-                <li v-for="(item, i) in list" :key="i">
-                    <div class="num">
-                        <p>
-                            <i><font-awesome-icon :icon="faHeartR" /></i>
-                            <span>{{ ((page * 15)+i)+1 }}</span>
-                        </p>
-                    </div>
-                    <div class="title">
-                        <p class="king"><router-link :to="'/'+info.board+'/post/'+item._id">{{ item.title }}</router-link></p>
-                        <div class="info">
-                            <p class="date">{{ item.state.displayDate }}</p>
-                            <p class="name">{{ item.user.name }}</p>
+                    <div>
+                        <div class="photo">
+                            <div>
+                                <img :src="'http://127.0.0.1:3000/images/'+item.images[item.meta.thumbnail.num]+'/thumbnail'">
+                            </div>
                         </div>
-                    </div>
-                    <div class="thumbnail">
-                        <div>
-                        
+                        <div class="info">
+                            <div>
+                                <div class="comment">
+                                    <div v-html="item.post"></div>
+                                </div>
+                                <div class="profile">
+                                    <div class="image">
+                                        <div>
+
+                                        </div>
+                                    </div>
+                                    <div class="name">
+                                        <p>하하호호</p>
+                                    </div>
+                                </div>
+                                <div class="status">
+                                    <p><i><font-awesome-icon :icon="faHeartR" /></i><span>1</span></p>
+                                    <p><i><font-awesome-icon :icon="faCommentAlt" /></i><span>1</span></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </li>
@@ -73,8 +70,8 @@ import { mapActions, mapGetters } from 'vuex'
 
 import { SET_BOARD, SET_TIME } from '@/store/helper/'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faThLarge, faThList } from '@fortawesome/free-solid-svg-icons'
-import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
+import { faThLarge, faThList, faTable, faTh, faCaretSquareDown } from '@fortawesome/free-solid-svg-icons'
+import { faHeart as faHeartR, faCommentAlt } from '@fortawesome/free-regular-svg-icons'
 
 const postStore = 'postStore'
 
@@ -87,19 +84,41 @@ export default {
             page : 0,
             title: '',
             ACTIVE: {
-                list: false,
+                wide: false,
                 grid: true
             },
+            HIDDEN: false,
 
+            faTable,
+            faTh,
             faThLarge,
             faThList,
-            faHeartR
+            faHeartR,
+            faCommentAlt,
+            faCaretSquareDown
         }
     },
     methods : {
         ...mapActions(postStore, [
             'POST_LIST'
         ]),
+        postType(type) {
+            this.ACTIVE['wide'] = false;
+            this.ACTIVE['grid'] = false;
+
+            this.ACTIVE[type] = true;
+
+            this.$emit("active", this.ACTIVE);
+        },
+        menuType() {
+            if(this.HIDDEN){
+                this.HIDDEN = false;
+            }else {
+                this.HIDDEN = true;
+            }
+
+            this.$emit("menu", this.HIDDEN);
+        }
     },
     created: function(){
         this.title = SET_BOARD.category(this.info.board);
@@ -111,7 +130,6 @@ export default {
         }
 
         this.POST_LIST(data).then((req) => {
-            console.log(req);
             this.list = req;
         }).catch((err) => {
             console.log(err);
@@ -133,6 +151,7 @@ export default {
                 background-color: #fff;
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
+
             & > .title {
                 & {
                     padding: 15px 30px;
@@ -142,6 +161,7 @@ export default {
                     font-size: #{$font-size + 6};
                 }
             }
+
             & > .menu {
                 &:after {
                     content: " ";
@@ -194,161 +214,227 @@ export default {
                                     color: #555;
                                     @include transition(.2s all);
                                 }
+
+                                &.menu-hidden {
+                                    & {
+                                        color: #555;
+                                    }
+
+                                    & > i {
+                                        display: block;
+                                        font-size: #{$font-size + 2};
+                                        @include transform(rotate(-90deg));
+                                        @include transition(.2s all);
+                                    }
+                                }
+
+                                &.menu-hidden.active {
+                                    & {
+                                        color: #999;
+                                    }
+
+                                    & > i {
+                                        @include transform(rotate(90deg));
+                                        @include transition(.2s all);
+                                    }
+                                }
                             }
                         }
                     }
+                }
+            }
+
+            &.active {
+                & {
+                    width: 100%;
+                    max-width: 1200px;
+                    margin: 0 auto;
                 }
             }
         }
 
-        & > .list {
-            & {
-                background-color: #fff;
-                margin-top: 15px;
-                @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
-            }
-            & > ul {
+        & > div {
+
+            & > .grid {
+
                 & {
+                    padding-top: 15px;
                     font-size: 0;
+                    display: none;
+                    white-space: normal;
+                    position: relative;
+                    left: 10px;
                 }
 
                 & > li {
                     & {
-                        width: 100%;
-                        height: 45px;
-                        display: table;
-                        list-style: none;
-                        font-size: #{$font-size};
-                        border-bottom: 1px solid #f1f1f1;
-                        padding: 0 10px;
+                        width: 25%;
+                        height: auto;
+                        padding: 0 10px 10px 0;
+                        display: inline-block;
                     }
 
                     & > div {
-                        vertical-align: middle;
-                    }
-
-                    & > .num {
-                        & {
-                            width: 7%;
+                        & { 
+                            width: 100%;
                             height: auto;
-                            display: table-cell;
+                            background-color: #fff;
+                            border-radius: 5px;
+                            overflow: hidden;
+                            padding: 10px;
+                            @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
                         }
 
-                        & > p {
+                        & > .photo {
                             & {
-                                vertical-align: middle;
-                                text-align: center;
-                                padding-right: 10px;
-                            }
-
-                            & > i {
-                                & {
-                                    font-size: #{$font-size - 4};
-                                    display: inline-block;
-                                    vertical-align: middle;
-                                    padding-right: 5px;
-                                }
-                            }
-
-                            & > span {
-                                & {
-                                    display: inline-block;
-                                    vertical-align: middle;
-                                }
-                            }
-                        }
-                    }
-
-                    & > .title {
-                        width: 63%;
-                        height: auto;
-                        display: table-cell;
-                    }
-
-                    & > .date {
-                        width: 10%;
-                        height: auto;
-                        display: table-cell;
-                    }
-
-                    & > .user {
-                        width: 20%;
-                        height: auto;
-                        display: table-cell;
-                    }
-                }
-
-                &.grid {
-                    & > li {
-                        & > .title {
-                            & {
-                                width: 82%;
-                                padding: 10px 0;
-                            }
-
-                            & > .king {
-                                & {
-                                    display: block;
-                                    width: 100%;
-                                }
-
-                                & > a {
-                                    display: block;
-                                    text-decoration: none;
-                                    color: #333;
-                                    font-weight: bold;
-                                    font-size: #{$font-size + 2};
-                                    padding-bottom: 10px;
-                                }
-                            }
-
-                            & > .info {
-                                & {
-                                    display: block;
-                                    font-size: #{$font-size};
-                                    color: #555;
-                                }
-
-                                & > .date {
-                                    & {
-                                        display: inline-block;
-                                        padding-right: 30px;
-                                    }
-                                }
-
-                                & > .name {
-                                    & {
-                                        display: inline-block;
-                                    }
-                                }
-                            }
-                        }
-
-                        & > .thumbnail {
-                            & {
-                                width: 10%;
+                                width: 100%;
                                 height: auto;
-                                display: table-cell;
-                                padding: 15px;
+                                position: relative;
+                                background-color: #ccc;
+                            }
+
+                            &:after {
+                                display: block;
+                                content: " ";
+                                padding-bottom: 100%;
                             }
 
                             & > div {
                                 & {
-                                    width: 100px;
-                                    height: auto;
-                                    position: relative;
-                                    overflow: hidden;
-                                    border-radius: 1px;
-                                    background-color: #ccc;
+                                    position: absolute;
+                                    width: 100%;
+                                    height: 100%;
                                 }
 
-                                &:after {
-                                    content: " ";
-                                    display: block;
-                                    padding-bottom: 80%;
+                                & > img {
+                                    & {
+                                        position: absolute;
+                                        width: 100%;
+                                        height: 100%;
+                                        object-fit: cover;
+                                    }
                                 }
                             }
                         }
+
+                        & > .info {
+                            & {
+                                width: 100%;
+                                height: auto;
+                                padding: 10px 0;
+                                background-color: #fff;
+                                font-size: #{$font-size};
+                            }
+
+                            & > div {
+                                & {
+                                    font-size: 0;
+                                }
+
+                                & > .comment {
+                                    & {
+                                        width: 100%;
+                                        height: auto;
+                                        padding-bottom: 10px;
+                                        display: block;
+                                    }
+
+                                    & > div {
+                                        & {                                    
+                                            font-size: #{$font-size};
+                                            font-weight: bold;
+                                            color: #555;
+                                            overflow: hidden;
+                                            text-overflow:ellipsis;
+                                            white-space:nowrap;
+                                        }
+                                    }
+                                }
+
+                                & > .profile {
+                                    & {
+                                        width: 60%;
+                                        display: inline-block;
+                                        vertical-align: middle;
+                                        font-size: 0;
+                                    }
+
+                                    & > .image {
+                                        & {
+                                            width: 22px;
+                                            height: auto;
+                                            position: relative;
+                                            background-color: #ccc;
+                                            overflow: hidden;
+                                            border-radius: 50%;
+                                            border: 1px solid $bg-orange;
+                                            display: inline-block;
+                                            vertical-align: middle;
+                                        }
+
+                                        &:after {
+                                            content: " ";
+                                            display: block;
+                                            padding-bottom: 100%;
+                                        }
+                                    }
+
+                                    & > .name {
+                                        & {
+                                            font-size: #{$font-size};
+                                            color: #999;
+                                            display: inline-block;
+                                            vertical-align: middle;
+                                            padding-left: 5px;
+                                            font-weight: bold;
+                                        }
+                                    }
+                                }
+
+                                & > .status {
+                                    & {
+                                        width: 40%;
+                                        display: inline-block;
+                                        text-align: right;
+                                        vertical-align: middle;
+                                    }
+
+                                    & > p {
+                                        & {
+                                            font-size: #{$font-size - 2};
+                                            display: inline-block;
+                                            color: #999;
+                                            padding-left: 10px;
+                                        }
+
+                                        &:nth-child(1){
+                                            & {
+                                                padding-left: 0;
+                                            }
+                                        }
+
+                                        & > span {
+                                            & {
+                                                padding-left: 5px;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                &.active {
+                    & {
+                        display: block;
+                        margin-left: -10px;
+                    }
+                }
+
+                &.hidden {
+                    & > li{
+                        width: 20%;
                     }
                 }
             }
