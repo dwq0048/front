@@ -1,114 +1,19 @@
 <template>
     <div class="pee">
-        <div class="grid">
-            <div class="grid__item" data-size="1280x853">
-                <a href="img/original/1.jpg" class="img-wrap"><img src="@/assets/img/thumbs/1.jpg" alt="img01" />
-                    <div class="description description--grid">Assemblage</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="958x1280">
-                <a href="img/original/2.jpg" class="img-wrap"><img src="@/assets/img/thumbs/2.jpg" alt="img02" />
-                    <div class="description description--grid">Demesne</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="837x1280">
-                <a href="img/original/3.jpg" class="img-wrap"><img src="@/assets/img/thumbs/3.jpg" alt="img03" />
-                    <div class="description description--grid">Felicity</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x961">
-                <a href="img/original/4.jpg" class="img-wrap"><img src="@/assets/img/thumbs/4.jpg" alt="img04" />
-                    <div class="description description--grid">Propinquity</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x1131">
-                <a href="img/original/5.jpg" class="img-wrap"><img src="@/assets/img/thumbs/5.jpg" alt="img05" />
-                    <div class="description description--grid">Ephemeral</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x857">
-                <a href="img/original/6.jpg" class="img-wrap"><img src="@/assets/img/thumbs/6.jpg" alt="img06" />
-                    <div class="description description--grid">Surreptitious</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x1280">
-                <a href="img/original/7.jpg" class="img-wrap"><img src="@/assets/img/thumbs/7.jpg" alt="img07" />
-                    <div class="description description--grid">Scintilla</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x853">
-                <a href="img/original/8.jpg" class="img-wrap"><img src="@/assets/img/thumbs/8.jpg" alt="img08" />
-                    <div class="description description--grid">Vestigial</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="865x1280">
-                <a href="img/original/9.jpg" class="img-wrap"><img src="@/assets/img/thumbs/9.jpg" alt="img09" />
-                    <div class="description description--grid">Zephyr</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x1280">
-                <a href="img/original/10.jpg" class="img-wrap"><img src="@/assets/img/thumbs/10.jpg" alt="img10" />
-                    <div class="description description--grid">Desideratum</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x850">
-                <a href="img/original/11.jpg" class="img-wrap"><img src="@/assets/img/thumbs/11.jpg" alt="img11" />
-                    <div class="description description--grid">Quixotic</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x853">
-                <a href="img/original/1.jpg" class="img-wrap"><img src="@/assets/img/thumbs/1.jpg" alt="img01" />
-                    <div class="description description--grid">Assemblage</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="958x1280">
-                <a href="img/original/2.jpg" class="img-wrap"><img src="@/assets/img/thumbs/2.jpg" alt="img02" />
-                    <div class="description description--grid">Demesne</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="837x1280">
-                <a href="img/original/3.jpg" class="img-wrap"><img src="@/assets/img/thumbs/3.jpg" alt="img03" />
-                    <div class="description description--grid">Felicity</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x961">
-                <a href="img/original/4.jpg" class="img-wrap"><img src="@/assets/img/thumbs/4.jpg" alt="img04" />
-                    <div class="description description--grid">Propinquity</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x1131">
-                <a href="img/original/5.jpg" class="img-wrap"><img src="@/assets/img/thumbs/5.jpg" alt="img05" />
-                    <div class="description description--grid">Ephemeral</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x857">
-                <a href="img/original/6.jpg" class="img-wrap"><img src="@/assets/img/thumbs/6.jpg" alt="img06" />
-                    <div class="description description--grid">Surreptitious</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x1280">
-                <a href="img/original/7.jpg" class="img-wrap"><img src="@/assets/img/thumbs/7.jpg" alt="img07" />
-                    <div class="description description--grid">Scintilla</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x853">
-                <a href="img/original/8.jpg" class="img-wrap"><img src="@/assets/img/thumbs/8.jpg" alt="img08" />
-                    <div class="description description--grid">Vestigial</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="865x1280">
-                <a href="img/original/9.jpg" class="img-wrap"><img src="@/assets/img/thumbs/9.jpg" alt="img09" />
-                    <div class="description description--grid">Zephyr</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x1280">
-                <a href="img/original/10.jpg" class="img-wrap"><img src="@/assets/img/thumbs/10.jpg" alt="img10" />
-                    <div class="description description--grid">Desideratum</div>
-                </a>
-            </div>
-            <div class="grid__item" data-size="1280x850">
-                <a href="img/original/11.jpg" class="img-wrap"><img src="@/assets/img/thumbs/11.jpg" alt="img11" />
-                    <div class="description description--grid">Quixotic</div>
+        <div class="grid" ref="element">
+            <div class="grid__item" v-for="(item, i) in list" :key="i">
+                <a href="img/original/1.jpg" class="img-wrap" 
+                    :data-radio="(item.ImageMeta[item.meta.thumbnail.num].meta.height / item.ImageMeta[item.meta.thumbnail.num].meta.width) * 100"
+                    :data-width="300"
+                    :data-height="((item.ImageMeta[item.meta.thumbnail.num].meta.height / item.ImageMeta[item.meta.thumbnail.num].meta.width)) * 300"
+                >
+                    <img :src="'http://127.0.0.1:3000/images/'+item.images[item.meta.thumbnail.num]" alt="img01" />
+
+                    <div class="background">
+                        <div class="black">
+
+                        </div>
+                    </div>
                 </a>
             </div>
 		</div>
@@ -116,6 +21,13 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+import { SET_BOARD, SET_TIME } from '@/store/helper/'
+
+const postStore = 'postStore';
+
+// 250 / X =  300
+
 export default {
     name: 'GridPost',
     data() {
@@ -124,50 +36,97 @@ export default {
             cntWidth: 0,
             ElementCnt: 0,
             imgWidth: 0,
-            margin: 0,
-            option: []
+            bottom: 15,
+            option: [],
+            min: [],
+            max: [],
+            man: [],
+
+            list: []
         }
     },
-    mounted(){
-        let element = this.$el.querySelectorAll('.grid__item');
+    methods: {
+        ...mapActions(postStore, [
+            'POST_LIST'
+        ]),
+        LoadEvent(){
+            window.addEventListener('load', () => {
+                this.ResizeEvent();
+            });
+        },
+        ResizeEvent(){
+            let element = this.$refs.element;
+            element = element.childNodes;
 
-        this.Screen = window.innerWidth;
-        this.cntWidth = Math.floor(this.Screen / 300);
-        this.ElementCnt = element.length;
-        this.imgWidth = 300;
-        this.margin = 50;
-        this.option = [];
+            this.Screen = window.innerWidth;
+            this.cntWidth = Math.floor(this.Screen / 300);
+            this.ElementCnt = element.length;
+            this.imgWidth = 300;
+            this.margin = 0;
+            this.option = [];
+            this.min = [];
 
-        const ResizeEvent = () => {
-            element = this.$el.querySelectorAll('.grid__item');
+            for(let i=0; i<this.ElementCnt; i++){
+                element[i].style.left = ``;
+                element[i].style.top = ``;
+            }
 
             for(let i=0; i<this.cntWidth; i++){
                 this.option.push({ name: i, height: 0, meta: [] })
             }
-            let min = this.option[0];
 
+            this.min = this.option[0];
+            this.max = this.option[0];
             for(let i=0; i<this.ElementCnt; i++){
                 for(let j=0; j<this.option.length; j++){
-                    if(min.height > this.option[j].height){
-                        min = this.option[j];
+                    if((this.min.height >= this.option[j].height)){
+                        this.min = this.option[j];
+                    }
+
+                    if(this.max.height < this.option[j].height){
+                        this.max = this.option[j];
                     }
                 }
 
-                if(min.name != 0){
-                    element[i].style.left = `${ ( min.name * this.imgWidth ) }px`;
+                if(this.min.name != 0){
+                    element[i].style.left = `${ ( this.min.name * this.imgWidth ) }px`;
                 }
 
-                if(this.option[min.name].height != 0){
-                    element[i].style.top = `${ ( this.option[min.name].height ) }px`;
+                if(this.option[this.min.name].height != 0){
+                    element[i].style.top = `${ Number(this.option[this.min.name].height) }px`;
                 }
 
-                this.option[min.name].height = ( this.option[min.name].height + element[i].offsetHeight + this.margin );
-                this.option[min.name].meta.push( i );
+                this.option[this.min.name].height = Number(this.option[this.min.name].height) + Number(element[i].querySelector(`[data-height]`).getAttribute("data-height"));
+                this.option[this.min.name].meta.push( i );
             }
+
+            document.querySelector('.pee > .grid').style.width = `${ this.imgWidth * this.option.length }px`;
+            document.querySelector('.pee > .grid').style.height = `${ this.max.height }px`;
+        }
+    },  
+    created(){
+        const data = {
+            board: 'photo',
+            page: 0,
+            view: 100
         }
 
-        ResizeEvent();
+        this.POST_LIST(data).then((req) => {
+            this.list = req;
+
+            this.LoadEvent();
+        }).catch((err) => {
+            console.log(err);
+        })
+    },
+    mounted(){
         window.addEventListener('resize', () => {
+            this.ResizeEvent();
+        });
+
+        /*
+
+        window.addEventListener('click', () => {
             this.Screen = window.innerWidth;
             this.cntWidth = Math.floor(this.Screen / 300);
             this.ElementCnt = element.length;
@@ -177,6 +136,8 @@ export default {
 
             ResizeEvent();
         });
+
+        */
 
     }
 }
@@ -191,16 +152,77 @@ export default {
         & > .grid {
             & {
                 font-size: 0;
-                text-align: center;
+                margin: 0 auto;
+                position: relative;
             }
 
             & > .grid__item {
-                width: 300px;
-                display: inline-block;
-                vertical-align: top;
-                position:absolute;
-                left:0;
-                top:0;
+                & {
+                    width: 300px;
+                    display: inline-block;
+                    vertical-align: top;
+                    position:absolute;
+                    left:0;
+                    top:0;
+                    padding: 15px;
+                    @include transform(scale(1));
+                    @include transition(all .2s);
+                    cursor: pointer;
+                }
+
+                & > a {
+                    & {
+                        display: block;
+                        border: 1px solid #eee;
+                        border-radius: 5px;
+                        overflow: hidden;
+                        position: relative;
+                    }
+
+                    & > img {
+                        & {
+                            width: 100%;
+                        }
+                    }
+
+                    & > div.background {
+                        & {
+                            position: absolute;
+                            left: 0; top: 0;
+                            width: 100%;
+                            height: 100%;
+                            z-index: 1;
+                        }
+
+                        & > .black {
+                            & {
+                                position: absolute;
+                                left: 0; top: 0;
+                                width: 100%;
+                                height: 100%;
+                                background-color: rgba(0,0,0,0);
+                                @include transition(all .2s);
+                                z-index: 2;
+                            }
+                        }
+                    }
+                }
+
+                &:hover {
+                    & {
+                        @include transform(scale(1.05));
+                        @include transition(all .2s);
+                    }
+
+                    & > a {
+                        & > div.background {
+                            & > .black {
+                                background-color: rgba(0,0,0,0.5);
+                                @include transition(all .2s);
+                            }
+                        }
+                    }
+                }
             }
         }
     }

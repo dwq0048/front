@@ -49,7 +49,7 @@
                                         </div>
                                     </div>
                                     <div class="name">
-                                        <p>하하호호</p>
+                                        <p>{{ item.users[0].nickname }}</p>
                                     </div>
                                 </div>
                                 <div class="status">
@@ -131,6 +131,8 @@ export default {
 
         this.POST_LIST(data).then((req) => {
             this.list = req;
+
+            console.log(this.list);
         }).catch((err) => {
             console.log(err);
         })
@@ -272,6 +274,7 @@ export default {
                         height: auto;
                         padding: 0 10px 10px 0;
                         display: inline-block;
+                        vertical-align: top;
                     }
 
                     & > div {

@@ -120,6 +120,7 @@ export default {
 			fs.append('position', data.position);
 			fs.append('title', data.title);
 			fs.append('post', data.post);
+			//fs.append('meta', {});
 			for(let i=0;i<imageStorage.length;i++){
 				fs.append('images', imageStorage[i]);
 			}

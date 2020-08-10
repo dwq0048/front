@@ -38,11 +38,33 @@ const Post = {
                     data: payload,
                     withCredentials: true,
                 }).then((req) => {
-                    req.data.data.map(item => {
-                        item.state.displayDate = SET_TIME(item.state.date_fix)
-                    });
+                    const index = [];
+                    //req.data.data.map(item => {
+                    //    index.push({
+                    //        index: item.user.index
+                    //    });
+                    //});
 
-                    resolve(req.data.data);
+/*
+                    axios({
+                        methos: 'post',
+                        url: `/api/1/auth/info`,
+                        data: index,
+                        withCredentials: true,
+                    }).then((reqest) => {
+                        req.data.data.map(item => {
+                            item.state.displayDate = SET_TIME(item.state.date_fix);
+                            item.user.nickname = re
+                        });
+
+                        resolve(req.data.data);
+                    }).catch((err) => {
+                        reject(err);
+                    })
+*/
+
+                    console.log(req);
+                    resolve(req.data.payload);
                 }).catch((err) => {
                     reject(err);
                 })
