@@ -33,14 +33,14 @@
                 <li v-for="(item, i) in list" :key="i">
                     <div>
                         <div class="photo">
-                            <div>
+                            <router-link :to="'/photo/post/'+item._id">
                                 <img :src="'http://127.0.0.1:3000/images/'+item.images[item.meta.thumbnail.num]+'/thumbnail'">
-                            </div>
+                            </router-link>
                         </div>
                         <div class="info">
                             <div>
                                 <div class="comment">
-                                    <div v-html="item.post"></div>
+                                    <router-link :to="'/photo/post'+item._id" v-html="item.post"></router-link>
                                 </div>
                                 <div class="profile">
                                     <div class="image">
@@ -302,8 +302,9 @@ export default {
                                 padding-bottom: 100%;
                             }
 
-                            & > div {
+                            & > a {
                                 & {
+                                    display: block;
                                     position: absolute;
                                     width: 100%;
                                     height: 100%;
@@ -342,7 +343,7 @@ export default {
                                         display: block;
                                     }
 
-                                    & > div {
+                                    & > a {
                                         & {                                    
                                             font-size: #{$font-size};
                                             font-weight: bold;
@@ -350,6 +351,8 @@ export default {
                                             overflow: hidden;
                                             text-overflow:ellipsis;
                                             white-space:nowrap;
+                                            display: block;
+                                            text-decoration: none;
                                         }
                                     }
                                 }

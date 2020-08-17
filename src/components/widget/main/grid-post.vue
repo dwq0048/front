@@ -13,6 +13,16 @@
                         <div class="black">
 
                         </div>
+                        <div class="status">
+                            <span>
+                                <i><font-awesome-icon :icon="faHeart" /></i>
+                                <p>0</p>
+                            </span>
+                            <span>
+                                <i><font-awesome-icon :icon="faComment" /></i>
+                                <p>0</p>
+                            </span>
+                        </div>
                     </div>
                 </a>
             </div>
@@ -23,6 +33,9 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { SET_BOARD, SET_TIME } from '@/store/helper/'
+
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faHeart, faComment } from '@fortawesome/free-solid-svg-icons'
 
 const postStore = 'postStore';
 
@@ -41,6 +54,8 @@ export default {
             min: [],
             max: [],
             man: [],
+
+            faHeart, faComment,
 
             list: []
         }
@@ -117,7 +132,7 @@ export default {
             this.LoadEvent();
         }).catch((err) => {
             console.log(err);
-        })
+        });
     },
     mounted(){
         window.addEventListener('resize', () => {
@@ -205,6 +220,46 @@ export default {
                                 z-index: 2;
                             }
                         }
+
+                        & > .status {
+                            & {
+                                position: absolute;
+                                left: 50%; top: 50%;
+                                z-index: 3;
+                                opacity: 0;
+                                @include transform(translate(-50%, -50%));
+                                @include transition(.2s all);
+                            }
+
+                            & > span {
+                                & {
+                                    color: #fff;
+                                    font-size: #{$font-size + 2};
+                                    vertical-align: middle;
+                                    padding-left: 20px;
+                                }
+
+                                &:nth-child(1){
+                                    & {
+                                        padding-left: 0;
+                                    }
+                                }
+
+                                & > p {
+                                    & {
+                                        display: inline-block;
+                                        padding-left: 10px;
+                                        font-weight: bold;
+                                    }
+                                }
+
+                                & > i {
+                                    & {
+                                        display: inline-block;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -219,6 +274,13 @@ export default {
                             & > .black {
                                 background-color: rgba(0,0,0,0.5);
                                 @include transition(all .2s);
+                            }
+
+                            & > .status {
+                                & {
+                                    opacity: 1;
+                                    @include transition(.2s all);
+                                }
                             }
                         }
                     }

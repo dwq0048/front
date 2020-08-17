@@ -22,7 +22,7 @@
                                 <ul>
                                     <li>
                                         <router-link to="/notice">공지사항</router-link>
-                                        <router-link to="/">버그 리포트</router-link>
+                                        <router-link to="/report">버그 리포트</router-link>
                                     </li>
                                 </ul>
                             </li>
@@ -46,8 +46,8 @@
                                 </div>
                                 <ul>
                                     <li>
-                                        <router-link to="/">WIKI</router-link>
-                                        <router-link to="/">질문</router-link>
+                                        <router-link to="/wiki">WIKI</router-link>
+                                        <router-link to="/qna">질문</router-link>
                                     </li>
                                 </ul>
                             </li>
@@ -71,9 +71,9 @@
                                 </div>
                                 <ul>
                                     <li>
-                                        <router-link to="/">자유게시판</router-link>
-                                        <router-link to="/">VR 포토</router-link>
-                                        <router-link to="/">VR 영상</router-link>
+                                        <router-link to="/free">자유게시판</router-link>
+                                        <router-link to="/photo">VR 포토</router-link>
+                                        <router-link to="/video">VR 영상</router-link>
                                     </li>
                                 </ul>
                             </li>

@@ -71,6 +71,12 @@ const routes = [
 		component: () => import('@/views/photo/edit'),
 		beforeEnter: before()
 	},
+	{
+		path: '/photo/post/:id',
+		name: 'PhotoPost',
+		component: () => import('@/views/photo/post.vue'),
+		beforeEnter: before()
+	},
 ];
 
 /*

@@ -2,28 +2,41 @@
     <div class="default">
         <div class="contents">
             <div class="info">
-                <div class="title">
-                    <h1>{{ post.title }}</h1>
+                <div class="profile">
+                    <div class="image">
+                        <div></div>
+                    </div>
+                    <div class="name">
+                        <p>안녕하세요</p>
+                    </div>
                 </div>
-                <div class="display">
-                    <div>
-                        <span>{{ post.board.name }}</span>
-                        <span>{{ post.state.displayDate }}</span>
-                        <span>{{ post.user.nickname }}</span>
-                    </div>
-                    <div>
-                        <span>좋아요</span>
-                    </div>
+                <div class="status">
+                    <span>{{ post.state.displayDate }}</span>
                 </div>
             </div>
             <div class="post">
-                <div v-html="post.post"></div>
-            </div>
-            <div class="love">
-                <button type="button">
-                    <i><font-awesome-icon :icon="faHeartR" /></i>
-                    <span>좋아요</span>
-                </button>
+                <div class="view">
+                    <div ref="ImgPost">
+                        <img :src="`http://127.0.0.1:3000/images/${post.images[CurImg]}`" alt="">
+                    </div>
+                </div>
+                <div class="arrow">
+                    <button type="button">
+                        <i><font-awesome-icon :icon="faChevronLeft" /></i>
+                    </button>
+                    <button type="button">
+                        <i><font-awesome-icon :icon="faChevronRight" /></i>
+                    </button>
+                </div>
+                <div class="slide">
+                    <ul>
+                        <li v-for="(item, i) in post.images" :key="i">
+                            <div :class="{ active : (CurImg == i) }">
+                                <img :src="`http://127.0.0.1:3000/images/${item}`" alt="">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <div class="setting">
                 <div class="default_btn">
@@ -32,10 +45,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="comment">
-            <comment :info="info"/>
-        </div>
     </div>
 </template>
 
@@ -43,13 +52,10 @@
 import { mapActions, mapGetters } from 'vuex'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
-import { faHeart as faHeartS } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 
 import { SET_TIME } from '@/store/helper'
 import { SET_BOARD } from '@/store/helper'
-
-import Comment from '@/components/board/comment_skin/chatPack01'
 
 const postStore = 'postStore'
 
@@ -84,8 +90,10 @@ export default {
                 images: [],
             },
 
-            faHeartR,
-            faHeartS
+            faChevronLeft,
+            faChevronRight,
+
+            CurImg: 0
         }
     },
     components: {
@@ -99,11 +107,13 @@ export default {
     created: function(){
         const data = {
             id: this.id,
-            board: this.board
+            board: this.info.board
         }
 
         this.POST_VIEW(data).then((req) => {
-            this.post = req
+            this.post = req;
+            const radio = (this.post.ImageMeta[0].meta.height / this.post.ImageMeta[0].meta.width) * 100;
+            this.$refs.ImgPost.style.paddingBottom = `${radio}%`;
         }).catch((err) => {
             console.log(err)
         })
@@ -127,123 +137,234 @@ export default {
             & > .info {
                 & {
                     border-bottom: 1px solid #ddd;
-                }
-                
-                & > .title {
-                    & {
-                        padding: 20px 30px;
-                    }
+                    padding: 15px;
+                    position: relative;
+                }                
 
-                    & > h1 {
-                        font-size: #{$font-size + 10};
-                    }
-                }
+                & > div.profile {
 
-                & > .display {
-                    & {
-                        padding: 0px 30px 15px 30px;
-                    }
-
-                    &:after {
-                        content: " ";
-                        display: block;
-                        clear: both;
-                    }
-
-                    & > div {
+                    & > .image {
                         & {
-                            float: left;
-                        }
-
-                        & > span {
-                            font-size: #{$font-size - 1};
-                            color: #858585;
+                            width: 35px;
+                            height: auto;
+                            background-color: #999;
+                            border-radius: 50%;
+                            border: 1px solid #ccc;
                             display: inline-block;
-                            padding-right: 15px;
+                            vertical-align: middle;
                         }
-                        
+
+                        &::after {
+                            & {
+                                content: " ";
+                                display: block;
+                                padding-bottom: 100%;
+                            }
+                        }
                     }
 
-                    & > div:nth-child(2){
+                    & > .name {
                         & {
-                            float: right;
+                            display: inline-block;
+                            vertical-align: middle;
                         }
 
-                        & > span {
-                            padding-right: 0;
-                            padding-left: 15px;
+                        & > p {
+                            display: inline-block;
+                            vertical-align: middle;
+                            font-size: #{$font-size};
+                            color: $font-color;
+                            font-weight: bold;
+                            line-height: 35px;
+                            padding-left: 10px;
                         }
                     }
+                }
+
+                & > div.status {
+
+                    & {
+                        position: absolute;
+                        right: 0; top: 50%;
+                        @include transform(translateY(-50%));
+                    }
+
+                    & > span {
+                        font-size: #{$font-size - 1};
+                        color: #858585;
+                        display: inline-block;
+                        padding-right: 15px;
+                    }
+                    
                 }
             }
 
             & > .post {
                 & {
-                    padding: 30px;
-                    min-height: 425px;
-                }
-            }
-
-            & > .love {
-                & {
-                    text-align: center;
-                    padding: 0 0 30px 0;
+                    position: relative;
                 }
 
-                & > button {
+                & > .view {
                     & {
-                        display: inline-block;
-                        background: none;
-                        border: none;
-                        vertical-align: middle;
-                        cursor: pointer;
-                        border: 1px solid #ccc;
-                        border-radius: 10px;
-                        padding: 0 20px;
-                        margin: 0 15px;
-                        outline: none;
+                        width: 100%;
+                        height: auto;
+                        background-color: #ccc;
+                        cursor: w-resize;
+                        cursor: grab;
+                        position: relative;
+                    }
+
+                    & > div {
+                        & {
+                            width: 100%;
+                            height: auto;
+                            overflow: hidden;
+                        }
+
+                        & > img {
+                            position: absolute;
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            left: 0; top: 0;
+                        }
+                    }
+                }
+
+                & > .arrow {
+                    & {
+                        width: 100%;
+                        height: 100%;
+                        opacity: 1;
                         @include transition(.2s all);
                     }
 
-                    & > i {
-                        display: inline-block;
-                        font-size: #{$font-size + 2};
-                        line-height: 40px;
-                        color: #999;
+                    & > button {
+                        & {
+                            display: block;
+                            background: none;
+                            border: none;
+                            cursor: pointer;
+                            outline: none;
+                            position: absolute;
+                            top: 50%;
+                            @include transform(translateY(-50%));
+                            font-size: #{$font-size + 30};
+                            color: rgba(255,255,255,0.5);
+                            height: 100%;
+                            z-index: 1;
+                            padding: 0 10px;
+                        }
+
+                        &:nth-child(1){
+                            left: 0;
+                        }
+
+                        &:nth-child(2){
+                            right: 0;
+                        }
+                    }
+                }
+
+                & > .slide {
+                    & {
+                        width: 100%;
+                        height: auto;
+                        position: absolute;
+                        left: 0; bottom: 0;
+                        opacity: 1;
+                        background-color: rgba(0,0,0,0.5);
                         @include transition(.2s all);
+                        cursor: w-resize;
+                        cursor: grab;
+                        z-index: 2;
                     }
 
-                    & > span {
-                        display: inline-block;
-                        padding-left: 10px;
-                        font-size: #{$font-size + 2};
-                        line-height: 40px;
-                        color: #999;
-                    }
-
-                    &:hover {
+                    & > ul {
                         & {
-                            background-color: #f1f1f1;
+                            width: 100%;
+                            height: auto;
+                            font-size: 0;
+                            padding: 20px 15px;
+                            white-space: nowrap;
+                            overflow: hidden;
+                        }
+
+                        & > li {
+                            & {
+                                display: inline-block;
+                                width: 10%;
+                                height: auto;
+                                padding-right: 15px;
+                                cursor: pointer;
+                            }
+
+                            & > div {
+                                & {
+                                    width: 100%;
+                                    height: auto;
+                                    background-color: #555;
+                                    position: relative;
+                                    border: 1px solid #555;
+                                    border-radius: 3px;
+                                    overflow: hidden;
+                                }
+
+                                &:after {
+                                    content: " ";
+                                    display: block;
+                                    padding-bottom: 100%;
+                                }
+
+                                & > img {
+                                    & {
+                                        width: 100%;
+                                        height: 100%;
+                                        position: absolute;
+                                        left: 0; top: 0;
+                                        object-fit: cover;
+                                    }
+                                }
+
+                                &.active {
+                                    & {
+                                        border: 1px solid $bg-orange;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                &:hover {
+                    & > .slide {
+                        & {
+                            opacity: 0;
                             @include transition(.2s all);
                         }
                     }
 
-                    &:active {
+                    & > .arrow {
                         & {
-                            border: 1px solid #e02554;
-                            @include transition(.2s all);
-                        }
-                        & > i {
-                            color: #e02554;
-                            @include transition(.2s all);
-                        }
-
-                        & > span{
-                            color: #e02554;
+                            opacity: 0;
                             @include transition(.2s all);
                         }
                     }
                 }
+
+                & > .slide:hover {
+                    & {
+                        opacity: 1;
+                        @include transition(.2s all);
+                    }
+                }
+
+                & > .arrow:hover {
+                    & {
+                        opacity: 1;
+                        @include transition(.2s all);
+                    }
+                }                
             }
 
             & > .setting {
@@ -275,4 +396,6 @@ export default {
             }
         }
     }
+
+
 </style>

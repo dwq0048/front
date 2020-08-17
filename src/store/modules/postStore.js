@@ -78,7 +78,7 @@ const Post = {
                     data: payload,
                     withCredentials: true,
                 }).then((req) => {
-                    let post = req.data.req;
+                    let post = req.data.payload;
                     post.state.displayDate = SET_TIME(post.state.date_fix);
                     post.board = {
                         original: post.board,
