@@ -77,6 +77,20 @@ const routes = [
 		component: () => import('@/views/photo/post.vue'),
 		beforeEnter: before()
 	},
+
+	// 블로그
+	{
+		path: '/blog',
+		name: 'Blog',
+		component: () => import('@/views/Blog/index.vue'),
+		beforeEnter: before()
+	},
+	{
+		path: '/blog/edit',
+		name: 'BlogEdit',
+		component: () => import('@/views/Blog/edit'),
+		beforeEnter: before()
+	},
 ];
 
 /*

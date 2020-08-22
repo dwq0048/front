@@ -1,11 +1,11 @@
 <template>
     <div class="pee">
         <div class="grid" ref="element">
-            <div class="grid__item" v-for="(item, i) in list" :key="i">
+            <div class="grid__item" v-for="(item, i) in list" :key="i" :style="`width: ${imgWidth}px`">
                 <a href="img/original/1.jpg" class="img-wrap" 
                     :data-radio="(item.ImageMeta[item.meta.thumbnail.num].meta.height / item.ImageMeta[item.meta.thumbnail.num].meta.width) * 100"
-                    :data-width="300"
-                    :data-height="((item.ImageMeta[item.meta.thumbnail.num].meta.height / item.ImageMeta[item.meta.thumbnail.num].meta.width)) * 300"
+                    :data-width="imgWidth"
+                    :data-height="((item.ImageMeta[item.meta.thumbnail.num].meta.height / item.ImageMeta[item.meta.thumbnail.num].meta.width)) * (imgWidth)"
                 >
                     <img :src="'http://127.0.0.1:3000/images/'+item.images[item.meta.thumbnail.num]" alt="img01" />
 
@@ -43,6 +43,7 @@ const postStore = 'postStore';
 
 export default {
     name: 'GridPost',
+    props: ['grid'],
     data() {
         return {
             Screen: 0,
@@ -73,10 +74,41 @@ export default {
             let element = this.$refs.element;
             element = element.childNodes;
 
-            this.Screen = window.innerWidth;
-            this.cntWidth = Math.floor(this.Screen / 300);
+            if(!this.grid){
+                this.imgWidth = 300;
+                this.Screen = window.innerWidth;
+            }else {
+                if(this.grid.img == 'auto'){
+                    //this.Screen = this.$refs.element.clientWidth;
+                    this.Screen = window.innerWidth;
+
+                    if(this.Screen > 1650){
+                        this.Screen = 1170;
+                    }else if(this.Screen > 1330 && this.Screen <= 1649){
+                        this.Screen = 850;
+                    }else if(this.Screen > 1024 && this.Screen <= 1329){
+                        this.Screen = 1024;
+                    
+                    }
+                    this.Screen = Number(this.Screen) - 30;
+
+                    if(window.innerWidth > 1650){
+                        this.imgWidth = Math.floor(this.Screen / 4);
+                    }else if(window.innerWidth > 1330 && this.Screen <= 1649){
+                        this.imgWidth = Math.floor(this.Screen / 3);
+                    }else if(this.Screen > 840 && this.Screen <= 1329){
+                        this.imgWidth = Math.floor(this.Screen / 3);
+                    }else{
+                        this.imgWidth = Math.floor(this.Screen / 2);
+                    }
+                }else{
+                    this.Screen = this.$refs.element.clientWidth;
+                    this.imgWidth = this.grid.img;
+                }
+            }
+
+            this.cntWidth = Math.floor(this.Screen / this.imgWidth);
             this.ElementCnt = element.length;
-            this.imgWidth = 300;
             this.margin = 0;
             this.option = [];
             this.min = [];
@@ -128,7 +160,6 @@ export default {
 
         this.POST_LIST(data).then((req) => {
             this.list = req;
-
             this.LoadEvent();
         }).catch((err) => {
             console.log(err);
@@ -154,6 +185,9 @@ export default {
 
         */
 
+    },
+    updated() {
+        this.ResizeEvent();
     }
 }
 </script>

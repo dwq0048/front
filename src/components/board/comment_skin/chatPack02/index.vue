@@ -113,13 +113,18 @@ export default {
 <style lang="scss" scoped>
     .comment {
         & {
-            background-color: #fff;
+            background-color: #f1f1f1;
+            width: 400px;
+            height: 100vh;
+            z-index: 1;
+            @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
         }
 
         & > .submit {
             & {
                 width: 100%;
                 padding: 15px 30px;
+                background-color: #fff;
                 display: table;
             }
 

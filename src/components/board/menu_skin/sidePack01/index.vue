@@ -7,11 +7,11 @@
         </ul>
         <ul>
             <li>
-                <div>홈</div>
+                <div>홈페이지</div>
                 <ul>
                     <li>
                         <router-link to="/notice">공지사항</router-link>
-                        <router-link to="/report">버그 리포트</router-link>
+                        <router-link to="/blog">블로그</router-link>
                     </li>
                 </ul>
             </li>
@@ -21,7 +21,8 @@
                 <div>정보</div>
                 <ul>
                     <li>
-                        <router-link to="/wiki">WIKI</router-link>
+                        <router-link to="/guide">가이드</router-link>
+                        <router-link to="/wiki">위키</router-link>
                         <router-link to="/qna">질문</router-link>
                     </li>
                 </ul>

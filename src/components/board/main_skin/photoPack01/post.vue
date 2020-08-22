@@ -1,6 +1,6 @@
 <template>
     <div class="default">
-        <div class="contents">
+        <div class="contents" ref="content">
             <div class="info">
                 <div class="profile">
                     <div class="image">
@@ -45,10 +45,46 @@
                 </div>
             </div>
         </div>
+
+        <div class="other">
+            <div class="list">
+                <div>
+                    <h1>작성자의 게시글</h1>
+                </div>
+                <ul>
+                    <li>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="good">
+            <div class="users">
+                <h1>추천 게시글</h1>
+            </div>
+            <div class="widget">
+                <widget-grid :grid="grid"/>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+import Grid from '@/components/widget/main/grid-post'
+
 import { mapActions, mapGetters } from 'vuex'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -60,7 +96,7 @@ import { SET_BOARD } from '@/store/helper'
 const postStore = 'postStore'
 
 export default {
-    name: 'DefaultMain',
+    name: 'DefaultPhoto',
     props: ['info'],
     data() {
         return {
@@ -93,11 +129,18 @@ export default {
             faChevronLeft,
             faChevronRight,
 
-            CurImg: 0
+            side: false,
+            CurImg: 0,
+            grid: {
+                width: 800,
+                max: 1650,
+                min: 1330,
+                img: 'auto'
+            }
         }
     },
     components: {
-        'comment' : Comment
+        'widget-grid': Grid,
     },
     methods : {
         ...mapActions(postStore, [
@@ -118,6 +161,21 @@ export default {
             console.log(err)
         })
     },
+    mounted() {
+        const cont = this.$refs.content;
+        window.addEventListener('scroll', (data) => {
+            //console.log(window.scrollY);
+            const el = cont.getBoundingClientRect();
+            const top = el.top;
+            const left = el.left;
+            if(top <= 0){
+                this.side = true;
+            }else{
+                this.side = false;
+            }
+            this.$emit('childs-event', this.side)
+		});
+    }
 }
 </script>
 
@@ -394,8 +452,190 @@ export default {
                     }
                 }
             }
+
+            &.active {
+                & > .comet {
+                    & {
+                        position: fixed;
+                        top: 0;
+                        right: 0;
+                    }
+                }
+            }
+        }
+
+        & > .other {
+            & {
+                width: 100%;
+                height: auto;
+                padding-top: 40px;
+            }
+
+            & > .list {
+                & {
+                    width: 100%;
+                    height: auto;
+                }
+
+                & > div:nth-child(1) {
+                    & {
+                        display: block;
+                    }
+
+                    & > h1 {
+                        & {
+                            font-size: #{$font-size + 2};
+                            color: $font-color;
+                            font-weight: bold;
+                            margin: 0;
+                            padding: 0;
+                        }
+                    }
+                }
+
+                & > ul {
+                    & {
+                        width: 100%;
+                        height: auto;
+                        list-style: none;
+                        font-size: 0;
+                        white-space: nowrap;
+                        padding-top: 15px;
+                        margin-left: -15px;
+                    }
+
+                    & > li {
+                        & {
+                            width: 20%;
+                            height: auto;
+                            padding: 0 15px;
+                            display: inline-block;
+                        }
+                        
+                        & > div {
+                            & {
+                                width: 100%;
+                                height: auto;
+                                background-color: #333;
+                                position: relative;
+                            }
+
+                            &:after {
+                                content: " ";
+                                display: block;
+                                padding-bottom: 100%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        & > .good {
+            & {
+                width: 100%;
+                height: auto;
+                margin-top: 40px;
+            }
+
+            & > .users {
+                & {
+                    width: 100%;
+                    max-width: 1200px;
+                    margin: 0 auto;
+                }
+
+                & > h1 {
+                    & {
+                        font-size: #{$font-size + 2};
+                        color: $font-color;
+                        font-weight: bold;
+                        margin: 0;
+                        padding: 0;
+                    }
+                }
+            }
+
+            & > .widget {
+                & {
+                    padding-top: 15px;
+                    margin-left: -15px;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 1650px) {
+        .default {
+            & > .contents {
+                & > .post {
+                    & > .slide {
+                        & > ul {
+                            & > li {
+                                & {
+                                    width: 15%;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
 
+    @media (max-width: 740px) {
+        .default {
+            & > .contents {
+                & > .post {
+                    & > .slide {
+                        & > ul {
+                            & > li {
+                                & {
+                                    width: 20%;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            & > .other {
+                & > .list {
+                    & > ul {
+                        & > li {
+                            & {
+                                width: 25%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 520px) {
+        .default {
+            & > .other {
+                & > .list {
+                    & > ul {
+                        & > li {
+                            & {
+                                width: 33.3333%;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+</style>
+
+<style lang="scss">
+    .pee {
+        & > .grid {
+            margin: 0!important;
+        }
+    }
 </style>

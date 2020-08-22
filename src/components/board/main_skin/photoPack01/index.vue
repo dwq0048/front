@@ -126,7 +126,7 @@ export default {
         const data = {
             board: this.info.board,
             page: this.page,
-            view: 15
+            view: 20
         }
 
         this.POST_LIST(data).then((req) => {
