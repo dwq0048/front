@@ -57,9 +57,7 @@ export default {
             'USER_LOGOUT'
         ]),
         LOGOUT() {
-            this.USER_LOGOUT;
-
-            console.log('adsakjl');
+            this.USER_LOGOUT();
         }
     }
 

@@ -61,15 +61,32 @@ const User = {
 					data: SEND,
 					withCredentials : true
 				}).then((req) => {
-					resolve(req);
+					if(req.data.status == 'success'){
+						const user = req.data.info;
+						commit('SET_STATUS', user);
+
+						resolve(req);
+					}else{
+						reject(req);
+					}
 				}).catch((err) => {
 					reject(err)
 				})
 			});
 		},
 		USER_LOGOUT: function({commit}, payload){
-			document.cookie = '_SESSION' + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-			commit('SET_LOGOUT');
+			return new Promise((resolve, reject) => {
+				axios({
+					method: 'post',
+					url: '/api/1/auth/logout',
+					withCredentials : true,
+				}).then((req) => {
+					commit('SET_LOGOUT');
+					resolve('success');
+				}).catch((err) => {
+					reject(err);
+				})
+			})
 		},
 		USER_ALERT: function({commit}, payload){
 			let object = {};

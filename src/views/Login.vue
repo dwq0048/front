@@ -12,6 +12,23 @@
             </p>
         </div>
         <div class="contents">
+            <div class="head">
+                <router-link to="/">
+                    <i><font-awesome-icon :icon="faHome" /></i>
+                </router-link>
+                <ul>
+                    <li :class="{ active : page.join }">
+                        <button type="button">
+                            <p>회원가입</p>
+                        </button>
+                    </li>
+                    <li :class="{ active : page.login }">
+                        <button type="button">
+                            <p>로그인</p>
+                        </button>
+                    </li>
+                </ul>
+            </div>
             <form v-on:submit.prevent="Login">
                 <div class="form" :class="{ active: LOGIN_ALERT['ERROR'] }" >
                     <div class="input" :class="{ active: LOGIN_ALERT['USER_ID'] }">
@@ -41,13 +58,12 @@
                                 <p>자동 로그인</p>
                             </label>
                         </div>
-                        <router-link to="/">아 비번 뭐였지</router-link>
                     </div>
                     <div class="submit">
                         <div class="form-submit">
                             <button type="submit">LOGIN</button>
                         </div>
-                        <router-link to="/">계정이 없으십니까?</router-link>
+                        <router-link to="/">아이디 까먹음? / 아 비번 뭐였지?</router-link>
                     </div>
                     <div class="alert" :class="{ active: LOGIN_ALERT['ALERT'] }">
                         <p>{{ LOGIN_ALERT['MESSAGE'] }}</p>
@@ -64,6 +80,8 @@
 </template>
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faHome } from '@fortawesome/free-solid-svg-icons'
 import { mapActions, mapGetters } from 'vuex'
 
 import Header from '@/components/layout/header'
@@ -77,7 +95,14 @@ export default {
         return {
             LOGIN_ALERT: {},
             USER_ID: '',
-            USER_PW: ''
+            USER_PW: '',
+
+            page : {
+                login : true,
+                join : false,
+            },
+
+            faHome
         }
     },
 	components: {
@@ -137,7 +162,7 @@ export default {
     .form-input {
         & {
             width: 100%;
-            height: 45px;
+            height: 40px;
             border: 2px solid $bg-black-light;
             background-color: #fff;
         }
@@ -209,7 +234,7 @@ export default {
     .form-submit {
         & {
             width: 100%;
-            height: 50px;
+            height: 45px;
             background-color: $bg-orange;
             border-radius: 5px;
             overflow: hidden;
@@ -230,7 +255,7 @@ export default {
                 border:none;
                 color:#fff;
                 letter-spacing: 2px;
-                font-size: #{$font-size - 1};
+                font-size: #{$font-size - 2};
                 cursor: pointer;
                 outline: none;
                 @include box-sizing(border-box);
@@ -266,13 +291,133 @@ export default {
     .contents {
         & {
             width: 100%;
-            max-width: 800px;
+            max-width: 700px;
             height: auto;
             margin: 80px auto 0 auto;
-            padding: 70px 0;
             background-color: #fff;
             border-radius: 5px;
+            padding-bottom: 70px;
             @include box-shadow(5px 5px 15px rgba(0,0,0,0.1));
+        }
+
+        & > .head {
+            & {
+                width: 100%;
+                height: 40px;
+                background-color: $bg-blue-bold;
+                border-bottom: 2px solid $bg-blue-light;
+            }
+
+            & > a {
+                & {
+                    display: inline-block;
+                    width: auto;
+                    height: 100%;
+                    position: relative;
+                    border: none;
+                    background: none;
+                    padding: 0 15px;
+                    vertical-align: middle;
+                    cursor: pointer;
+                    font-size: 0;
+                    line-height: 40px;
+                    background-color: $bg-blue-light;
+                }
+
+                & > i {
+                    & {
+                        font-size: #{$font-size};
+                        color: #fff;
+                        display: inline-block;
+                        vertical-align: middle;
+                    }
+                }
+
+                & > span {
+                    & {
+                        display: inline-block;
+                        font-size: #{$font-size - 2};
+                        color: #bbb;
+                        padding-left: 10px;
+                        vertical-align: middle;
+                        letter-spacing: 3px;
+                    }
+                }
+            }
+
+            & > ul {
+                & {
+                    list-style: none;
+                    font-size: 0;
+                    width: auto;
+                    height: 100%;
+                    float: right;
+                }
+
+                & > li {
+                    & {
+                        display: inline-block;
+                        width: auto;
+                        height: 100%;
+                        background-color: $bg-blue-bold;
+                        @include transition(.2s all);
+                    }
+
+                    & > button {
+                        & {
+                            display: block;
+                            width: auto;
+                            height: 100%;
+                            padding: 0;
+                            margin: 0;
+                            border: none;
+                            background: none;
+                            outline: none;
+                            cursor: pointer;
+                        }
+
+                        & > p {
+                            display: inline-block;
+                            width: auto;
+                            line-height: 45px;
+                            font-size: #{$font-size - 2};
+                            letter-spacing: 3px;
+                            color: #f1f1f1;
+                            padding: 0 30px;
+                            @include transition(.2s all);
+                        }
+                    }
+
+                    &:hover {
+                        & {
+                            background-color: $bg-blue;
+                        }
+                    }
+
+                    &.active {
+                        & {
+                            background-color: $bg-blue-light;
+                            @include transition(.2s all);
+                        }
+
+                        & > button {
+
+                            & > p {
+                                & {
+                                    color: #fff;
+                                    @include transition(.2s all);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        & > form {
+            & {
+                padding-top: 70px;
+            }
         }
     }
 
@@ -298,7 +443,7 @@ export default {
 
             & > label {
                 display: block;
-                font-size: #{$font-size + 2};
+                font-size: #{$font-size};
                 color: $bg-black-light;
                 line-height:1.5;
                 padding-bottom:5px;
@@ -314,6 +459,7 @@ export default {
 
                 & > ::placeholder {
                     color: $bg-light-bold;
+                    font-size: #{$font-size - 2};
                 }
             }
 
@@ -336,6 +482,7 @@ export default {
                     padding-left: 5px;
                     color: $font-color;
                     font-weight: bold;
+                    font-size: #{$font-size - 2};
                 }
 
                 & > i {
@@ -349,6 +496,26 @@ export default {
         .submit {
             & {
                 margin-top:30px;
+            }
+
+            & > a {
+                & {
+                    display: block;
+                    margin-top: 10px;
+                    text-decoration: none;
+                    font-weight: bold;
+                    color: $bg-blue;
+                    text-align: right;
+                    @include transition(.2s all);
+                }
+
+                &:hover {
+                    & {
+                        color: $bg-blue-bold;
+                        text-decoration: underline;
+                        @include transition(.2s all);
+                    }
+                }
             }
         }
 

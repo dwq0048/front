@@ -78,7 +78,7 @@
                                         <div></div>
                                     </div>
                                     <div class="intro">
-                                        <p class="nickname"> 하하</p>
+                                        <p class="nickname">하하</p>
                                         <p class="setting">
                                             <span class="bell" >
                                                 <i><font-awesome-icon :icon="faBell" /></i>
@@ -95,7 +95,7 @@
                                         </p>
                                     </div>
                                     <div class="button">
-                                        <router-link to="/" title="로그아웃">로그아웃</router-link>
+                                        <button type="button">로그아웃</button>
                                     </div>
                                 </div>
 
@@ -239,7 +239,8 @@ export default {
     },
     methods: {
         ...mapActions(userStore, [
-            'USER_LOGIN'
+            'USER_LOGIN',
+            'USER_LOGOUT'
         ]),
         onNavigation : function(){
             this.close = true;
@@ -247,6 +248,10 @@ export default {
                 this.$store.commit('onNavigation',false);
                 this.close = false;
             },300)
+        },
+        logout: function(){
+            this.USER_LOGOUT(data);
+            this.$router.go();
         },
         login : function(){
             const data = {
@@ -269,7 +274,7 @@ export default {
                 }else if(req.data.status == 'success'){
                     // 로그인 성공
 					this.$store.commit('TokenInfo', req.data.info);
-					this.$router.push({ path: '/' });
+					this.$router.go();
                 }
             }).catch((err) => {
                 console.log(err);

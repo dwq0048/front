@@ -83,13 +83,9 @@ export default {
             }
 
             this.USER_LOGIN(payload).then((req) => {
-                if(req.data.status == 'success'){
-                    console.log(req);
-                }else{
-                    this.LoginFail(req.data.message);
-                }
+                //console.log('');
             }).catch((err) => {
-                console.log(err);
+                this.LoginFail(err.data.message);
             })
 
         },
