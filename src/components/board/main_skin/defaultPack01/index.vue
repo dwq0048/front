@@ -3,6 +3,9 @@
         <div class="nav">
             <div class="title">
                 <h1>{{ title }}</h1>
+                <router-link :to="`/${info.board}/edit`" class="write" title="글쓰기">
+                    <i><font-awesome-icon :icon="faEdit" /></i>
+                </router-link>
             </div>
             <div class="menu">
                 <ul>
@@ -15,10 +18,10 @@
                 </ul>
                 <ul class="right">
                     <li>
-                        <button type="button" title="리스트" :class="{ active: ACTIVE.list  }">
+                        <button type="button" title="리스트" v-on:click="boardStyle('list')" :class="{ active: Active.list }">
                             <i><font-awesome-icon :icon="faThList" /></i>
                         </button>
-                        <button type="button" title="그리드" :class="{ active: ACTIVE.grid  }">
+                        <button type="button" title="그리드" v-on:click="boardStyle('grid')" :class="{ active: Active.grid }" >
                             <i><font-awesome-icon :icon="faThLarge" /></i>
                         </button>
                     </li>
@@ -26,44 +29,8 @@
             </div>
         </div>
         <div class="list">
-            <ul v-if="false">
-                <li v-for="(item, i) in list" :key="i">
-                    <div class="num">
-                        <p>{{ ((page * 15)+i)+1 }}</p>
-                    </div>
-                    <div class="title">
-                        <p><router-link :to="'/'+info.board+'/post/'+item._id">{{ item.title }}</router-link></p>
-                    </div>
-                    <div class="date">
-                        <p>{{ item.state.date_fix }}</p>
-                    </div>
-                    <div class="user">
-                        <p>{{ item.user.name }}</p>
-                    </div>
-                </li>
-            </ul>
-            <ul class="grid">
-                <li v-for="(item, i) in list" :key="i">
-                    <div class="num">
-                        <p>
-                            <i><font-awesome-icon :icon="faHeartR" /></i>
-                            <span>{{ ((page * 15)+i)+1 }}</span>
-                        </p>
-                    </div>
-                    <div class="title">
-                        <p class="king"><router-link :to="'/'+info.board+'/post/'+item._id">{{ item.title }}</router-link></p>
-                        <div class="info">
-                            <p class="date">{{ item.state.displayDate }}</p>
-                            <p class="name">{{ item.user.name }}</p>
-                        </div>
-                    </div>
-                    <div class="thumbnail">
-                        <div>
-                        
-                        </div>
-                    </div>
-                </li>
-            </ul>
+            <board-list v-if="Active.list" :list="list" :info="info" :page="page"/>
+            <board-grid v-if="Active.grid" :list="list" :info="info" />
         </div>
     </div>
 </template>
@@ -73,36 +40,64 @@ import { mapActions, mapGetters } from 'vuex'
 
 import { SET_BOARD, SET_TIME } from '@/store/helper/'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faThLarge, faThList } from '@fortawesome/free-solid-svg-icons'
-import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
+import { faThLarge, faThList, faEdit } from '@fortawesome/free-solid-svg-icons'
+
+import BoardList from './type/list'
+import BoardGrid from './type/grid'
 
 const postStore = 'postStore'
 
 export default {
     name: 'DefaultMain',
     props: ['info'],
+    components: {
+        'board-list': BoardList,
+        'board-grid': BoardGrid,
+    },
     data() {
         return {
             list : [],
             page : 0,
             title: '',
-            ACTIVE: {
+            Active: {
                 list: false,
                 grid: true
             },
 
             faThLarge,
             faThList,
-            faHeartR
+            faEdit
         }
     },
     methods : {
         ...mapActions(postStore, [
             'POST_LIST'
         ]),
+        boardStyle(type){
+            switch(type){
+                case 'list':
+                    this.boardReset();
+                    this.Active.list = true;
+                    break;
+                case 'grid':
+                    this.boardReset();
+                    this.Active.grid = true;
+                    break;
+                default:
+                    this.boardReset();
+                    this.Active.list = true;
+            }
+        },
+        boardReset(){
+            this.Active = {
+                list: false,
+                grid: false
+            }
+        }
     },
     created: function(){
         this.title = SET_BOARD.category(this.info.board);
+        this.boardStyle(this.info.list);
 
         const data = {
             board: this.info.board,
@@ -111,7 +106,6 @@ export default {
         }
 
         this.POST_LIST(data).then((req) => {
-            console.log(req);
             this.list = req;
         }).catch((err) => {
             console.log(err);
@@ -133,15 +127,48 @@ export default {
                 background-color: #fff;
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
+
             & > .title {
                 & {
                     padding: 15px 30px;
+                    position: relative;
                 }
 
                 & > h1 {
                     font-size: #{$font-size + 6};
                 }
+
+                & > .write {
+                    & {
+                        display: inline-block;
+                        border: none;
+                        background: none;
+                        margin: 0; padding: 0;
+                        outline: none;
+                        cursor: pointer;
+                        position: absolute;
+                        right: 0; top: 50%;
+                        padding: 5px 30px;
+                        @include transition(.2s all);
+                        @include transform(scale(1) translate(0, -50%));
+                    }
+
+                    & > i {
+                        & {
+                            font-size: #{$font-size + 4};
+                            color: $bg-blue;
+                        }
+                    }
+
+                    &:hover {
+                        & {
+                            @include transition(.2s all);
+                            @include transform(scale(1.05) translate(0, -50%));
+                        }
+                    }
+                }
             }
+
             & > .menu {
                 &:after {
                     content: " ";
@@ -206,151 +233,6 @@ export default {
                 background-color: #fff;
                 margin-top: 15px;
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
-            }
-            & > ul {
-                & {
-                    font-size: 0;
-                }
-
-                & > li {
-                    & {
-                        width: 100%;
-                        height: 45px;
-                        display: table;
-                        list-style: none;
-                        font-size: #{$font-size};
-                        border-bottom: 1px solid #f1f1f1;
-                        padding: 0 10px;
-                    }
-
-                    & > div {
-                        vertical-align: middle;
-                    }
-
-                    & > .num {
-                        & {
-                            width: 7%;
-                            height: auto;
-                            display: table-cell;
-                        }
-
-                        & > p {
-                            & {
-                                vertical-align: middle;
-                                text-align: center;
-                                padding-right: 10px;
-                            }
-
-                            & > i {
-                                & {
-                                    font-size: #{$font-size - 4};
-                                    display: inline-block;
-                                    vertical-align: middle;
-                                    padding-right: 5px;
-                                }
-                            }
-
-                            & > span {
-                                & {
-                                    display: inline-block;
-                                    vertical-align: middle;
-                                }
-                            }
-                        }
-                    }
-
-                    & > .title {
-                        width: 63%;
-                        height: auto;
-                        display: table-cell;
-                    }
-
-                    & > .date {
-                        width: 10%;
-                        height: auto;
-                        display: table-cell;
-                    }
-
-                    & > .user {
-                        width: 20%;
-                        height: auto;
-                        display: table-cell;
-                    }
-                }
-
-                &.grid {
-                    & > li {
-                        & > .title {
-                            & {
-                                width: 82%;
-                                padding: 10px 0;
-                            }
-
-                            & > .king {
-                                & {
-                                    display: block;
-                                    width: 100%;
-                                }
-
-                                & > a {
-                                    display: block;
-                                    text-decoration: none;
-                                    color: #333;
-                                    font-weight: bold;
-                                    font-size: #{$font-size + 2};
-                                    padding-bottom: 10px;
-                                }
-                            }
-
-                            & > .info {
-                                & {
-                                    display: block;
-                                    font-size: #{$font-size};
-                                    color: #555;
-                                }
-
-                                & > .date {
-                                    & {
-                                        display: inline-block;
-                                        padding-right: 30px;
-                                    }
-                                }
-
-                                & > .name {
-                                    & {
-                                        display: inline-block;
-                                    }
-                                }
-                            }
-                        }
-
-                        & > .thumbnail {
-                            & {
-                                width: 10%;
-                                height: auto;
-                                display: table-cell;
-                                padding: 15px;
-                            }
-
-                            & > div {
-                                & {
-                                    width: 100px;
-                                    height: auto;
-                                    position: relative;
-                                    overflow: hidden;
-                                    border-radius: 1px;
-                                    background-color: #ccc;
-                                }
-
-                                &:after {
-                                    content: " ";
-                                    display: block;
-                                    padding-bottom: 80%;
-                                }
-                            }
-                        }
-                    }
-                }
             }
         }
     }

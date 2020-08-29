@@ -1,14 +1,17 @@
 <template>
     <form v-on:submit.prevent="Login">
+        <div class="title">
+            <h1>LOGIN</h1>
+        </div>
         <div class="form" :class="{ active: LOGIN_ALERT['ERROR'] }" >
             <div class="input" :class="{ active: LOGIN_ALERT['USER_ID'] }">
-                <label for="userid">User ID / E-mail</label>
+                <label for="userid">아이디 또는 이메일</label>
                 <div class="form-input">
                     <input type="text" placeholder="User ID / E-mail" v-model="USER_ID" />
                 </div>
             </div>
             <div class="input" :class="{ active: LOGIN_ALERT['USER_PW'] }">
-                <label for="password">Password</label>
+                <label for="password">비밀번호</label>
                 <div class="form-input">
                     <input type="password" placeholder="password" v-model="USER_PW" />
                 </div>
@@ -68,7 +71,7 @@ export default {
     },
     methods: {
         ...mapActions(userStore, [
-            'USER_ALERT'
+            'USER_ALERT','USER_LOGIN'
         ]),
         Login : function(){
             const payload = {
@@ -88,7 +91,7 @@ export default {
                 if(req.data.status == 'fail'){
                     this.LoginFail(req.data.message);
                 }else if(req.data.status == 'success'){
-                    console.log(req);
+                    this.$router.push({ path: '/' })
                 }
             }).catch((err) => {
                 console.log(err);
@@ -97,6 +100,7 @@ export default {
         LoginFail: function(message){
             this.USER_ALERT(message);
             this.LOGIN_ALERT = this.UPDATE_ALERT;
+            console.log('fail');
 
             window.setTimeout(() => {
                 this.LOGIN_ALERT.ERROR = false;
@@ -135,6 +139,7 @@ export default {
     .form-checkbox {
         & {
             display: inline-block;
+            vertical-align: middle;
         }
 
         & > input {
@@ -149,8 +154,8 @@ export default {
 
         & > div {
             & {
-                width: 10px;
-                height: 10px;
+                width: 15px;
+                height: 15px;
                 background-color: #f1f1f1;
                 border: 1px solid $bg-gray;
                 border-radius: 2px;
@@ -216,140 +221,162 @@ export default {
 
     }
 
-
-    .form {
+    form {
         & {
-            width: 500px;
-            margin: 0 auto;
-            position: relative;
-            padding-top: 70px;
-            @include transition(.2s all);
+            padding: 70px 50px;
+            text-align: left;
+            width: 100%;
+            height: auto;
         }
 
-        .input {
+        & > .title {
+            & > h1 {
+                & {
+                    font-size: #{$font-size + 10};
+                    font-weight: bold;
+                    color: #ccc;
+                    letter-spacing: 3px;
+                }
+            }
+        }
+        
+        & > .form {
             & {
                 width: 100%;
-                height: auto;
-                max-width: 500px;
-                margin: 0 auto 20px auto;
-            }
-
-            &:last-child {
-                margin: 0 auto 0 auto;
-            }
-
-            & > label {
+                padding-top: 30px;
                 display: block;
-                font-size: #{$font-size};
-                color: $bg-black-light;
-                line-height:1.5;
-                padding-bottom:5px;
+                position: relative;
+                @include transition(.2s all);
             }
 
-            & > div {
+            .input {
                 & {
-                    border: 1px solid $bg-gray;
-                    border-radius: 5px;
-                    overflow: hidden;
-                    @include transition(.2s all);
+                    width: 100%;
+                    height: auto;
+                    max-width: 1200px;
+                    margin: 0 auto 20px auto;
                 }
 
-                & > ::placeholder {
-                    color: $bg-light-bold;
-                    font-size: #{$font-size - 2};
-                }
-            }
-
-        }
-
-        .checkbox {
-            & {
-                width: 100%;
-                height: auto;
-                max-width: 500px;
-                margin: 0 auto 5px auto;
-            }
-            & > label {
-                & {
-                    cursor: pointer;
+                &:last-child {
+                    margin: 0 auto 0 auto;
                 }
 
-                & > p {
-                    display: inline-block;
-                    padding-left: 5px;
-                    color: $font-color;
-                    font-weight: bold;
-                    font-size: #{$font-size - 2};
-                }
-
-                & > i {
-                    font-size: #{$font-size - 2};
+                & > label {
                     display: block;
-                    font-style: normal;
-                }
-            }
-        }
-
-        .submit {
-            & {
-                margin-top:30px;
-            }
-
-            & > a {
-                & {
-                    display: block;
-                    margin-top: 10px;
-                    text-decoration: none;
-                    font-weight: bold;
-                    color: $bg-blue;
-                    text-align: right;
-                    @include transition(.2s all);
+                    font-size: #{$font-size};
+                    color: $bg-black-light;
+                    line-height:1.5;
+                    padding-bottom:5px;
                 }
 
-                &:hover {
+                & > div {
                     & {
-                        color: $bg-blue-bold;
-                        text-decoration: underline;
+                        border: 1px solid $bg-gray;
+                        border-radius: 5px;
+                        overflow: hidden;
                         @include transition(.2s all);
+                    }
+
+                    & > ::placeholder {
+                        color: $bg-light-bold;
+                        font-size: #{$font-size - 2};
+                    }
+                }
+
+            }
+
+            .checkbox {
+                & {
+                    width: 100%;
+                    height: auto;
+                    max-width: 500px;
+                    margin: 0 auto 5px auto;
+                }
+
+                & > label {
+                    & {
+                        cursor: pointer;
+                        display: block;
+                        vertical-align: middle;
+                    }
+
+                    & > p {
+                        display: inline-block;
+                        padding-left: 7px;
+                        color: $font-color;
+                        font-weight: bold;
+                        font-size: #{$font-size};
+                        vertical-align: middle;
+                    }
+
+                    & > i {
+                        font-size: #{$font-size - 2};
+                        display: block;
+                        font-style: normal;
                     }
                 }
             }
+
+            .submit {
+                & {
+                    margin-top:30px;
+                }
+
+                & > a {
+                    & {
+                        display: block;
+                        margin-top: 10px;
+                        text-decoration: none;
+                        font-weight: bold;
+                        color: $bg-blue;
+                        text-align: right;
+                        @include transition(.2s all);
+                    }
+
+                    &:hover {
+                        & {
+                            color: $bg-blue-bold;
+                            text-decoration: underline;
+                            @include transition(.2s all);
+                        }
+                    }
+                }
+            }
+
+            .alert {
+                & {
+                    @include transition(.2s all);
+                    color: #e84f4f;
+                    font-size: #{$font-size - 2};
+                    opacity:0;
+                }
+
+                & > p {
+                    padding: 7px 0px 0px 5px;
+                }
+            }
+
+            .line {
+                & {
+                    width: 100%;
+                    height: 1px;
+                    position: relative;
+                    background-color: $bg-gray;
+                    margin-top:50px;
+                    text-align: center;
+                }
+
+                & > p {
+                    font-size: $font-size;
+                    background-color: #fff;
+                    padding: 0 30px;
+                    display: inline-block;
+                    position: relative;
+                    top: -8px;
+                }
+
+            }
         }
-
-        .alert {
-            & {
-                @include transition(.2s all);
-                color: #e84f4f;
-                font-size: #{$font-size - 2};
-                opacity:0;
-            }
-
-            & > p {
-                padding: 7px 0px 0px 5px;
-            }
-        }
-
-        .line {
-            & {
-                width: 100%;
-                height: 1px;
-                position: relative;
-                background-color: $bg-gray;
-                margin-top:50px;
-                text-align: center;
-            }
-
-            & > p {
-                font-size: $font-size;
-                background-color: #fff;
-                padding: 0 30px;
-                display: inline-block;
-                position: relative;
-                top: -8px;
-            }
-
-        }
-
     }
 
     .input.active {

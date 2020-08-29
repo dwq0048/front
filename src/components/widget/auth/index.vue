@@ -34,6 +34,8 @@
             <!-- 여기 -->
 
         </div>
+
+        <default-footer />
 	</div>
 </template>
 
@@ -65,7 +67,8 @@ export default {
     },
 	components: {
         'default-header': Header,
-        'default-side': Side
+        'default-side': Side,
+        'default-footer': Footer
     },
     computed: {
         ...mapGetters(userStore, [

@@ -1,5 +1,10 @@
 <template>
-        <div class="search">
+    <div class="search">            
+        <div class="title">
+            <h1>V<span>R</span></h1>
+            <h1>V<span>IEWER</span></h1>
+        </div>
+        <div class="box">
             <div class="menu">
                 <ul>
                     <li v-for="list in this.lists" :key="list.ko" v-bind:class="{ active : list.isActive }">
@@ -18,6 +23,7 @@
                 </div>
             </div>
         </div>
+    </div>
 </template>
 
 <script>
@@ -54,105 +60,152 @@ export default {
         & {
             width: 100%;
             max-width: 700px;
-            margin: 30px auto;
-            overflow:hidden;
-            border-radius:5px;
-            @include box-shadow(5px 15px 15px rgba(0,0,0,0.1));
+            margin: 0 auto;
+            position: relative;
+            @include box-shadow(5px 5px 5px rgba(0,0,0,0.1));
         }
 
-        & > .menu {
-
-            & > ul {
-                & {
-                    font-size: 0;
-                    text-decoration: none;
-                    background-color: $bg-black-light;
-                }
-
-                & > li {
-                    & {
-                        display: inline-block;
-                        width: auto;
-                        height: 40px;
-                        font-size: $font-size;
-                        background-color: $bg-black-light;
-                    }
-
-                    &.active {
-                        & {
-                            background-color: $bg-orange;
-                        }
-                    }
-
-                    & > div {
-                        & {
-                            display:table;
-                            width:100%;
-                            height:100%;
-                        }
-
-                        & > a {
-                            font-size: #{$font-size - 1};
-                            text-decoration: none;
-                            color: #fff;
-                            display: table-cell;
-                            width: auto;
-                            height: 100%;
-                            padding: 0 15px;
-                            vertical-align: middle;
-                            cursor:pointer;
-                        }
-                    }
-                }
-            }
-        }
-
-        & > .form {
+        & > .title {
             & {
+                position: absolute;
+                right: 100%; top: 50%;
+                padding-right: 70px;
+                white-space: nowrap;
+                margin-top: -10px;
+                @include transform(translateY(-50%));
+            }
+
+            & > h1 {
+                & {
+                    font-size: #{$font-size + 50};
+                    color: $bg-orange;
+                    font-family: $notoKR-B;
+                    display: inline-block;
+                    line-height: 1;
+                    position: relative;
+                    margin-left: -5px;
+                }
+
+                &:nth-child(1){
+                    & {
+                        margin-left: 0;
+                    }
+                }
+
+                & > span {
+                    & {
+                        font-size: #{$font-size + 5};
+                        position: absolute;
+                        left: 10px; top: 100%;
+                    }
+                }
+			}
+        }
+
+        & > .box {
+            & {
+                width: 100%;
+                margin: 0 auto;
+                overflow:hidden;
+                border-radius:5px;
                 position: relative;
+                @include box-shadow(5px 5px 5px rgba(0,0,0,0.1));
             }
 
-            & > .input {
+            & > .menu {
+
+                & > ul {
+                    & {
+                        font-size: 0;
+                        text-decoration: none;
+                        background-color: #333;
+                    }
+
+                    & > li {
+                        & {
+                            display: inline-block;
+                            width: auto;
+                            height: 40px;
+                            font-size: $font-size;
+                            background-color: #333;
+                        }
+
+                        &.active {
+                            & {
+                                background-color: $bg-orange;
+                            }
+                        }
+
+                        & > div {
+                            & {
+                                display:table;
+                                width:100%;
+                                height:100%;
+                            }
+
+                            & > a {
+                                font-size: #{$font-size - 1};
+                                text-decoration: none;
+                                color: #fff;
+                                display: table-cell;
+                                width: auto;
+                                height: 100%;
+                                padding: 0 15px;
+                                vertical-align: middle;
+                                cursor:pointer;
+                            }
+                        }
+                    }
+                }
+            }
+
+            & > .form {
                 & {
-                    height: 50px;
-                    border: 2px solid $bg-orange;
-                    display: block;
-                    margin-right:100px;
-                }
-                & > input {
-                    width: 100%;
-                    height: 100%;
-                    background-color: #fff;
-                    border: none;
-                    outline: none;
-                    padding: 0 15px;
-                }
-            }
-
-            & > .submit {
-                & {
-                    width: 100px;
-                    height: 50px;
-                    display: block;
-                    float: right;
-                    background-color: $bg-orange;
+                    position: relative;
                 }
 
-                & > input[type=submit] {
-                    width: 100%;
-                    height: 100%;
-                    display: block;
-                    cursor: pointer;
-                    background: none;
-                    border: none;
-                    color: #fff;
+                & > .input {
+                    & {
+                        height: 50px;
+                        border: 2px solid $bg-orange;
+                        display: block;
+                        margin-right:100px;
+                    }
+                    & > input {
+                        width: 100%;
+                        height: 100%;
+                        background-color: #fff;
+                        border: none;
+                        outline: none;
+                        padding: 0 15px;
+                    }
                 }
-            }
 
-            &:after {
-                content: " ";
-                display: block;
-                clear: both;
+                & > .submit {
+                    & {
+                        width: 100px;
+                        height: 50px;
+                        display: block;
+                        float: right;
+                        background-color: $bg-orange;
+                    }
+
+                    & > input[type=submit] {
+                        width: 100%;
+                        height: 100%;
+                        display: block;
+                        cursor: pointer;
+                        background: none;
+                        border: none;
+                        color: #fff;
+                    }
+                }
+
+                &:after {
+                    content: " ";
+                    display: block;
+                    clear: both;
+                }
             }
         }
     }

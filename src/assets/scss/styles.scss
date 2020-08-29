@@ -34,6 +34,19 @@
 }
 
 html, body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, input, blockquote { margin:0; padding:0; }
+html, body{
+    min-height: 100%;
+}
+
+html{
+    position: relative;
+}
+
+body {
+    padding-bottom: 100px;
+    @include box-sizing(border-box);
+}
+
 #app {
     font-family: $fontKR, 'Avenir', Helvetica, Arial, sans-serif;
     @include box-sizing(border-box);

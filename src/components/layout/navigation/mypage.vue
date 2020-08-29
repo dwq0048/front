@@ -25,6 +25,8 @@
                             </p>
                         </div>
                         <div class="button">
+                            <button type="button" class="page" v-on:click="Mypage">마이페이지</button>
+
                             <button type="button" v-on:click="LOGOUT">로그아웃</button>
                         </div>
                     </div>
@@ -58,6 +60,9 @@ export default {
         ]),
         LOGOUT() {
             this.USER_LOGOUT();
+        },
+        Mypage() {
+            this.$router.push({ path : '/user' });
         }
     }
 
@@ -149,23 +154,32 @@ export default {
                 }
 
                 & > button {
-                    width: 100%;
-                    font-size: #{$font-size - 2};
-                    text-align: center;
-                    margin: 0;
-                    padding: 10px;
-                    display: block;
-                    border:none;
-                    background: none;
-                    outline: none;
-                    cursor: pointer;
-                    background-color: #555;
-                    color: #f1f1f1;
-                    text-decoration: none;
-                    outline: none;
-                    letter-spacing: 3px;
-                    font-weight: bold;
-                    @include transition(.2s all);
+                    & {
+                        width: 100%;
+                        font-size: #{$font-size - 2};
+                        text-align: center;
+                        margin: 0;
+                        padding: 10px;
+                        display: block;
+                        border:none;
+                        background: none;
+                        outline: none;
+                        cursor: pointer;
+                        background-color: #555;
+                        color: #f1f1f1;
+                        text-decoration: none;
+                        outline: none;
+                        letter-spacing: 3px;
+                        font-weight: bold;
+                        @include transition(.2s all);
+                    }
+
+                    &.page {
+                        & {
+                            background-color: $bg-orange;
+                            margin-bottom: 10px;
+                        }
+                    }
                 }
 
                 & > a:hover {

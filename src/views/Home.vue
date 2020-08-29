@@ -7,27 +7,37 @@
 
 			<!-- Title -->
 			<div class="section-1">
-				<div class="title">
-					<h1>VV</h1>
-				</div>
 				<layout-search />
 			</div>
 			<!-- Title End -->
 
+			<!--
+			<div class="main-menu">
+				<div>
+					<ul>
+						<li>
+							<button type="button">
+								<h1>홈페이지</h1>
+							</button>
+						</li>
+						<li>
+							<button type="button">
+								<h1>정보</h1>
+							</button>
+						</li>
+						<li>
+							<button type="button">
+								<h1>커뮤니티</h1>
+							</button>
+						</li>
+					</ul>
+				</div>
+			</div>
+			-->
+
 			<!-- Pee -->
 			<div class="section-2">
-				<div class="title">
-					<!--
-					<div>
-						<h1>찰칵찰칵</h1>
-						<router-link to="/vrchat/post" title="업로드">업로드 하기</router-link>
-					</div>
-					-->
-				</div>
-
 				<pee />
-				
-			
 			</div>
 			<!-- Pee End -->
 
@@ -57,22 +67,25 @@ export default {
 	.section-1 {
 		& {
 			width: 100%;
-			max-width: $wrap;
 			height: auto;
-			margin: 40px auto 0 auto;
+			padding: 70px;
+			margin: 0 auto;
+			position: relative;
 		}
 
 		& > .title {
 			& {
-				text-align: center;
+				position: absolute;
+				right: 100%; top: 50%;
+				//@include transform(translateY(-50%));
 			}
+
 			& > h1 {
-				text-align: center;
 				font-size: 64px;
 				color: $bg-orange;
 				letter-spacing: -5px;
 				font-family: $notoKR-B;
-				display:inline-block;
+				display: inline-block;
 				@include transform(rotate(90deg));
 			}
 
@@ -83,56 +96,88 @@ export default {
 		}
 	}
 
+	.main-menu {
+		& {
+			width: 100%;
+			height: 3px;
+			background-color: $bg-orange;
+		}
+
+		& > * {
+			display: none;
+		}
+		/*
+		& {
+			width: 100%;
+			max-width: $wrap;
+			margin: 0 auto;
+			height: 50px;
+			background-color: #555;
+			//border: 2px solid $bg-blue;
+			margin-top: 50px;
+			border-radius: 5px;
+            @include box-shadow(5px 5px 5px rgba(0,0,0,0.1));
+		}
+
+		& > div {
+			& {
+				width: 100%;
+				max-width: $wrap;
+				height: 100%;
+				margin: 0 auto;
+			}
+
+			& > ul {
+				& {
+					width: 100%;
+					height: 100%;
+					font-size: none;
+					list-style: none;
+					padding-left: 15px;
+				}
+
+				& > li {
+					& {
+						width: auto;
+						height: 100%;
+						display: inline-block;
+					}
+
+					& > button {
+						& {
+							display: inline-block;
+							margin: 0;
+							padding: 0;
+							width: auto;
+							height: 100%;
+							border: 0;
+							background: none;
+							outline: none;
+							padding: 0 15px;
+						}
+						
+
+						& > h1 {
+							& {
+								font-size : #{$font-size};
+								color: #fff;
+								font-weight: 300;
+							}
+						}
+					}
+				}
+			}
+		}
+		*/
+	}
+
 	.section-2 {
 		& {
 			width: 100%;
 			max-width: 1920px;
 			height: auto;
-			margin: 40px auto 0 auto;
+			margin: 0px auto 0 auto;
 		}
-
-		& > .title{
-			& {
-				width: 100%;
-				max-width: $wrap;
-				height: auto;
-				margin: 0 auto 30px auto;
-			}
-
-			& > div{
-				& {
-					padding: 0 15px;
-				}
-
-				&:after{
-					content: " ";
-					display:block;
-					clear: both;
-					display: table;
-				}
-
-				& > h1 {
-					display: table-cell;
-					font-size: 32px;
-					float:left;
-					vertical-align: middle;
-				}
-
-				& > a {
-					display: table-cell;
-					border: 1px solid $bg-orange-bold;
-					padding: 7px 20px;
-					float: right;
-					vertical-align: middle;
-					background-color: $bg-orange;
-					text-decoration: none;
-					font-size: #{$font-size};
-					color: $bg-light;
-					border-radius: 5px;
-				}	
-			}
-		}
-
 	}
 
 </style>

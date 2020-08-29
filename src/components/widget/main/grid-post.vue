@@ -222,10 +222,11 @@ export default {
                 & > a {
                     & {
                         display: block;
-                        border: 1px solid #eee;
+                        //border: 1px solid #eee;
                         border-radius: 5px;
                         overflow: hidden;
                         position: relative;
+                        @include box-shadow(5px 5px 5px rgba(0,0,0,0.1));
                     }
 
                     & > img {

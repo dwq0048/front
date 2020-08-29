@@ -6,8 +6,9 @@
                     <router-link to="/" title="홈으로"><span>VV</span></router-link>
                 </div>
                 <div class="menu" title="메뉴">
-                    <router-link to="/login" title="로그인" v-if="!GET_LOGIN" class="btn">로그인</router-link>
-                    <router-link to="/login" title="로그인" v-if="GET_LOGIN" class="btn">안녕하세요</router-link>
+                    <router-link to="/auth/login" title="로그인" v-if="!GET_LOGIN" class="btn">로그인</router-link>
+                    <router-link to="/auth/join" title="회원가입" v-if="!GET_LOGIN" class="btn">회원가입</router-link>
+                    <router-link to="/auth/login" title="로그인" v-if="GET_LOGIN" class="btn">안녕하세요</router-link>
                     <a class="ham" v-on:click="Navigation(true)">
                         <div></div>
                         <div></div>
@@ -175,9 +176,10 @@ export default {
         & > .nav {
             & {
                 width: 100%;
-                height: 5px;
+                height: 0px;
+                //height: 5px;
                 background-color: $bg-orange;
-                border-bottom: 2px solid $bg-orange;
+                border-bottom: 3px solid $bg-orange;
             }
 
             & > ul {

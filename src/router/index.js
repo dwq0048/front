@@ -12,10 +12,24 @@ const routes = [
 		beforeEnter: before()
 	},
 	{
-		path: '/login',
-		name: 'Login',
-		//component: () => import('@/views/Login'),
-		component: () => import('@/views/auth/login.vue'),
+		path: '/auth/:id',
+		name: 'Auth',
+		component: () => import('@/views/auth/index.vue'),
+		beforeEnter: before(),
+		watch: {
+			'$route' (to, from) {
+				const toDepth = to.path.split('/').length;
+				const fromDepth = from.path.split('/').length;
+				this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left';
+				
+				console.log('asdjsalkdjklsajdlksajdlkj');
+			}
+		}
+	},
+	{
+		path: '/user',
+		name: 'Mypage',
+		component: () => import('@/views/user/mypage.vue'),
 		beforeEnter: before()
 	},
 

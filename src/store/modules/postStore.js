@@ -39,6 +39,10 @@ const Post = {
                     withCredentials: true,
                 }).then((req) => {
                     const index = [];
+                    let list = req.data.payload;
+                    list.map(item => {
+                        item.state.displayDate = SET_TIME(item.state.date_fix);
+                    })
                     //req.data.data.map(item => {
                     //    index.push({
                     //        index: item.user.index
@@ -63,8 +67,7 @@ const Post = {
                     })
 */
 
-                    console.log(req);
-                    resolve(req.data.payload);
+                    resolve(list);
                 }).catch((err) => {
                     reject(err);
                 })

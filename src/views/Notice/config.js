@@ -1,5 +1,6 @@
 const config = {
-    board: 'notice'
+    board: 'notice',
+    list: 'list'
 }
 
 export { config }
