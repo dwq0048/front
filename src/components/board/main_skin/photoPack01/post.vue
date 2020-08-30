@@ -49,7 +49,7 @@
         <div class="other">
             <div class="list">
                 <div>
-                    <h1>작성자의 게시글</h1>
+                    <h1>목록</h1>
                 </div>
                 <ul>
                     <li>

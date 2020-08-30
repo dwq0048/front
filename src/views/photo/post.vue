@@ -73,20 +73,20 @@ export default {
 
         .photo {
             & {
-                width: 1200px;
+                width: 850px;
                 height: auto;
-                padding: 0 30px;
                 display: inline-block;
                 font-size: #{$font-size};
                 vertical-align: top;
                 text-align: left;
+                padding-right: 30px;
             }
         }
 
         .comet {
             & {
                 display: inline-block;
-                width: 400px;
+                width: 350px;
                 font-size: #{$font-size};
                 vertical-align: top;
                 text-align: left;
@@ -98,7 +98,7 @@ export default {
                 & > div {
                     position: fixed;
                     top: 0; left: 0;
-                    width: 400px;
+                    width: 350px;
                 }
             }
         }

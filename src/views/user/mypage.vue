@@ -18,7 +18,6 @@
                             <button type="button" data-name="dashboard"></button>
                             <button type="button" data-name="vrchatApi"></button>
                             <button type="button" data-name="post"></button>
-                            <button type="button" data-name="comment"></button>
                             <button type="button" data-name="vrchatApi"></button>
                             <button type="button" data-name="setting"></button>
                             <button type="button" data-name="password"></button>
@@ -32,17 +31,12 @@
                                 </li>
                                 <li>
                                     <button type="button">
-                                        <span>Vrchat 관음</span>
+                                        <span>Vrchat API</span>
                                     </button>
                                 </li>
                                 <li>
                                     <button type="button">
                                         <span>내 게시글</span>
-                                    </button>
-                                </li>
-                                <li>
-                                    <button type="button">
-                                        <span>내 댓글</span>
                                     </button>
                                 </li>
                                 <li>
@@ -76,17 +70,12 @@
                                         </li>
                                         <li>
                                             <button type="button">
-                                                <span>Vrchat 관음</span>
+                                                <span>Vrchat API</span>
                                             </button>
                                         </li>
                                         <li>
                                             <button type="button">
                                                 <span>내 게시글</span>
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <button type="button">
-                                                <span>내 댓글</span>
                                             </button>
                                         </li>
                                         <li>
@@ -150,10 +139,18 @@ export default {
                 @include box-shadow(5px 5px 15px rgba(0,0,0,0.1));
             }
 
+            &:after {
+                content: " ";
+                display: block;
+                clear: both;
+            }
+
             & > .dash_nav {
                 & {
                     width: 300px;
                     height: 100%;
+                    margin-right: 10px;
+                    float: right;
                 }
 
                 & > div {

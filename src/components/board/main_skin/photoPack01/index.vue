@@ -146,12 +146,12 @@ export default {
         & {
             width: 100%;
             height: auto;
+            @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
         }
 
         & > .nav {
             & {
                 background-color: #fff;
-                @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
 
             & > .title {
@@ -256,23 +256,27 @@ export default {
         }
 
         & > div {
+            & {
+                position: relative;
+                background-color: #fff;
+                padding-top: 10px;
+            }
 
             & > .grid {
 
                 & {
-                    padding-top: 15px;
                     font-size: 0;
                     display: none;
                     white-space: normal;
                     position: relative;
-                    left: 10px;
+                    padding: 10px 15px;
                 }
 
                 & > li {
                     & {
                         width: 25%;
                         height: auto;
-                        padding: 0 10px 10px 0;
+                        //padding: 0 10px 10px 0;
                         display: inline-block;
                         vertical-align: top;
                     }
@@ -281,11 +285,11 @@ export default {
                         & { 
                             width: 100%;
                             height: auto;
-                            background-color: #fff;
-                            border-radius: 5px;
+                            //background-color: #fff;
+                            //border-radius: 5px;
                             overflow: hidden;
                             padding: 10px;
-                            @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
+                            //@include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
                         }
 
                         & > .photo {
@@ -294,6 +298,9 @@ export default {
                                 height: auto;
                                 position: relative;
                                 background-color: #ccc;
+                                border-radius: 3px;
+                                overflow: hidden;
+                                border: 1px solid #ddd;
                             }
 
                             &:after {
@@ -326,7 +333,7 @@ export default {
                                 width: 100%;
                                 height: auto;
                                 padding: 10px 0;
-                                background-color: #fff;
+                                //background-color: #fff;
                                 font-size: #{$font-size};
                             }
 
@@ -435,6 +442,7 @@ export default {
                     & {
                         display: block;
                         margin-left: -10px;
+                        margin-right: -10px;
                     }
                 }
 

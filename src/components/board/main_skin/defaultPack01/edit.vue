@@ -39,6 +39,32 @@
 				</div>
 			</div>
 		</div>
+		<div class="post-setting">
+			<table>
+				<tr>
+					<td>카테고리</td>
+					<td>
+						<input type="text">
+					</td>
+				</tr>
+				<tr>
+					<td>주제</td>
+					<td>니 주제에?ㅋㅋㅋ</td>
+				</tr>
+				<tr>
+					<td>공개 설정</td>
+					<td>
+						익명 <input type="checkbox">
+						검색 허용 <input type="checkbox">
+						게시글 비공개 <input type="checkbox">
+					</td>
+				</tr>
+				<tr>
+					<td>테그 설정</td>
+					<td><input type="text"></td>
+				</tr>
+			</table>
+		</div>
 		<div class="post-footer">
 			<div class="post-disabled">
 				<button type="button">취소</button>

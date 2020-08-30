@@ -114,7 +114,7 @@ export default {
     .comment {
         & {
             background-color: #f1f1f1;
-            width: 400px;
+            width: 350px;
             height: 100vh;
             z-index: 1;
             @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
