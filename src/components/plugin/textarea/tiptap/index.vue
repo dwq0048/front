@@ -223,10 +223,7 @@ export default {
 					new HyperLink(),
 					new Images()
         		],
-				content: `
-				<h1>Yay Headlines!</h1>
-				<p>All these <strong>cool tags</strong> are working now.</p>
-				`,
+				content: ``,
 				onUpdate: ({ getHTML }) => {
 					this.postData = getHTML();
 				},
@@ -691,6 +688,7 @@ export default {
 				left: 0;
 				bottom: 0;
 				width: 100%;
+				display: none;
 			}
 		}
 </style>

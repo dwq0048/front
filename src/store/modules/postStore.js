@@ -77,7 +77,7 @@ const Post = {
             return new Promise((resolve, reject) => {
                 axios({
                     method: 'post',
-                    url: `/api/1/board/view/${payload.id}`,
+                    url: `/api/1/board/view/${payload.board}`,
                     data: payload,
                     withCredentials: true,
                 }).then((req) => {

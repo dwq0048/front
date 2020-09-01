@@ -28,7 +28,28 @@
                 </ul>
             </div>
         </div>
-        <div>
+        
+        <div class="tag">
+            <ul>
+                <li>
+                    <button type="button">
+                        <span>게임</span>
+                    </button>
+                </li>
+                <li>
+                    <button type="button">
+                        <span>Vrchat</span>
+                    </button>
+                </li>
+                <li>
+                    <button type="button">
+                        <span>오큘러스</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="post">
             <ul class="grid" :class="{ active: ACTIVE.grid, hidden : HIDDEN }">
                 <li v-for="(item, i) in list" :key="i">
                     <div>
@@ -87,7 +108,7 @@ export default {
                 wide: false,
                 grid: true
             },
-            HIDDEN: false,
+            HIDDEN: true,
 
             faTable,
             faTh,
@@ -146,12 +167,12 @@ export default {
         & {
             width: 100%;
             height: auto;
-            @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
         }
 
         & > .nav {
             & {
                 background-color: #fff;
+                @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
 
             & > .title {
@@ -255,10 +276,61 @@ export default {
             }
         }
 
-        & > div {
+        & > .tag {
+            & {
+                width: 100%; height: auto;
+                position: relative;
+                padding-top: 30px;
+            }
+
+            & > ul {
+                & {
+                    font-size: 0;
+                    list-style: none;
+                }
+
+                & > li {
+                    & {
+                        display: inline-block;
+                        vertical-align: top;
+                        padding-right: 15px;
+                    }
+
+                    & > button {
+                        & {
+                            margin: 0; padding: 0;
+                            border: 0;
+                            background: none;
+                            background-color: #999;
+                            color: #fff;
+                            text-align: center;
+                            display: block;
+                            padding: 10px 15px;
+                            border-radius: 15px;
+                            cursor: pointer;
+                        }
+
+                        & > span {
+                            & {
+                                font-size: #{$font-size};
+                                display: block;
+                                letter-spacing: 1px;
+                            }
+
+                            &:before {
+                                content: "#";
+                                padding-right: 5px;
+                                font-weight: bold;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        & > .post {
             & {
                 position: relative;
-                background-color: #fff;
                 padding-top: 10px;
             }
 
@@ -269,27 +341,23 @@ export default {
                     display: none;
                     white-space: normal;
                     position: relative;
-                    padding: 10px 15px;
+                    padding: 10px 0;
                 }
 
                 & > li {
                     & {
-                        width: 25%;
+                        width: 20%;
                         height: auto;
-                        //padding: 0 10px 10px 0;
                         display: inline-block;
                         vertical-align: top;
+                        padding: 10px;
                     }
 
                     & > div {
                         & { 
                             width: 100%;
                             height: auto;
-                            //background-color: #fff;
-                            //border-radius: 5px;
                             overflow: hidden;
-                            padding: 10px;
-                            //@include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
                         }
 
                         & > .photo {
@@ -300,7 +368,7 @@ export default {
                                 background-color: #ccc;
                                 border-radius: 3px;
                                 overflow: hidden;
-                                border: 1px solid #ddd;
+                                @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
                             }
 
                             &:after {
@@ -333,7 +401,6 @@ export default {
                                 width: 100%;
                                 height: auto;
                                 padding: 10px 0;
-                                //background-color: #fff;
                                 font-size: #{$font-size};
                             }
 
@@ -374,13 +441,13 @@ export default {
 
                                     & > .image {
                                         & {
-                                            width: 22px;
+                                            width: 20px;
                                             height: auto;
                                             position: relative;
                                             background-color: #ccc;
                                             overflow: hidden;
                                             border-radius: 50%;
-                                            border: 1px solid $bg-orange;
+                                            //border: 1px solid $bg-orange;
                                             display: inline-block;
                                             vertical-align: middle;
                                         }
@@ -394,7 +461,7 @@ export default {
 
                                     & > .name {
                                         & {
-                                            font-size: #{$font-size};
+                                            font-size: #{$font-size - 1};
                                             color: #999;
                                             display: inline-block;
                                             vertical-align: middle;
@@ -448,7 +515,7 @@ export default {
 
                 &.hidden {
                     & > li{
-                        width: 20%;
+                        width: calc(100% / 6);
                     }
                 }
             }

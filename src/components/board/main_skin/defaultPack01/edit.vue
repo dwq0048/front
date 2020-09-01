@@ -1,97 +1,203 @@
 <template>
     <div class="post">
-		<div class="post-head">
-			<div class="post-title">
-				<input type="text" placeholder="제목" v-model="postTitle">
-			</div>
-			<div class="post-select">
-				<div>
-					<select v-model="postPosition">
-						<option v-for="option in postPositionOptions" v-bind:value="option.value" :key="option.value" :selected="postPosition == option.value">
-							{{ option.text }}
-						</option>
-					</select>
-				</div>
-			</div>
-		</div>
 
-		<tip-tap-editor ref="edit"/>
-
-		<div class="post-file-title" @click="file()">
+		<!-- Title Start -->
+		<div class="send">
 			<div>
-				<input type="file" ref="fileSelect" @change="fileTemp($event.target.name, $event.target.files)">
-				<span><font-awesome-icon :icon="faFileUpload" /></span>
-				<p>파일 업로드<span>5MB이하로 업로드가 가능합니다.</span></p>
+				<button type="button" class="prev" title="목록으로">
+					<i><font-awesome-icon :icon="faList" /></i>
+					<span>목록으로</span>
+				</button>
+				<button type="button" class="submit">
+					<i><font-awesome-icon :icon="faEdit" /></i>
+					<span>글쓰기</span>
+				</button>
 			</div>
 		</div>
-		<div class="post-files">
-			<div v-for="(item, i) in fileBox" :key="i">
-				<div class="file-plus">
-					<div>
-						<font-awesome-icon :icon="faPlus" />
-					</div>
+		<!-- Title End -->
+
+		<!-- Editor Menu Start -->
+		<tip-tap-menu :editor="editor" />
+		<!-- Editor Menu ENd -->
+
+		<div class="write">
+			<div class="post-head">
+				<div class="post-title">
+					<input type="text" placeholder="제목을 입력해주세요" v-model="postTitle">
 				</div>
-				<div class="file-list">
-					<div>
-						<span><font-awesome-icon :icon="faFile" /></span>
-						<p>{{item.name}}</p>
-					</div>
+			</div>
+
+			<!-- Editor Start -->
+			<tip-tap-editor :editor="editor" />
+			<!-- Editor End -->
+
+			<!-- 작은 메뉴 Start -->
+			<div class="post-menu">
+				<button type="button" title="크게보기">
+					<i><font-awesome-icon :icon="faPlus" /></i>
+				</button>
+				<div class="title">
+					<ul>
+						<li>
+							<button type="button" title="사진">
+								<i><font-awesome-icon :icon="faImage" /></i>
+							</button>
+						</li>
+						<li>
+							<button type="button" title="동영상">
+								<i><font-awesome-icon :icon="faVideo" /></i>
+							</button>
+						</li>
+						<li>
+							<button type="button" title="유튜브">
+								<i><font-awesome-icon :icon="faYoutube" /></i>
+							</button>
+						</li>
+						<li>
+							<button type="button" title="이모티콘">
+								<i><font-awesome-icon :icon="faSmile" /></i>
+							</button>
+						</li>
+						<li>
+							<button type="button" title="이모티콘">
+								<i><font-awesome-icon :icon="faFileUpload" /></i>
+							</button>
+						</li>
+					</ul>
+				</div>
+				<div class="list">
+					<ul>
+						<li></li>
+					</ul>
 				</div>
 			</div>
-		</div>
-		<div class="post-setting">
-			<table>
-				<tr>
-					<td>카테고리</td>
-					<td>
-						<input type="text">
-					</td>
-				</tr>
-				<tr>
-					<td>주제</td>
-					<td>니 주제에?ㅋㅋㅋ</td>
-				</tr>
-				<tr>
-					<td>공개 설정</td>
-					<td>
-						익명 <input type="checkbox">
-						검색 허용 <input type="checkbox">
-						게시글 비공개 <input type="checkbox">
-					</td>
-				</tr>
-				<tr>
-					<td>테그 설정</td>
-					<td><input type="text"></td>
-				</tr>
-			</table>
-		</div>
-		<div class="post-footer">
-			<div class="post-disabled">
-				<button type="button">취소</button>
+			<!-- 작은 메뉴 End -->
+
+			<!-- Option Start -->
+			<div class="post-option">
+				<div class="post-setting">
+					<table>
+						<tr class="category">
+							<td>카테고리</td>
+							<td>
+								<div class="select">
+									<div>
+										<select name="" id="">
+											<option value="default">카테고리가 없음</option>
+										</select>
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr class="open">
+							<td>공개 설정</td>
+							<td>
+								<div>
+									<label class="checkbox">
+										<input type="checkbox">
+										<div>
+											<i><font-awesome-icon :icon="faCheck" /></i>
+										</div>
+										<span>검색 허용</span>
+									</label>
+								</div>
+
+								<div>
+									<label class="checkbox">
+										<input type="checkbox">
+										<div>
+											<i><font-awesome-icon :icon="faCheck" /></i>
+										</div>
+										<span>글쓴이 익명</span>
+									</label>
+								</div
+								>
+								<div>
+									<label class="checkbox">
+										<input type="checkbox">
+										<div>
+											<i><font-awesome-icon :icon="faCheck" /></i>
+										</div>
+										<span>게시글 비공개</span>
+									</label>
+								</div>
+							</td>
+						</tr>
+						<tr class="tag">
+							<td>테그 설정</td>
+							<td><input type="text"></td>
+						</tr>
+					</table>
+				</div>
 			</div>
-			<div class="post-submit" @click="submit()">
-				<button type="button">작성완료</button>
-			</div>
+			<!-- Option End -->
 		</div>
     </div>
 </template>
 
 <script>
-import tipTapEditor from '@/components/plugin/textarea/tiptap'
+import { Editor } from 'tiptap'
+import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
+import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
+
+import { Blockquote, CodeBlock, HardBreak, Heading, OrderedList, BulletList, ListItem, TodoItem, TodoList, Bold, Code, Italic, Link, Strike, Underline, History, Image } from 'tiptap-extensions'
+import AlignLeft from '@/components/plugin/textarea/tiptap/AlignLeft'
+import AlignRight from '@/components/plugin/textarea/tiptap/AlignRight'
+import AlignCenter from '@/components/plugin/textarea/tiptap/AlignCenter'
+import LineBreak from '@/components/plugin/textarea/tiptap/LineBreak'
+import CheckItem from '@/components/plugin/textarea/tiptap/CheckItem'
+import CheckList from '@/components/plugin/textarea/tiptap/CheckList'
+import HyperLink from '@/components/plugin/textarea/tiptap/HyperLink'
+import Images from '@/components/plugin/textarea/tiptap/Images'
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPlus, faFileUpload, faFile } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faFileUpload, faFile, faChevronLeft, faCheck, faImage, faSmile, faVideo, faList, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 const sanitizeHtml = require('sanitize-html');
 
 export default {
     name: 'DefaultPost',
     components: {
-		FontAwesomeIcon,
+		'tip-tap-menu' : tipTapMenu,
 		'tip-tap-editor' : tipTapEditor
 	},
 	data() {
 		return {
-			faPlus, faFileUpload, faFile,
+			editor: new Editor({
+    			extensions: [
+					new Heading({ levels: [1, 2, 3, 4, 5, 6] }),
+					new Bold(),
+					new Italic(),
+					new Strike(),
+					new Blockquote(),
+					new CodeBlock(),
+					new HardBreak(),
+					new BulletList(),
+					new OrderedList(),
+					new ListItem(),
+					new TodoItem(),
+					new TodoList(),
+					new Code(),
+					new Link(),
+					new Underline(),
+					new History(),
+					new AlignLeft(),
+					new AlignRight(),
+					new AlignCenter(),
+					new LineBreak(),
+					new CheckItem(),
+					new CheckList(),
+					new HyperLink(),
+					new Images()
+        		],
+				content: ``,
+				onUpdate: ({ getHTML }) => {
+					this.postData = getHTML();
+				},
+			}),
+			
+			faPlus, faFileUpload, faFile, faChevronLeft, faCheck, faImage, faSmile, faYoutube, faVideo, faList, faEdit,
 			fileBox: [],
 			postTitle: '',
 			postPosition: 'notice',
@@ -164,35 +270,6 @@ export default {
 				console.log(err);
 			});
 		}
-		/*
-		submit: function(){
-			const fs = new FormData();
-
-			fs.append('position', this.postPosition);
-			fs.append('title', this.postTitle);
-			fs.append('post', this.postData);
-			console.log(this.fileBox);
-			for(let i=0;i<this.fileBox.length;i++){
-				fs.append(`files[]`, this.fileBox[i]);
-			}
-
-			this.$axios({
-				method: 'post',
-				url: `/api/1/board/post`,
-				data: fs,
-				headers: {'Content-Type': 'multipart/form-data'},
-				withCredentials : true
-			}).then((req) => {
-				console.log(req);
-				console.log(fs);
-                //this.$store.commit('tokenStatus', req.data.info);
-                //this.$router.push({ path: '/' });
-            })
-            .catch((err) => {
-				console.log(err);
-            })
-		},
-		*/
 	}
 }
 </script>
@@ -203,282 +280,401 @@ export default {
 			background-color: #fff;
 			border:1px solid #ccc;
 			@include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
-			padding: 30px;
 		}
 
-		& > .post-head {
-			&:after {
-				content: " ";
-				display: block;
-				clear: both;
+		& > .send {
+			& {
+				width: 100%;
+				height: 45px;
+				background-color: #fff;
+				border-bottom: 1px solid #ddd;
 			}
 
-			& > .post-title {
+			& > div {
 				& {
-					width: 80%;
-					height: 40px;
-					border: 1px solid #ccc;
-					border-radius: 2px;
-					overflow: hidden;
-					float: right;
-				}
-
-				& > input {
 					width: 100%;
 					height: 100%;
-					background-color: #fff;
-					border: none;
-					outline: none;
-					padding: 0;
-					margin: 0;
-					padding: 0 15px;
-				}
-			}
-
-			& > .post-select {
-				& {
-					width: 20%;
-					height: 40px;
-					float: left;
-					padding-right: 10px;
-				}
-
-				& > div {
-					& {
-						width: 100%;
-						height: 100%;
-						border: 1px solid #ccc;
-						border-radius: 2px;
-						overflow: hidden;
-					}
-
-					& > select {
-						& {
-							width: 100%;
-							height: 100%;
-							background-color: #fff;
-							border:none;
-							outline: none;
-							padding: 5px;
-							margin: 0;
-							cursor: pointer;
-							color: $font-color;
-						}
-
-						& > option {
-							color: $font-color;
-						}
-					}
-					
-				}
-
-			}
-		}
-
-		& > .post-file-title {
-			& {
-				width: 100%;
-				height: auto;
-				margin-top: 30px;
-				margin-bottom: 15px;
-				padding: 0 15px;
-				cursor: pointer;
-			}
-
-			& > div {
-				& > input[type=file] {
-					display: none;
-				}
-
-				& > span {
-					font-size: #{$font-size + 4};
-					color: #aaa;
-					display: inline-block;
-					@include transition(all .2s);
-				}
-
-				& > p {
-					& {
-						font-size: #{$font-size + 4};
-						color: #aaa;
-						display: inline-block;
-						padding-left: 15px;
-						@include transition(all .2s);
-					}
-
-					& > span {
-						font-size: #{$font-size - 2};
-						color: #aaa;
-						vertical-align: bottom;
-						padding-left: 5px;
-						@include transition(all .2s);
-					}
-				}
-			}
-
-			&:hover {
-				& > div {
-					& > span {
-						color: #333;
-						@include transition(all .2s);
-					}
-
-					& > p {
-						& {
-							color: #333;
-							@include transition(all .2s);
-						}
-
-						& > span {
-							color: #333;
-							@include transition(all .2s);
-						}
-					}
-				}
-
-			}
-		}
-
-		& > .post-files {
-			& {
-				width: 100%;
-				height: auto;
-			}
-
-			& > div {
-
-				& {
-					padding: 0px 15px 0px 15px;
-				}
-
-
-				& > div {
-					display: inline-block;
-				}
-
-				& > .file-plus {
-					& {
-						padding-right: 15px;
-						cursor: pointer;
-					}
-
-					& > div {
-						font-size: #{$font-size};
-						@include transform(rotate(45deg));
-						color: #aaa;
-						@include transition(all .2s);
-					}
-				}
-
-				& > .file-plus:hover {
-					& > div {
-						@include transform(rotate(225deg));
-						color: #333;
-						@include transition(all .2s);
-					}
-				}
-
-				& > .file-list {
-					& > div {
-						& {
-							font-size: #{$font-size};
-							color: #aaa;
-							border-bottom: 2px solid #ccc;
-							padding: 15px 30px 15px 10px;
-							@include transition(all .2s);
-						}
-
-						& > p {
-							display: inline-block;
-							padding: 0 15px;
-						}
-					}
-				}
-
-				& > .file-list:hover {
-					& > div {
-						& {
-							color: #555;
-							@include transition(all .2s);
-						}
-					}
-				}
-
-			}
-		}
-
-		& > .post-footer {
-			& {
-				width: 100%;
-				height: auto;	
-				margin-top: 50px;
-			}
-
-			&:after {
-				content: " ";
-				display: block;
-				clear: both;
-			}
-
-			& > div {
-				& {
-					padding: 8px 30px;
-					border-radius: 5px;
-					cursor: pointer;
-				}
-
-				&.post-disabled {
-					& {
-						float: left;
-						border: 1px solid #ccc;
-						background-color: #fff;
-						@include transition(.2s);
-					}
-
-					& > button {
-						color: $font-color;
-					}
-				}
-
-				&.post-disabled:hover {
-					& {
-						background-color: #f1f1f1;
-						@include transition(.2s);
-					}
-				}
-
-				&.post-submit {
-					& {
-						float: right;
-						border: 1px solid $bg-orange;
-						background-color: $bg-orange;
-						@include transition(.2s);
-					}
-
-					& > button {
-						color: #fff;
-					}
-				}
-
-				&.post-submit:hover {
-					& {
-						background-color: $bg-orange-bold;
-						border: 1px soild $bg-orange-bold;
-						@include transition(.2s);
-					}
+					position: relative;
 				}
 
 				& > button {
-					width: 100%;
-					height: 100%;
-					background: none;
-					border: none;
-					padding: 0;
-					cursor: pointer;
-					margin: 0;
+					& {
+						border: 0;
+						background: none;
+						outline: none;
+						font-size: #{$font-size};
+						padding:0; margin: 0;
+						color: #fff;
+						cursor: pointer;
+					}
+
+					& > i {
+						& {
+							display: inline-block;
+							font-size: #{$font-size - 2};
+							padding-left: 7px;
+						}
+					}
+
+					& > span {
+						& {
+							display: inline-block;
+							vertical-align: middle;
+							font-size: #{$font-size - 2};
+						}
+					}
+
+					&.submit {
+						& {
+							height: 100%;
+							position: absolute;
+							right: 0; top: 50%;
+							padding: 0 30px;
+							font-weight: bold;
+							color: $bg-blue;
+							@include transition(.2s all);
+							@include transform(translateY(-50%) scale(1));
+						}
+
+						& > i {
+							& {
+								display: inline-block;
+								vertical-align: middle;
+								font-size: #{$font-size - 2};
+								padding-right: 10px;
+							}
+						}
+
+						& > span {
+							& {
+								display: inline-block;
+								vertical-align: middle;
+								font-size: #{$font-size - 2};
+							}
+						}
+
+						&:hover {
+							& {
+								color: $bg-blue-bold;
+								@include transform(translateY(-50%) scale(1.1));
+								@include transition(.2s all);
+							}
+						}
+					}
+
+					&.prev {
+						& {
+							width: auto; height: 100%;
+							border-right: 1px solid #ddd;
+							background-color: #fff;
+							padding: 0 15px;
+						}
+
+						& > i {
+							& {
+								font-size: #{font-size + 2};
+								color: #555;
+								padding-left: 0;
+								display: inline-block;
+								vertical-align: middle;
+							}
+						}
+
+						& > span {
+							& {
+								padding-left: 15px;
+								color: #555;
+								display: inline-block;
+								font-size: #{$font-size - 2};
+								vertical-align: middle;
+							}
+						}
+					}
 				}
 			}
 		}
 
+		& > .write {
+
+			& > .post-head {
+				& {
+					padding: 30px 30px 0 30px;
+				}
+
+				& > .post-title {
+					& {
+						width: 100%;
+						height: 45px;
+						border-bottom: 1px solid #ddd;
+						overflow: hidden;
+					}
+
+					& > input {
+						width: 100%;
+						height: 100%;
+						background-color: #fff;
+						border: none;
+						outline: none;
+						padding: 0;
+						margin: 0;
+						padding: 0 15px;
+						font-size: #{$font-size + 2};
+					}
+
+					& > input::placeholder {
+						& {
+							color: #999;
+						}
+					}
+				}
+			}
+
+			& > .post-menu {
+				& {
+					border: 1px solid #ddd;
+					border-left: 0;
+					border-right: 0;
+					position: relative;
+				}
+
+				& > button {
+					& {
+						position: absolute;
+						right: 0; top: 0;
+						width: auto; height: auto;
+						border: 0;
+						background: none;
+						outline: none;
+						color: #999;
+						$font-size: #{$font-size + 8};
+						padding: 15px 30px;
+						cursor: pointer;
+						@include transition(.2s all);
+					}
+
+					&:hover {
+						& {
+							color: $bg-blue;
+							@include transition(.2s all);
+						}
+					}
+				}
+
+				& > .title {
+					& {
+						width: 100%;
+						height: auto;
+						padding: 0 15px;
+					}
+
+					& > ul {
+						& {
+							width: auto; height: auto;
+							list-style: none;
+							font-size: 0;
+						}
+
+						& > li {
+							& {
+								display: inline-block;
+							}
+
+							& > button {
+								& {
+									display: block;
+									margin: 0; padding: 0;
+									border: 0;
+									background: none;
+									font-size: #{$font-size + 8};
+									padding: 10px 15px;
+									color: #999;
+									cursor: pointer;
+									@include transition(.2s all);
+								}
+
+								&:hover {
+									& {
+										color: $bg-blue;
+										@include transition(.2s all);
+									}
+								}
+							}
+						}
+					}
+				}
+
+				& > .list {
+					& {
+						display: none;
+					}
+				}
+			}
+
+			& > .post-option {
+				& {
+					width: 100%; height: auto;
+					padding: 30px 30px 50px 30px;
+				}
+
+				& > .post-setting {
+					& {
+						width: 100%;
+						height: auto;
+					}
+
+					& .checkbox {
+						& {
+							display: block;
+							cursor: pointer;
+							font-size: 0;
+						}
+
+						& > input[type=checkbox] {
+							& {
+								display: none;
+							}
+						}
+
+						& > div {
+							& {
+								display: inline-block;
+								width: 15px;
+								height: 15px;
+								border: 1px solid #ccc;
+								background-color: #f9f9f9;
+								position: relative;
+								vertical-align: middle;
+								overflow: hidden;
+								@include transition(.2s all);
+							}
+
+							& > i {
+								& {
+									position: absolute;
+									left: 50%; top: 50%;
+									font-size: #{$font-size - 4};
+									color: #666;
+									opacity: 0;
+									@include transition(.2s all);
+									@include transform(translate(-50%, -50%));
+								}
+							}
+						}
+
+						& > span {
+							& {
+								display: inline-block;
+								font-size: #{$font-size - 1};
+								color: #666;
+								vertical-align: middle;
+								padding-left: 7px;
+							}
+						}
+
+						& > input[type=checkbox]:checked ~ div {
+							& > i {
+								& {
+									opacity: 1;
+									@include transition(.2s all);
+								}
+							}
+						}
+
+						&:hover {
+							& > div {
+								& {
+									background-color: #f1f1f1;
+									@include transition(.2s all);
+								}
+							}
+
+							& > span {
+								& {
+									color: #333;
+								}
+							}
+						}
+					}
+
+					& .select {
+						& {
+							width: 300px;
+							height: 30px;
+							font-size: #{$font-size - 2};
+						}
+
+						& > div {
+							& {
+								width: 100%;
+								height: 100%;
+								border: 1px solid #ccc;
+								border-radius: 2px;
+								overflow: hidden;
+							}
+
+							& > select {
+								& {
+									width: 100%;
+									height: 100%;
+									background-color: #fff;
+									border:none;
+									outline: none;
+									padding: 5px;
+									margin: 0;
+									cursor: pointer;
+									color: #666;
+								}
+
+								& > option {
+									color: #666;
+								}
+							}
+							
+						}
+					}
+
+					& > table {
+						& {
+							width: 100%;
+							height: auto;
+						}
+
+						& > tr {
+
+							& > td {
+								& {
+									padding-bottom: 15px;
+								}
+
+								&:nth-child(1){
+									width: 100px;
+									vertical-align: top;
+									font-size: #{$font-size + 1};
+									font-weight: bold;
+								}
+							}
+
+							&.open {
+								& > td:nth-child(2) {
+									& > div {
+										& {
+											display: inline-block;
+											vertical-align: middle;
+											padding-right: 15px;
+										}
+
+										&:nth-last-child(1){
+											& {
+												padding-right: 0;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 </style>

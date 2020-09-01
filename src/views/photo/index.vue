@@ -37,7 +37,7 @@ export default {
             return {
                 info: config,
                 ACTIVE: {},
-                HIDDEN: false
+                HIDDEN: true
             }
         },
         methods: {

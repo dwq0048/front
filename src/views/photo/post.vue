@@ -5,24 +5,27 @@
 
         <div class="contents" v-bind:class="{ active : side }">
             <div class="photo">
-                <widget-skin :info="info" @childs-event="parentsMethod"/>
+                <widget-skin :info="info" :post="post" @childs-event="parentsMethod" v-if="post"/>
             </div>
             <div class="comet" ref="comet">
-                <comment :info="info"/>
+                <comment :info="info" :post="post" v-if="post"/>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
 import Header from '@/components/layout/header'
 import Navigation from '@/components/layout/navigation'
 
 import Comment from '@/components/board/comment_skin/chatPack02'
 import WidgetSkin from '@/components/board/main_skin/photoPack01/post'
 
-
 import { config } from './config'
+
+const postStore = 'postStore'
 
 export default {
     name: 'boardNoticePost',
@@ -36,11 +39,17 @@ export default {
     data(){
         return {
             info: config,
+            post: false,
+
+
             side: false,
-            left: ''
+            left: '',
         }
     },
     methods: {
+        ...mapActions(postStore, [
+            'POST_VIEW'
+        ]),
         parentsMethod(data){
             this.side = data;
             const el = this.$refs.comet
@@ -51,7 +60,19 @@ export default {
                 el.querySelector('.comment').style.left = '';
             }
         }
+    },
+    created(){
+        let info = this.info;
+        info.index = this.$route.params.id;
+
+        this.POST_VIEW(info).then((req) => {
+            this.post = req;
+
+        }).catch((err) => {
+            console.log(err)
+        })
     }
+
 }
 
 </script>

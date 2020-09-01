@@ -10,8 +10,8 @@
                 <div>홈페이지</div>
                 <ul>
                     <li>
+                        <router-link to="/home">커뮤니티 메인</router-link>
                         <router-link to="/notice">공지사항</router-link>
-                        <router-link to="/blog">블로그</router-link>
                     </li>
                 </ul>
             </li>
@@ -21,7 +21,6 @@
                 <div>정보</div>
                 <ul>
                     <li>
-                        <router-link to="/guide">가이드</router-link>
                         <router-link to="/wiki">위키</router-link>
                         <router-link to="/qna">질문</router-link>
                     </li>
@@ -33,9 +32,8 @@
                 <div>커뮤니티</div>
                 <ul>
                     <li>
-                        <router-link to="/free">자유게시판</router-link>
-                        <router-link to="/photo">VR 포토</router-link>
-                        <router-link to="/video">VR 영상</router-link>
+                        <router-link to="/free">자유 게시판</router-link>
+                        <router-link to="/photo">이미지 게시판</router-link>
                     </li>
                 </ul>
             </li>

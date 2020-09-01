@@ -1,17 +1,23 @@
 <template>
     <div class="default">
         <div class="contents" ref="content">
-            <div class="info">
-                <div class="profile">
-                    <div class="image">
-                        <div></div>
-                    </div>
-                    <div class="name">
-                        <p>안녕하세요</p>
-                    </div>
+            <div class="title">
+                <div class="left">
+                    <button type="button" class="list" title="목록으로">
+                        <i><font-awesome-icon :icon="faList" /></i>
+                        <span>목록으로</span>
+                    </button>
                 </div>
-                <div class="status">
-                    <span>{{ post.state.displayDate }}</span>
+                <div class="right">
+                    <button type="button" title="펼쳐보기" class="list">
+                        <div><div><div></div><div></div><div></div><div></div></div></div>
+                    </button>
+                    <button type="button" title="이전글" class="prev">
+                        <i><font-awesome-icon :icon="faChevronLeft" /></i>
+                    </button>
+                    <button type="button" title="다음글" class="next">
+                        <i><font-awesome-icon :icon="faChevronRight" /></i>
+                    </button>
                 </div>
             </div>
             <div class="post">
@@ -38,6 +44,69 @@
                     </ul>
                 </div>
             </div>
+            <div class="intro">
+                <div>
+                    <h1>이거슨 제목 입니다.</h1>
+                    <div class="post">
+                        글을 읽으면 아무런 뜻이 없는것을<br>
+                        알 수 있다... 이건 그냥 탬플릿 사진과 탬플릿 글이다<br><br>
+                        아래에는 테그가 있다.
+                    </div>
+                    <div class="tag">
+                        <ul>
+                            <li>
+                                <a href="#">
+                                    # 게임<span>#Game</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    # Vrchat
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#">
+                                    # 사람들<span>#people</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="writer">
+                <div class="title">
+                    <h1>작가의 다른 사진</h1>
+                </div>
+                <div class="content">
+                    <div class="user">
+                        <div class="img">
+
+                        </div>
+                        <div class="intro">
+                            <p>관리자</p>
+                        </div>
+                    </div>
+                    <div class="list">
+                        <ul>
+                            <li>
+                                <div></div>
+                            </li>
+                            <li>
+                                <div></div>
+                            </li>
+                            <li>
+                                <div></div>
+                            </li>
+                            <li>
+                                <div></div>
+                            </li>
+                            <li>
+                                <div></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <div class="setting">
                 <div class="default_btn">
                     <button type="button">공유하기</button>
@@ -52,6 +121,12 @@
                     <h1>목록</h1>
                 </div>
                 <ul>
+                    <li>
+                        <div></div>
+                    </li>
+                    <li>
+                        <div></div>
+                    </li>
                     <li>
                         <div></div>
                     </li>
@@ -85,49 +160,18 @@
 <script>
 import Grid from '@/components/widget/main/grid-post'
 
-import { mapActions, mapGetters } from 'vuex'
-
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight, faList } from '@fortawesome/free-solid-svg-icons'
 
 import { SET_TIME } from '@/store/helper'
 import { SET_BOARD } from '@/store/helper'
 
-const postStore = 'postStore'
-
 export default {
     name: 'DefaultPhoto',
-    props: ['info'],
+    props: ['info', 'post'],
     data() {
         return {
-            id: this.$route.params.id,
-            board: this.info.board,
-            post: {
-                title: '',
-                board: '',
-                post: '',
-                user: {
-                    name: '',
-                    nickname: '',
-                    userKey: '',
-                    userid: '',
-                },
-                state: {
-                    date: '',
-                    date_fix: '',
-                    displayDate: '',
-                },
-                type: {
-                    password: '',
-                    skin: '',
-                    state: '',
-                },
-                files: [],
-                images: [],
-            },
-
-            faChevronLeft,
-            faChevronRight,
+            faChevronLeft, faChevronRight, faList,
 
             side: false,
             CurImg: 0,
@@ -142,27 +186,12 @@ export default {
     components: {
         'widget-grid': Grid,
     },
-    methods : {
-        ...mapActions(postStore, [
-            'POST_VIEW'
-        ]),
-    },
-    created: function(){
-        const data = {
-            id: this.id,
-            board: this.info.board
-        }
-
-        this.POST_VIEW(data).then((req) => {
-            this.post = req;
-            const radio = (this.post.ImageMeta[0].meta.height / this.post.ImageMeta[0].meta.width) * 100;
-            this.$refs.ImgPost.style.paddingBottom = `${radio}%`;
-        }).catch((err) => {
-            console.log(err)
-        })
+    created() {
+        console.log(this.post);
     },
     mounted() {
         const cont = this.$refs.content;
+
         window.addEventListener('scroll', (data) => {
             //console.log(window.scrollY);
             const el = cont.getBoundingClientRect();
@@ -173,8 +202,12 @@ export default {
             }else{
                 this.side = false;
             }
+
             this.$emit('childs-event', this.side)
-		});
+        });
+
+        const radio = (this.post.ImageMeta[0].meta.height / this.post.ImageMeta[0].meta.width) * 100;
+        this.$refs.ImgPost.style.paddingBottom = `${radio}%`;
     }
 }
 </script>
@@ -192,69 +225,219 @@ export default {
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
             
-            & > .info {
+            & > .title {
                 & {
+                    width:100%; height: 45px;
                     border-bottom: 1px solid #ddd;
-                    padding: 15px;
                     position: relative;
-                }                
+                }
 
-                & > div.profile {
-
-                    & > .image {
-                        & {
-                            width: 35px;
-                            height: auto;
-                            background-color: #999;
-                            border-radius: 50%;
-                            border: 1px solid #ccc;
-                            display: inline-block;
-                            vertical-align: middle;
-                        }
-
-                        &::after {
-                            & {
-                                content: " ";
-                                display: block;
-                                padding-bottom: 100%;
-                            }
-                        }
+                & > .left {
+                    & {
+                        width: auto; height: 100%;
                     }
 
-                    & > .name {
+                    & > button {
                         & {
-                            display: inline-block;
-                            vertical-align: middle;
+                            width: auto; height: 100%;
+                            border: 0;
+                            background: none;
+                            border-right: 1px solid #ddd;
+                            background-color: #fff;
+                            padding: 0 15px;
+                        }
+                        
+                        & > i {
+                            & {
+                                font-size: #{font-size + 2};
+                                color: #555;
+                                padding-left: 0;
+                                display: inline-block;
+                                vertical-align: middle;
+                            }
                         }
 
-                        & > p {
-                            display: inline-block;
-                            vertical-align: middle;
-                            font-size: #{$font-size};
-                            color: $font-color;
-                            font-weight: bold;
-                            line-height: 35px;
-                            padding-left: 10px;
+                        & > span {
+                            & {
+                                padding-left: 15px;
+                                color: #555;
+                                display: inline-block;
+                                font-size: #{$font-size - 2};
+                                vertical-align: middle;
+                            }
                         }
                     }
                 }
 
-                & > div.status {
-
+                & > .right {
                     & {
                         position: absolute;
                         right: 0; top: 50%;
                         @include transform(translateY(-50%));
+                        font-size: 0;
                     }
 
-                    & > span {
-                        font-size: #{$font-size - 1};
-                        color: #858585;
-                        display: inline-block;
-                        padding-right: 15px;
+                    & > button {
+                        & {
+                            width: 45px; height:auto;
+                            border: 0;
+                            padding: 0; margin: 0;
+                            background: none;
+                            outline: none;
+                            border-left: 1px solid #ddd;
+                            position: relative;
+                            color: #999;
+                            cursor: pointer;
+                        }
+
+                        &:after {
+                            content: " ";
+                            display: block;
+                            padding-bottom: 100%;
+                        }
+
+                        &.list {
+                            & > div {
+                                &  {
+                                    position: absolute;
+                                    left: 50%; top: 50%;
+                                    @include transform(translate(-50%, -50%));
+                                }
+
+                                & > div {
+                                    & {
+                                        position: relative;
+                                    }
+
+                                    & > div {
+                                        & {
+                                            position: absolute;
+                                            left: 50%; top: 50%;
+                                            width: 20px; height: 15px;
+                                            //border-radius: 2px;
+                                            background-color: #999;
+                                            @include transition(.2s all);
+                                            @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
+                                        }
+
+                                        /*
+                                        &:after {
+                                            content: " ";
+                                            display: block;
+                                            width: 80%; height: 1px;
+                                            background-color: #f1f1f1;
+                                            border-radius: 1px;
+                                            margin: 0 auto;
+                                            margin-top: 4px;
+                                        }
+                                        
+                                        &:before {
+                                            content: " ";
+                                            display: block;
+                                            width: 80%; height: 1px;
+                                            background-color: #f1f1f1;
+                                            border-radius: 1px;
+                                            margin: 0 auto;
+                                            margin-top: 4px;
+                                        }
+                                        */
+                                    }
+
+                                    & > div:nth-child(1){
+                                        & {
+                                            @include transform(translate(-50%, -50%));
+                                            z-index: 3;
+                                        }
+                                    }
+
+                                    & > div:nth-child(2){
+                                        & {
+                                            width: 18px; height: 10px;
+                                            background-color: #bbb;
+                                            @include transform(translate(-50%, 30%));
+                                            z-index: 2;
+                                        }
+                                    }
+
+                                    & > div:nth-child(3){
+                                        & {
+                                            width: 18px; height: 10px;
+                                            background-color: #bbb;
+                                            @include transform(translate(-50%, -130%));
+                                            z-index: 1;
+                                        }
+                                    }
+                                    
+                                    & > div:nth-child(4){
+                                        & {
+                                            width: 18px; height: 10px;
+                                            background-color: #bbb;
+                                            @include transform(translate(-50%, -50%));
+                                            z-index: 0;
+                                        }
+                                    }
+                                }
+                            }
+
+                            &:hover {
+                                & > div {
+                                    & > div {
+                                        & > div {
+                                            & {
+                                                @include transition(.2s all);
+                                            }
+                                        }
+
+                                        & > div:nth-child(1) {
+                                            & {
+                                                width: 18px; height: 10px;
+                                                background-color: #bbb;
+                                                @include transform(translate(-50%, 30%));
+                                                z-index: 1;
+                                            }
+                                        }
+
+                                        & > div:nth-child(2) {
+                                            & {
+                                                width: 18px; height: 10px;
+                                                background-color: #bbb;
+                                                @include transform(translate(-50%, -50%));
+                                                z-index: 0;
+                                            }
+                                        }
+
+                                        & > div:nth-child(3) {
+                                            & {
+                                                width: 20px; height: 15px;
+                                                background-color: #999;
+                                                @include transform(translate(-50%, -50%));
+                                                z-index: 3;
+                                            }
+                                        }
+
+                                        & > div:nth-child(4) {
+                                            & {
+                                                width: 18px; height: 10px;
+                                                background-color: #bbb;
+                                                @include transform(translate(-50%, -130%));
+                                                z-index: 2;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        & > i {
+                            & {
+                                position: absolute;
+                                left: 50%; top: 50%;
+                                @include transform(translate(-50%, -50%));
+                            }
+                        }
                     }
-                    
                 }
+
             }
 
             & > .post {
@@ -425,6 +608,147 @@ export default {
                 }                
             }
 
+            & > .intro {
+                & {
+                    width: 100%; height: auto;
+                    padding: 30px;
+                }
+                & > div {
+                    & > h1 {
+                        & {
+                            padding-bottom: 15px;
+                        }
+                    }
+
+                    & > .tag {
+                        & {
+                            padding-top: 50px;
+                        }
+
+                        & > ul {
+                            & {
+                                font-size: 0;
+                                list-style: none;
+                            }
+
+                            & > li {
+                                & {
+                                    display: inline-block;
+                                    padding-right: 10px;
+                                }
+
+                                & > a {
+                                    & {
+                                        display: block;
+                                        text-decoration: none;
+                                        color: $bg-blue;
+                                        font-size: #{$font-size - 2};
+                                        font-weight: bold;
+                                    }
+
+                                    & > span {
+                                        & {
+                                            padding-left: 3px;
+                                            vertical-align: bottom;
+                                            font-size: #{$font-size - 4};
+                                            font-weight: 300;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            & > .writer {
+                & {
+                    padding: 5px 50px 30px 50px;
+                }
+                & > .title {
+                    & > h1 {
+                        & {
+                            font-size: #{$font-size + 2};
+                            font-weight: bold;
+                            color: #666;
+                        }
+                    }
+                }
+
+                & > .content {
+                    & > .user {
+                        & {
+                            font-size: 0;
+                            width: 100%; height: auto;
+                            display: none;
+                        }
+
+                        & > .img {
+                            & {
+                                display: inline-block;
+                                width: 30px; height: auto;
+                                position: relative;
+                                border-radius: 50%;
+                                overflow: hidden;
+                                background-color: #ccc;
+                                vertical-align: middle;
+                            }
+
+                            &:after {
+                                content: " ";
+                                display: block;
+                                padding-bottom: 100%;
+                            }
+                        }
+
+                        & > .intro {
+                            & {
+                                display: inline-block;
+                                padding-left: 5px;
+                                color: #999;
+                                font-size: #{$font-size};
+                                padding-left: 10px;
+                                vertical-align: middle;
+                            }
+                        }
+                    }
+                    & > .list {
+                        & > ul {
+                            & {
+                                font-size: 0;
+                                list-style: none;
+                                margin-left: -15px;
+                            }
+
+                            & > li {
+                                & {
+                                    display: inline-block;
+                                    width: 20%;
+                                    height: auto;
+                                    padding: 15px;
+                                }
+
+                                & > div {
+                                    & {
+                                        width: 100%; height: auto;
+                                        background-color: #ccc;
+                                        position: relative;
+                                        border-radius: 3px;
+                                        overflow: hidden;
+                                    }
+
+                                    &:after {
+                                        content: " ";
+                                        display: block;
+                                        padding-bottom: 100%;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             & > .setting {
                 & {
                     background-color: #f9f9f9;
@@ -506,7 +830,7 @@ export default {
 
                     & > li {
                         & {
-                            width: 20%;
+                            width: calc(100% / 7);
                             height: auto;
                             padding: 0 15px;
                             display: inline-block;
