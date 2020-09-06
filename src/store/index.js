@@ -10,10 +10,17 @@ const store = new Vuex.Store({
   modules: {
     Store: {
       state: {
-          NAVIGATION: false
+          NAVIGATION: false,
+          HOST : {
+            protocal : window.location.protocol,
+            hostname : window.location.hostname,
+            port : 3000
+          }
       },
       getters: {
-          GET_NAVIGATION: state => state.NAVIGATION
+          GET_NAVIGATION: state => state.NAVIGATION,
+          GET_HOST: state => state.HOST,
+          GET_SERVER: state => `${state.HOST.protocal}//${state.HOST.hostname}:${state.HOST.port}`,
       },
       mutations: {
           SET_NAVIGATION(state, payload){

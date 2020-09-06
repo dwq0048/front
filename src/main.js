@@ -18,19 +18,25 @@ library.add(fas)
 library.add(far)
 library.add(fab)
 
+const host = {
+  protocal : window.location.protocol,
+  hostname : window.location.hostname,
+  port : 3000
+}
+
+host.server = `${host.protocal}//${host.hostname}:${host.port}`;
+
+if(process.env.NODE_ENV == 'developer'){
+  axios.defaults.baseURL = host.server
+}else{
+  axios.defaults.baseURL = host.server
+}
+
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
 Vue.prototype.$axios = axios
 //Vue.prototype.$socket = socket
-
-
-if(process.env.NODE_ENV == 'developer'){
-  axios.defaults.baseURL = 'http://127.0.0.1:3000';
-}else{
-  axios.defaults.baseURL = 'http://127.0.0.1:3000';
-}
-
 
 new Vue({
   store,

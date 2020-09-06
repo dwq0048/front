@@ -10,7 +10,8 @@
                 </div>
                 <div class="right">
                     <button type="button" title="펼쳐보기" class="list">
-                        <div><div><div></div><div></div><div></div><div></div></div></div>
+                        <i><font-awesome-icon :icon="faStream" /></i>
+                        <span>펼쳐보기</span>
                     </button>
                     <button type="button" title="이전글" class="prev">
                         <i><font-awesome-icon :icon="faChevronLeft" /></i>
@@ -161,7 +162,7 @@
 import Grid from '@/components/widget/main/grid-post'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faChevronLeft, faChevronRight, faList } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faChevronRight, faList, faStream } from '@fortawesome/free-solid-svg-icons'
 
 import { SET_TIME } from '@/store/helper'
 import { SET_BOARD } from '@/store/helper'
@@ -171,7 +172,7 @@ export default {
     props: ['info', 'post'],
     data() {
         return {
-            faChevronLeft, faChevronRight, faList,
+            faChevronLeft, faChevronRight, faList, faStream,
 
             side: false,
             CurImg: 0,
@@ -288,6 +289,7 @@ export default {
                             position: relative;
                             color: #999;
                             cursor: pointer;
+                            vertical-align: top;
                         }
 
                         &:after {
@@ -297,133 +299,24 @@ export default {
                         }
 
                         &.list {
-                            & > div {
-                                &  {
-                                    position: absolute;
-                                    left: 50%; top: 50%;
-                                    @include transform(translate(-50%, -50%));
-                                }
-
-                                & > div {
-                                    & {
-                                        position: relative;
-                                    }
-
-                                    & > div {
-                                        & {
-                                            position: absolute;
-                                            left: 50%; top: 50%;
-                                            width: 20px; height: 15px;
-                                            //border-radius: 2px;
-                                            background-color: #999;
-                                            @include transition(.2s all);
-                                            @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
-                                        }
-
-                                        /*
-                                        &:after {
-                                            content: " ";
-                                            display: block;
-                                            width: 80%; height: 1px;
-                                            background-color: #f1f1f1;
-                                            border-radius: 1px;
-                                            margin: 0 auto;
-                                            margin-top: 4px;
-                                        }
-                                        
-                                        &:before {
-                                            content: " ";
-                                            display: block;
-                                            width: 80%; height: 1px;
-                                            background-color: #f1f1f1;
-                                            border-radius: 1px;
-                                            margin: 0 auto;
-                                            margin-top: 4px;
-                                        }
-                                        */
-                                    }
-
-                                    & > div:nth-child(1){
-                                        & {
-                                            @include transform(translate(-50%, -50%));
-                                            z-index: 3;
-                                        }
-                                    }
-
-                                    & > div:nth-child(2){
-                                        & {
-                                            width: 18px; height: 10px;
-                                            background-color: #bbb;
-                                            @include transform(translate(-50%, 30%));
-                                            z-index: 2;
-                                        }
-                                    }
-
-                                    & > div:nth-child(3){
-                                        & {
-                                            width: 18px; height: 10px;
-                                            background-color: #bbb;
-                                            @include transform(translate(-50%, -130%));
-                                            z-index: 1;
-                                        }
-                                    }
-                                    
-                                    & > div:nth-child(4){
-                                        & {
-                                            width: 18px; height: 10px;
-                                            background-color: #bbb;
-                                            @include transform(translate(-50%, -50%));
-                                            z-index: 0;
-                                        }
-                                    }
-                                }
+                            & {
+                                width: auto; height: 45px;
+                                padding: 0 15px;
                             }
 
-                            &:hover {
-                                & > div {
-                                    & > div {
-                                        & > div {
-                                            & {
-                                                @include transition(.2s all);
-                                            }
-                                        }
+                            &:after {
+                                content: "";
+                                display: none;
+                                padding-bottom: 0;
+                            }
 
-                                        & > div:nth-child(1) {
-                                            & {
-                                                width: 18px; height: 10px;
-                                                background-color: #bbb;
-                                                @include transform(translate(-50%, 30%));
-                                                z-index: 1;
-                                            }
-                                        }
-
-                                        & > div:nth-child(2) {
-                                            & {
-                                                width: 18px; height: 10px;
-                                                background-color: #bbb;
-                                                @include transform(translate(-50%, -50%));
-                                                z-index: 0;
-                                            }
-                                        }
-
-                                        & > div:nth-child(3) {
-                                            & {
-                                                width: 20px; height: 15px;
-                                                background-color: #999;
-                                                @include transform(translate(-50%, -50%));
-                                                z-index: 3;
-                                            }
-                                        }
-
-                                        & > div:nth-child(4) {
-                                            & {
-                                                width: 18px; height: 10px;
-                                                background-color: #bbb;
-                                                @include transform(translate(-50%, -130%));
-                                                z-index: 2;
-                                            }
-                                        }
-                                    }
+                            & > i {
+                                & {
+                                    padding-right: 5px;
+                                    position: relative;
+                                    left: inherit; top: inherit; 
+                                    @include transform(rotate(0deg));
+                                    @include transition(.2s all);
                                 }
                             }
                         }

@@ -8,7 +8,7 @@
 					<i><font-awesome-icon :icon="faList" /></i>
 					<span>목록으로</span>
 				</button>
-				<button type="button" class="submit">
+				<button type="submit" class="submit" @click="Submit()">
 					<i><font-awesome-icon :icon="faEdit" /></i>
 					<span>글쓰기</span>
 				</button>
@@ -23,7 +23,7 @@
 		<div class="write">
 			<div class="post-head">
 				<div class="post-title">
-					<input type="text" placeholder="제목을 입력해주세요" v-model="postTitle">
+					<input type="text" v-model="Post.title" placeholder="제목을 입력해주세요">
 				</div>
 			</div>
 
@@ -32,43 +32,68 @@
 			<!-- Editor End -->
 
 			<!-- 작은 메뉴 Start -->
-			<div class="post-menu">
-				<button type="button" title="크게보기">
-					<i><font-awesome-icon :icon="faPlus" /></i>
-				</button>
-				<div class="title">
-					<ul>
-						<li>
-							<button type="button" title="사진">
-								<i><font-awesome-icon :icon="faImage" /></i>
-							</button>
-						</li>
-						<li>
-							<button type="button" title="동영상">
-								<i><font-awesome-icon :icon="faVideo" /></i>
-							</button>
-						</li>
-						<li>
-							<button type="button" title="유튜브">
-								<i><font-awesome-icon :icon="faYoutube" /></i>
-							</button>
-						</li>
-						<li>
-							<button type="button" title="이모티콘">
-								<i><font-awesome-icon :icon="faSmile" /></i>
-							</button>
-						</li>
-						<li>
-							<button type="button" title="이모티콘">
-								<i><font-awesome-icon :icon="faFileUpload" /></i>
-							</button>
-						</li>
-					</ul>
-				</div>
-				<div class="list">
-					<ul>
-						<li></li>
-					</ul>
+			<div class="post-menu" :class="{ active : MenuFixed.BottomMenu }" ref="BottomMenu">
+				<div ref="BottomMenuSub">
+					<button type="button" title="크게보기">
+						<i><font-awesome-icon :icon="faPlus" /></i>
+					</button>
+
+					<EditorMenuBar :editor="editor" v-slot="{ commands }">
+						<div>
+							<div class="title" ref="TitleMenu">
+								<ul>
+									<li v-for="(item, i) in EditorMenu" :key="i" :data-index="i" :class="{ 'is-active' : EditorMenu[i].active }" @click="EditorActive(i)" ref="EditorHover">
+										<button type="button" :title="item.ko">
+											<i><font-awesome-icon :icon="item.icon" /></i>
+										</button>
+									</li>
+									<div class="active" ref="EditorActive"></div>
+								</ul>
+							</div>
+
+							<div class="list">
+								<ul ref="EditorList">
+									<li :class="{ active : EditorMenu[0].active }">
+										<ul class="upload">
+											<li>
+												<input type="file" @change="UpdateFile('UploadImage', commands.image)" multiple="multiple" ref="UploadImage"/>
+												<button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
+													<span class="image">
+														<i>
+															<font-awesome-icon :icon="faImage" />
+															<span>사진 추가</span>
+														</i>
+													</span>
+													<span class="plus">
+														<i>
+															<font-awesome-icon :icon="faPlus" />
+														</i>
+													</span>
+												</button>
+											</li>
+										</ul>
+										<ul class="list">
+											<li v-for="(item, i) in StorageImages" :key="i">
+												<div>
+													<img :src="item.base">
+												</div>
+											</li>
+										</ul>
+										<div class="progress" ref="Progress">
+											<div class="bar">
+												<div class="bar" ref="SizeImages"></div>
+											</div>
+											<div class="info" ref="ProgressMb">
+												<div>
+													<span>{{ BytesToSize(MinSizeImages) }}</span> / <span>{{ BytesToSize(MaxSizeImages) }}</span>
+												</div>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</EditorMenuBar>
 				</div>
 			</div>
 			<!-- 작은 메뉴 End -->
@@ -136,23 +161,25 @@
 </template>
 
 <script>
-import { Editor } from 'tiptap'
+import { Editor, EditorMenuBar } from 'tiptap'
 import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
 import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
 
-import { Blockquote, CodeBlock, HardBreak, Heading, OrderedList, BulletList, ListItem, TodoItem, TodoList, Bold, Code, Italic, Link, Strike, Underline, History, Image } from 'tiptap-extensions'
-import AlignLeft from '@/components/plugin/textarea/tiptap/AlignLeft'
-import AlignRight from '@/components/plugin/textarea/tiptap/AlignRight'
-import AlignCenter from '@/components/plugin/textarea/tiptap/AlignCenter'
-import LineBreak from '@/components/plugin/textarea/tiptap/LineBreak'
-import CheckItem from '@/components/plugin/textarea/tiptap/CheckItem'
-import CheckList from '@/components/plugin/textarea/tiptap/CheckList'
-import HyperLink from '@/components/plugin/textarea/tiptap/HyperLink'
-import Images from '@/components/plugin/textarea/tiptap/Images'
+import { 
+	Heading, Bold, Italic, Strike, Underline, Link,
+	AlignLeft, AlignCenter, AlignRight,
+	ListBullet, ListOrdered, ListItem, Blockquote, Image,
+	HorizontalRule, BlankAutoLink,
+
+	HardBreak, Search,
+} from '@/components/plugin/textarea/script'
+
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPlus, faFileUpload, faFile, faChevronLeft, faCheck, faImage, faSmile, faVideo, faList, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
+
+import { SET_BOARD } from '@/store/helper/index'
 
 const sanitizeHtml = require('sanitize-html');
 
@@ -160,116 +187,320 @@ export default {
     name: 'DefaultPost',
     components: {
 		'tip-tap-menu' : tipTapMenu,
-		'tip-tap-editor' : tipTapEditor
+		'tip-tap-editor' : tipTapEditor,
+		EditorMenuBar,
 	},
 	data() {
 		return {
+			//Editor
 			editor: new Editor({
     			extensions: [
 					new Heading({ levels: [1, 2, 3, 4, 5, 6] }),
 					new Bold(),
 					new Italic(),
 					new Strike(),
-					new Blockquote(),
-					new CodeBlock(),
-					new HardBreak(),
-					new BulletList(),
-					new OrderedList(),
-					new ListItem(),
-					new TodoItem(),
-					new TodoList(),
-					new Code(),
-					new Link(),
 					new Underline(),
-					new History(),
+					new Link(),
+
 					new AlignLeft(),
-					new AlignRight(),
 					new AlignCenter(),
-					new LineBreak(),
-					new CheckItem(),
-					new CheckList(),
-					new HyperLink(),
-					new Images()
+					new AlignRight(),
+
+					new ListBullet(),
+					new ListOrdered(),
+					new ListItem(),
+					new Blockquote(),
+					new Image(),
+
+					new HorizontalRule(),
+					new BlankAutoLink(),
+
+					new HardBreak(),
+					new Search(),
         		],
 				content: ``,
 				onUpdate: ({ getHTML }) => {
-					this.postData = getHTML();
+					this.Post.content = getHTML();
 				},
 			}),
+
+			EditorMenu : [
+				{
+					ko : '사진',
+					en : 'Photo',
+					icon : faImage,
+					auth : 1,
+					active : false,
+				},
+				{
+					ko : '동영상',
+					en : 'Vidio',
+					icon : faVideo,
+					auth : 2,
+					active : false,
+				},
+				{
+					ko : '유튜브',
+					en : 'Youtube',
+					icon : faYoutube,
+					auth : 1,
+					active : false,
+				},
+				{
+					ko : '이모티콘',
+					en : 'Emoticon',
+					icon : faSmile,
+					auth : 1,
+					active : false,
+				},
+				{
+					ko : '파일',
+					en : 'File',
+					icon : faFileUpload,
+					auth : 2,
+					active : false,
+				},
+
+			],
 			
-			faPlus, faFileUpload, faFile, faChevronLeft, faCheck, faImage, faSmile, faYoutube, faVideo, faList, faEdit,
-			fileBox: [],
-			postTitle: '',
-			postPosition: 'notice',
-			postPositionOptions: [
-				{ text : '공지사항', value : 'notice' },
-				{ text : '자유게시판', value : 'free' }
-			]
+			// Icon
+			faPlus, faFileUpload, faFile, faChevronLeft,
+			faCheck, faImage, faSmile, faList, faEdit, faVideo,
+			faYoutube,
+
+			MenuFixed : {
+                BottomMenu : false
+            },
+
+			// Storage
+			StorageImages : [],
+			MaxSizeImages : 7340032,
+			MinSizeImages : 0,
+
+			// Post
+			Post : {
+				title : '',
+				content : '',
+			},
 		}
 	},
 	methods: {
-		file: function(){
-			const elem = this.$refs.fileSelect;
-
-			elem.click();
-		},
-		fileTemp: function(name, file){
-			for(let i=0;i<file.length;i++){
-				this.fileBox.push(file[i]);
+		TriggerInput(type){
+			try{
+				this.$refs[type].click();
+			} catch(err) {
+				console.log('Undefined Element');
 			}
-
-			this.temp();
 		},
-		submit: function(){
-			const data = {
-				position: this.postPosition,
-				title: this.postTitle,
-				post: this.$refs.edit.postData
-			}
+		UpdateFile(type, command){
+			const _this = this;
+			const ref = _this.$refs;
 
-			data.post = sanitizeHtml(data.post ,{
-				allowedTags : false , 
-				allowedAttributes : false ,
-				transformTags: {
-					'img': function(tagName, attribs) {
-						return {
-							tagName: 'img',
-							attribs: {
-								'src': '',
-								'data-index': attribs['data-index']
-							}
-						};
+			const Spend = {
+				async UploadImage(type){
+					const files = ref[type].files;
+					const storage = [];
+
+					files.forEach(item => {
+						switch(item.type){
+							case 'image/jpeg':
+								storage.push(item);
+								break;
+							case 'image/png':
+								storage.push(item);
+								break;
+							default:
+						}
+					});
+
+					for await (const item of storage){
+						const src = await SET_BOARD.encodeBase64ImageFile(item);
+						const index = _this.StorageImages.length;
+
+						_this.StorageImages.push({
+							base : src,
+							type : item.type,
+							size : item.size,
+							name : item.name,
+						});
+
+						command({ src, index });
 					}
-				}
-			});
 
-			let imageStorage = this.$refs.edit.imageStorage;
-			for(let i=0;i<imageStorage.length;i++){
-				delete imageStorage[i].base64;
+					_this.MinSizeImages = 0;
+					_this.StorageImages.forEach(item => {
+						_this.MinSizeImages += item.size
+					});
+
+					const CurrentSize = (Number(_this.MinSizeImages) / Number(_this.MaxSizeImages) * 100).toFixed(4);
+					ref['SizeImages'].style.width = `${CurrentSize}%`;
+				},
 			}
 
-			const fs = new FormData();
-			fs.append('position', data.position);
-			fs.append('title', data.title);
-			fs.append('post', data.post);
-			//fs.append('meta', {});
-			for(let i=0;i<imageStorage.length;i++){
-				fs.append('images', imageStorage[i]);
-			}
-
-			this.$axios({
-				method: 'post',
-				url: `/api/1/board/post`,
-				data: fs,
-				headers: {'Content-Type': 'multipart/form-data'},
-				withCredentials: true
-			})
-			.then((req) => {
-				console.log(req);
-			}).catch((err) => {
+			try{
+				Spend[type](type);
+			} catch(err) {
 				console.log(err);
+			}
+		},
+		EditorActive(index){
+			this.EditorMenu.map(item => {
+				if (item.active == true){
+					item.active = false;
+				}
+			})
+
+			this.EditorMenu[index].active = true;
+		},
+		BytesToSize(bytes) {
+			const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+			if (bytes == 0) return '0 MB';
+			let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+			if (i == 0) return bytes + ' ' + sizes[i];
+			return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+		},
+		dataURLtoFile(dataurl, fileName) {
+			var arr = dataurl.split(','),
+				mime = arr[0].match(/:(.*?);/)[1],
+				bstr = atob(arr[1]), 
+				n = bstr.length, 
+				u8arr = new Uint8Array(n);
+				
+			while(n--){
+				u8arr[n] = bstr.charCodeAt(n);
+			}
+			
+			return new File([u8arr], fileName, {type:mime});
+		},
+		Submit() {
+			const FileListItems = (files) => {
+				var b = new ClipboardEvent("").clipboardData || new DataTransfer()
+				for (var i = 0, len = files.length; i<len; i++) b.items.add(files[i])
+				return b.files
+			}
+
+			const ImageList = [];
+			const data = {
+				title : this.Post.title,
+				content : this.Post.content,
+				board : 'free',
+				setting : {},
+				meta : {
+					category : 'vrchat',
+					setting : {
+						search : true,
+						anonymous : false,
+						private : false,
+					},
+					tag : {},
+				},
+			}
+
+			this.StorageImages.map(item => {
+				const toFile = this.dataURLtoFile(item.base, item.name);
+				ImageList.push(toFile);
 			});
+
+			const ImageResponse = new FileListItems(ImageList);
 		}
+	},
+	mounted(){
+		(function() {
+			var throttle = function(type, name, obj) {
+				obj = obj || window;
+				var running = false;
+				var func = function() {
+					if (running) { return; }
+					running = true;
+					requestAnimationFrame(function() {
+						obj.dispatchEvent(new CustomEvent(name));
+						running = false;
+					});
+				};
+				obj.addEventListener(type, func);
+			};
+
+			throttle("resize", "optimizedResize");
+		})();
+
+		let EditorStyle = '';
+		this.EditorMenu.forEach((item, index) => {
+			const element = document.querySelector(`.post > .write > .post-menu > div > div > .title > ul > li:nth-child(${index + 1})`);
+			const width = element.clientWidth;
+			const left = element.offsetLeft;
+
+			EditorStyle += `
+				.post > .write > .post-menu > div > div > .title > ul > li.is-active:nth-child(${index + 1}) ~ .active {
+					left: ${left}px;
+					width: ${width}px;
+					transition: .2s all;
+					-webkit-transition: .2s all;
+					-moz-transition: .2s all;
+					-ms-transition: .2s all;
+					-o-transition: .2s all;
+				}
+			`;
+		});
+		this.styleTag = document.createElement('style');
+		this.styleTag.appendChild(document.createTextNode(EditorStyle));
+		document.head.appendChild(this.styleTag);
+
+        const BottomMenu = this.$refs.BottomMenu;
+		const BottomMenuSub = this.$refs.BottomMenuSub;
+		const WinHeight = window.innerHeight;
+
+		const Progress = this.$refs.Progress;
+		const ProgressMb = this.$refs.ProgressMb;
+
+		const EventMenu = () => {
+            const BottomElement = BottomMenu.getBoundingClientRect();;
+            const BottomPosition = {
+                bottom: WinHeight - BottomElement.bottom,
+                left: BottomElement.left
+			}
+
+
+			if(BottomPosition.bottom <= 0){
+                this.MenuFixed.BottomMenu = true;
+                BottomMenuSub.style.left = `${BottomPosition.left}px`;
+                BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
+            }else{
+				this.MenuFixed.BottomMenu = false;
+                BottomMenuSub.style.left = ``;
+                BottomMenu.style.paddingTop = ``;
+			}
+		}
+
+		const ProgressSet = () => {
+			const ProgressMbSize = { width: ProgressMb.clientWidth }
+			const Padding = 30;
+
+			Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
+		}
+
+        window.addEventListener('scroll', (data) => {
+			EventMenu();
+			ProgressSet();
+		});
+
+		window.addEventListener("optimizedResize", function() {
+			EventMenu();
+			ProgressSet();
+		});
+
+		this.$refs.TitleMenu.addEventListener("click", function() {
+			EventMenu();
+			ProgressSet();
+		});
+
+		/*
+		window.addEventListener('keypress', (event) => {
+            if (event.which === 13) {
+				console.log(this.test);
+			}
+		});
+		*/
+
 	}
 }
 </script>
@@ -280,6 +511,7 @@ export default {
 			background-color: #fff;
 			border:1px solid #ccc;
 			@include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
+			position: relative;
 		}
 
 		& > .send {
@@ -431,71 +663,373 @@ export default {
 
 			& > .post-menu {
 				& {
-					border: 1px solid #ddd;
-					border-left: 0;
-					border-right: 0;
+					width: 100%; height: auto;
 					position: relative;
+					z-index: 10;
 				}
 
-				& > button {
+				& > div {
 					& {
-						position: absolute;
-						right: 0; top: 0;
-						width: auto; height: auto;
-						border: 0;
-						background: none;
-						outline: none;
-						color: #999;
-						$font-size: #{$font-size + 8};
-						padding: 15px 30px;
-						cursor: pointer;
-						@include transition(.2s all);
+						border: 1px solid #ddd;
+						border-left: 0;
+						border-right: 0;
+						position: relative;
+						background-color: #fff;
 					}
 
-					&:hover {
+					& > button {
 						& {
-							color: $bg-blue;
+							position: absolute;
+							right: 0; top: 0;
+							width: auto; height: auto;
+							border: 0;
+							background: none;
+							outline: none;
+							color: #999;
+							$font-size: #{$font-size + 8};
+							padding: 15px 30px;
+							cursor: pointer;
 							@include transition(.2s all);
 						}
-					}
-				}
 
-				& > .title {
-					& {
-						width: 100%;
-						height: auto;
-						padding: 0 15px;
+						&:hover {
+							& {
+								color: $bg-blue;
+								@include transition(.2s all);
+							}
+						}
 					}
 
-					& > ul {
+					& > div {
 						& {
-							width: auto; height: auto;
-							list-style: none;
-							font-size: 0;
+							width: 100%; height: auto;
+							overflow:hidden;
 						}
 
-						& > li {
+						& > .title {
 							& {
-								display: inline-block;
+								width: 100%;
+								height: auto;
+								padding: 0 15px;
+								z-index: 1;
 							}
 
-							& > button {
+							& > ul {
 								& {
-									display: block;
-									margin: 0; padding: 0;
-									border: 0;
-									background: none;
-									font-size: #{$font-size + 8};
-									padding: 10px 15px;
-									color: #999;
-									cursor: pointer;
-									@include transition(.2s all);
+									width: auto; height: auto;
+									list-style: none;
+									font-size: 0;
+									position: relative;
+									overflow: hidden;
 								}
 
-								&:hover {
+								& > .active {
 									& {
-										color: $bg-blue;
+										position: absolute;
+										width: 52px; height: 3px;
+										background-color: $bg-blue;
+										left: -100px; bottom: 0;
 										@include transition(.2s all);
+									}
+								}
+
+								& > li {
+									& {
+										display: inline-block;
+									}
+
+									& > button {
+										& {
+											display: block;
+											margin: 0; padding: 0;
+											border: 0; background: none;
+											font-size: #{$font-size + 8};
+											padding: 10px 15px;
+											color: #999;
+											outline: none;
+											cursor: pointer;
+											@include transition(.2s all);
+										}
+
+										&:hover {
+											& {
+												color: $bg-blue;
+												@include transition(.2s all);
+											}
+										}
+									}
+
+									&.is-active {
+										& > button {
+											& {
+												color: $bg-blue;
+												@include transition(.2s all);
+											}
+										}
+									}
+								}
+							}
+						}
+
+						& > .list {
+							& {
+								width: 100%; height: auto;
+								border-top: 1px solid #ddd;
+							}
+
+							& > ul {
+								& {
+									width: 100%; height: auto;
+									font-size: 0;
+									list-style: none;
+								}
+
+								& > li {
+									& {
+										width: 100%; height: auto;
+										display: none;
+										position: relative;
+										background-color: #fff;	
+										font-size: 0;
+										white-space: nowrap;
+										overflow: hidden;
+										padding: 15px;
+									}
+
+									&.active {
+										& {
+											display: block;
+										}
+									}
+
+									& > .progress {
+										& {
+											width: 100%; height: auto;
+											position: relative;
+											padding-right: 100px;
+											margin-top: 10px;
+										}
+
+										& > .info {
+											& {
+												position: absolute;
+												right: 0; top: 50%;
+												@include transform(translateY(-50%));
+												text-align: right;
+											}
+
+											& > div {
+												& {
+													font-size: #{$font-size - 1};
+													font-weight: bold;
+													color: #999;
+													margin-top: -3px;
+												}
+
+												& > span {
+													&:nth-child(1){
+														& {
+															color: $bg-orange;
+														}
+													}
+
+													&:nth-child(2){
+														& {
+															color: #555;
+														}
+													}
+												}
+											}
+										}
+
+										& > .bar {
+											& {
+												width: 100%; height: 16px;
+												background-color: #ddd;
+												border-radius: 15px;
+												position: relative;
+												padding: 4px 5px;
+											}
+
+											& > .bar {
+												& {
+													width: 0px; height: 100%;
+													background-color: $bg-orange;
+													position: relative;
+													border-radius: 15px;
+												}
+											}
+										}
+									}
+
+									& > ul.upload {
+										& {
+											width: 15%;
+											font-size: 0;
+											list-style: none;
+											display: inline-block;
+											position: relative;
+											background-color: #fff;
+											z-index: 10;
+											vertical-align: top;
+										}
+
+										&:after {
+											content: " ";
+											display: block;
+											padding-bottom: 100%;
+										}
+
+										& > li {
+											& {
+												display: block;
+												position: absolute;
+												width: 100%; height: 100%;
+												left: 50%; top: 50%;
+												@include transform(translate(-50%, -50%));
+												padding: 5px;
+											}
+
+											& > input {
+												& {
+													display: none;
+												}
+											}
+
+											& > button {
+												& {
+													
+													display: block;
+													width: 100%; height: 100%;
+													border: 0; background: none;
+													margin: 0; padding: 0;
+													position: relative;
+													border: 2px dashed #ddd;
+													background-color: #f1f1f1;
+													border-radius: 3px;
+													overflow: hidden;
+													outline: none;
+													cursor: pointer;
+												}
+
+												& > span {
+													& {
+														display: block;
+														position: absolute;
+														left: 50%; top: 50%;
+														@include transform(translate(-50%, -50%));
+													}
+
+													&.image {
+														& {
+															opacity: 1;
+															@include transition(.2s all);
+															text-align: center;
+														}
+
+														& > i {
+															& {
+																font-size: #{$font-size + 4};
+																color: #999;
+															}
+
+															& > span {
+																& {
+																	display: block;
+																	font-size: #{$font-size - 2};
+																	font-style: normal;
+																	font-weight: bold;
+																}
+															}
+														}
+													}
+
+													&.plus {
+														& {
+															opacity: 0;
+															@include transition(.2s all);
+														}
+
+														& > i {
+															& {
+																font-size: #{$font-size + 4};
+																color: $bg-orange;
+															}
+														}
+													} 
+												}
+
+												&:hover {
+													& {
+														border: 2px dashed $bg-orange;
+														@include transition(.2s all);
+													}
+
+													& > span {
+														&.image {
+															& {
+																opacity: 0;
+																@include transition(.2s all);
+															}
+														}
+
+														&.plus {
+															& {
+																opacity: 1;
+																@include transition(.2s all);
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+
+									& > ul.list {
+										& {
+											display: inline-block;
+											width: 100%; height: auto;
+											font-size: 0;
+											list-style: none;
+											position: relative;
+											vertical-align: top;
+										}
+
+										& > li {
+											& {
+												display: inline-block;
+												width: 15%; height: auto;
+												padding: 5px;
+											}
+
+											& > div {
+												& {
+													display: block;
+													width: 100%; height: auto;
+													position: relative;
+													background-color: #ddd;
+													overflow: hidden;
+													border: 1px solid #ddd;
+													border-radius: 3px;
+												}
+
+												&:after {
+													content: " ";
+													display: block;
+													padding-bottom: 100%;
+												}
+
+												& > img {
+													& {
+														display: block;
+														position: absolute;
+														width: 100%; height: 100%;
+														left: 0; top: 0;
+														object-fit: cover;
+													}
+												}
+											}
+										}
 									}
 								}
 							}
@@ -503,9 +1037,13 @@ export default {
 					}
 				}
 
-				& > .list {
-					& {
-						display: none;
+				&.active {
+					& > div {
+						& {
+							position: fixed;
+							left: 0; bottom: 0;
+							width: 100%; max-width: 838px;
+						}
 					}
 				}
 			}

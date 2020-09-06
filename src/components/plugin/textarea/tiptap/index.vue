@@ -4,7 +4,7 @@
 			<div class="editor-menu">
 				<ul>
 					<li>
-						<button class="heading" :class="{ 'is-active': varActive.head }" @click="editActive('head')">
+						<button class="heading" :class="{ 'is-active': MenuActive.heading }" @click="MenuActive('heading')">
 							<p>H</p>
 							<div class="click">
 								<h1 :class="{ 'is-active': isActive.heading({ level: 1 }) }" @click="commands.heading({ level: 1 })">제목 크기 1</h1>

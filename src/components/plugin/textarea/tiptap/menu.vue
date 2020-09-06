@@ -158,15 +158,6 @@
 
 <script>
 import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
-import { Blockquote, CodeBlock, HardBreak, Heading, OrderedList, BulletList, ListItem, TodoItem, TodoList, Bold, Code, Italic, Link, Strike, Underline, History, Image } from 'tiptap-extensions'
-import AlignLeft from '@/components/plugin/textarea/tiptap/AlignLeft'
-import AlignRight from '@/components/plugin/textarea/tiptap/AlignRight'
-import AlignCenter from '@/components/plugin/textarea/tiptap/AlignCenter'
-import LineBreak from '@/components/plugin/textarea/tiptap/LineBreak'
-import CheckItem from '@/components/plugin/textarea/tiptap/CheckItem'
-import CheckList from '@/components/plugin/textarea/tiptap/CheckList'
-import HyperLink from '@/components/plugin/textarea/tiptap/HyperLink'
-import Images from '@/components/plugin/textarea/tiptap/Images'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faQuoteLeft, faLink, faAlignLeft, faAlignRight, faAlignJustify, faListOl, faListUl, faImage, faMinus, faCheck } from '@fortawesome/free-solid-svg-icons'

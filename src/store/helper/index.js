@@ -57,14 +57,11 @@ const SET_BOARD = {
     },
     encodeBase64ImageFile: function(image) {
         return new Promise((resolve, reject) => {
-            let reader = new FileReader()
-            reader.readAsDataURL(image)
-            reader.onload = (event) => {
-                resolve(event.target.result)
-            }
-            reader.onerror = (error) => {
-                reject(error)
-            }
+            let reader = new FileReader();
+            reader.readAsDataURL(image);
+            
+            reader.onload = (event) => { resolve(event.target.result) }
+            reader.onerror = (error) => { reject(error) }
         })
     }
 }

@@ -7,7 +7,7 @@
                     :data-width="imgWidth"
                     :data-height="((item.ImageMeta[item.meta.thumbnail.num].meta.height / item.ImageMeta[item.meta.thumbnail.num].meta.width)) * (imgWidth)"
                 >
-                    <img :src="'http://127.0.0.1:3000/images/'+item.images[item.meta.thumbnail.num]" alt="img01" />
+                    <img :src="`${SERVER}/images/${item.images[item.meta.thumbnail.num]}`" />
 
                     <div class="background">
                         <div class="black">
@@ -150,7 +150,12 @@ export default {
             document.querySelector('.pee > .grid').style.width = `${ this.imgWidth * this.option.length }px`;
             document.querySelector('.pee > .grid').style.height = `${ this.max.height }px`;
         }
-    },  
+    },
+    computed: {
+        ...mapGetters({
+            SERVER : 'GET_SERVER'
+        })
+    },
     created(){
         const data = {
             board: 'photo',
