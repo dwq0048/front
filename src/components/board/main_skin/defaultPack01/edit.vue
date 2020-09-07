@@ -72,13 +72,15 @@
 												</button>
 											</li>
 										</ul>
-										<ul class="list">
-											<li v-for="(item, i) in StorageImages" :key="i">
-												<div>
-													<img :src="item.base">
-												</div>
-											</li>
-										</ul>
+										<div class="list" ref="ImageSwiper" v-swiper:ImageSwiper="ImageSwipeOption">
+											<ul class="swiper-wrapper">
+												<li class="swiper-slide" v-for="(item, i) in StorageImages" :key="i">
+													<div>
+														<img :src="item.base">
+													</div>
+												</li>
+											</ul>
+										</div>
 										<div class="progress" ref="Progress">
 											<div class="bar">
 												<div class="bar" ref="SizeImages"></div>
@@ -161,9 +163,13 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import { Editor, EditorMenuBar } from 'tiptap'
 import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
 import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
+import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
+//import Swipe from 'swipejs'
+
 
 import { 
 	Heading, Bold, Italic, Strike, Underline, Link,
@@ -182,13 +188,19 @@ import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 import { SET_BOARD } from '@/store/helper/index'
 
 const sanitizeHtml = require('sanitize-html');
+const postStore = 'postStore'
 
 export default {
     name: 'DefaultPost',
     components: {
+		Swiper,
+		SwiperSlide,
+		EditorMenuBar,
 		'tip-tap-menu' : tipTapMenu,
 		'tip-tap-editor' : tipTapEditor,
-		EditorMenuBar,
+	},
+	directives: {
+		swiper: directive
 	},
 	data() {
 		return {
@@ -218,7 +230,7 @@ export default {
 					new HardBreak(),
 					new Search(),
         		],
-				content: ``,
+				content: `<h1>타이틀 1</h1><h2>타이틀2</h2><p><strong><s>여러가지 스타일</s></strong></p><p></p><p></p><p style="text-align:center"></p><p>중간</p><p></p><p></p><p style="text-align:right"></p><p>오른쪽</p><p></p><p></p><p></p><ul><li><p>리스트 1</p></li><li><p>리스트 2</p></li></ul><ol><li><p>숫자 1</p></li><li><p>숫자 2</p></li></ol><p></p><blockquote><p>인용<strong>띠용</strong></p></blockquote><p></p><p>밑에 줄</p><hr /><p></p><h3>링크</h3><p></p><p><a href="http://naver.com" target="_blank">http://naver.com</a></p><p><a href="http://youtube.com" target="_blank">이것도 링크 유투브</a></p><p></p><p></p>`,
 				onUpdate: ({ getHTML }) => {
 					this.Post.content = getHTML();
 				},
@@ -262,6 +274,11 @@ export default {
 				},
 
 			],
+
+			// Swiper
+			ImageSwipeOption : {
+
+			},
 			
 			// Icon
 			faPlus, faFileUpload, faFile, faChevronLeft,
@@ -285,6 +302,9 @@ export default {
 		}
 	},
 	methods: {
+		...mapActions(postStore, [
+			'POST'
+		]),
 		TriggerInput(type){
 			try{
 				this.$refs[type].click();
@@ -372,6 +392,34 @@ export default {
 			
 			return new File([u8arr], fileName, {type:mime});
 		},
+		SetHtml(content) {
+			return sanitizeHtml(content ,{
+				allowedTags: [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'i', 's', 'a', 'p', 'hr', 'br', 'ul', 'ol', 'li', 'blockquote', 'img', 'iframe' ],
+				allowedAttributes: {
+					'a': [ 'href', 'name', 'target' ],
+					'*': [ 'style' ],
+					'img': [ 'data-index', 'src' ]
+				},
+				allowedStyles: {
+					'*': {
+						'text-align': [/^left$/, /^right$/, /^center$/]
+					}
+				},
+				allowedIframeHostnames: ['www.youtube.com'],
+				transformTags: {
+					'img': function(tagName, attribs) {
+						let imageIndex = attribs['data-index'];
+
+						return {
+							tagName: 'img',
+							attribs: {
+								'data-index': imageIndex
+							}
+						};
+					}
+				}
+			});
+		},
 		Submit() {
 			const FileListItems = (files) => {
 				var b = new ClipboardEvent("").clipboardData || new DataTransfer()
@@ -379,12 +427,13 @@ export default {
 				return b.files
 			}
 
+			const ContentFixed = this.SetHtml(this.Post.content);
+
 			const ImageList = [];
 			const data = {
 				title : this.Post.title,
-				content : this.Post.content,
+				content : ContentFixed,
 				board : 'free',
-				setting : {},
 				meta : {
 					category : 'vrchat',
 					setting : {
@@ -401,7 +450,23 @@ export default {
 				ImageList.push(toFile);
 			});
 
-			const ImageResponse = new FileListItems(ImageList);
+			const ImageRequest = new FileListItems(ImageList);
+
+			const fs = new FormData();
+			fs.append('board', data.board);
+			fs.append('title', data.title);
+			fs.append('content', data.content);
+			fs.append('meta', data.meta);
+
+			for(let i=0;i<ImageRequest.length;i++){
+				fs.append('images', ImageRequest[i]);
+			}
+
+			this.POST(fs).then((req) => {
+				console.log(req);
+			}).catch((err) => {
+				console.log(err);
+			});
 		}
 	},
 	mounted(){
@@ -472,7 +537,7 @@ export default {
 		}
 
 		const ProgressSet = () => {
-			const ProgressMbSize = { width: ProgressMb.clientWidth }
+			const ProgressMbSize = { width: ProgressMb.clientWidth };
 			const Padding = 30;
 
 			Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
@@ -492,14 +557,6 @@ export default {
 			EventMenu();
 			ProgressSet();
 		});
-
-		/*
-		window.addEventListener('keypress', (event) => {
-            if (event.which === 13) {
-				console.log(this.test);
-			}
-		});
-		*/
 
 	}
 }
@@ -985,7 +1042,7 @@ export default {
 										}
 									}
 
-									& > ul.list {
+									& > .list {
 										& {
 											display: inline-block;
 											width: 100%; height: auto;
@@ -995,40 +1052,52 @@ export default {
 											vertical-align: top;
 										}
 
-										& > li {
+										& > ul {
 											& {
 												display: inline-block;
-												width: 15%; height: auto;
-												padding: 5px;
+												width: 100%; height: auto;
+												font-size: 0;
+												list-style: none;
+												position: relative;
+												vertical-align: top;
 											}
 
-											& > div {
+											& > li {
 												& {
-													display: block;
-													width: 100%; height: auto;
-													position: relative;
-													background-color: #ddd;
-													overflow: hidden;
-													border: 1px solid #ddd;
-													border-radius: 3px;
+													display: inline-block;
+													width: 15%!important; height: auto;
+													padding: 5px;
 												}
 
-												&:after {
-													content: " ";
-													display: block;
-													padding-bottom: 100%;
-												}
-
-												& > img {
+												& > div {
 													& {
 														display: block;
-														position: absolute;
-														width: 100%; height: 100%;
-														left: 0; top: 0;
-														object-fit: cover;
+														width: 100%; height: auto;
+														position: relative;
+														background-color: #ddd;
+														overflow: hidden;
+														border: 1px solid #ddd;
+														border-radius: 3px;
+													}
+
+													&:after {
+														content: " ";
+														display: block;
+														padding-bottom: 100%;
+													}
+
+													& > img {
+														& {
+															display: block;
+															position: absolute;
+															width: 100%; height: 100%;
+															left: 0; top: 0;
+															object-fit: cover;
+														}
 													}
 												}
 											}
+
 										}
 									}
 								}

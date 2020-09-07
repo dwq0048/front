@@ -42,30 +42,7 @@ const Post = {
                     let list = req.data.payload;
                     list.map(item => {
                         item.state.displayDate = SET_TIME(item.state.date_fix);
-                    })
-                    //req.data.data.map(item => {
-                    //    index.push({
-                    //        index: item.user.index
-                    //    });
-                    //});
-
-/*
-                    axios({
-                        methos: 'post',
-                        url: `/api/1/auth/info`,
-                        data: index,
-                        withCredentials: true,
-                    }).then((reqest) => {
-                        req.data.data.map(item => {
-                            item.state.displayDate = SET_TIME(item.state.date_fix);
-                            item.user.nickname = re
-                        });
-
-                        resolve(req.data.data);
-                    }).catch((err) => {
-                        reject(err);
-                    })
-*/
+                    });
 
                     resolve(list);
                 }).catch((err) => {
