@@ -27,24 +27,40 @@
                     <div>
                         <span>게시판 이름</span>
                         <span>날짜</span>
-                        <span>닉네임</span>
-                    </div>
-                    <div>
-                        <span>좋아요</span>
+                        <span>조회수</span>
                     </div>
                 </div>
             </div>
             <div class="post">
-                <!--
-                <div v-html="post.post"></div>
-                -->
-                <div></div>
+                <!-- <div v-html="post.post"></div> -->
+                <div>내용</div>
             </div>
-            <div class="love">
-                <button type="button">
-                    <i><font-awesome-icon :icon="faHeartR" /></i>
-                    <span>좋아요</span>
-                </button>
+
+            <div class="card">
+                <div>
+                    <div class="profile">
+                        <div class="image">
+                            <div></div>
+                        </div>
+                        <div class="intro">
+                            <div class="name">
+                                이름
+                            </div>
+                            <div class="decoration">
+                                프로필 설명이 없습니다.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sim">
+                        <button type="button" title="좋아요">
+                            <i><font-awesome-icon :icon="faHeartR" /></i>
+                            <span>
+                                <i><font-awesome-icon :icon="faPlus" /></i>
+                                <span>0</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="setting">
                 <div class="default_btn">
@@ -65,7 +81,7 @@ import { mapActions, mapGetters } from 'vuex'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
-import { faHeart as faHeartS, faList, faCaretLeft, faCaretRight } from '@fortawesome/free-solid-svg-icons'
+import { faHeart as faHeartS, faList, faCaretLeft, faCaretRight, faShareSquare, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import { SET_TIME } from '@/store/helper'
 import { SET_BOARD } from '@/store/helper'
@@ -83,7 +99,7 @@ export default {
             board: this.info.board,
             post: {},
 
-            faHeartR, faHeartS, faList, faCaretLeft,  faCaretRight
+            faHeartR, faHeartS, faList, faCaretLeft,  faCaretRight, faShareSquare, faPlus
         }
     },
     components: {
@@ -96,12 +112,14 @@ export default {
     },
     created: function(){
         const data = {
-            id: this.id,
+            index: this.id,
             board: this.board
         }
 
         this.POST_VIEW(data).then((req) => {
-            this.post = req
+            this.post = req;
+
+            console.log(this.post);
         }).catch((err) => {
             console.log(err)
         })
@@ -233,13 +251,9 @@ export default {
             }
             
             & > .info {
-                & {
-                    border-bottom: 1px solid #ddd;
-                }
-                
                 & > .title {
                     & {
-                        padding: 20px 30px;
+                        padding: 30px 45px 15px 45px;
                     }
 
                     & > h1 {
@@ -249,37 +263,29 @@ export default {
 
                 & > .display {
                     & {
-                        padding: 0px 30px 15px 30px;
-                    }
-
-                    &:after {
-                        content: " ";
-                        display: block;
-                        clear: both;
+                        display: inline-block;
+                        text-align: left;
+                        padding: 0px 45px 15px 45px;
                     }
 
                     & > div {
                         & {
-                            float: left;
+                            font-size: 0;
                         }
 
                         & > span {
-                            font-size: #{$font-size - 1};
-                            color: #858585;
-                            display: inline-block;
-                            padding-right: 15px;
-                        }
-                        
-                    }
+                            & {
+                                display: inline-block;
+                                font-size: #{$font-size - 2};
+                                color: #bbb;
+                                padding-right: 30px;
+                            }
 
-                    & > div:nth-child(2){
-                        & {
-                            float: right;
-                        }
-
-                        & > span {
-                            padding-right: 0;
-                            padding-left: 15px;
+                            &:nth-last-child(1){
+                                & {
+                                    padding-right: 0;
+                                }
+                            }
                         }
                     }
                 }
@@ -287,68 +293,133 @@ export default {
 
             & > .post {
                 & {
-                    padding: 30px;
+                    padding: 15px 45px;
                     min-height: 425px;
                 }
             }
 
-            & > .love {
+            & > .card {
                 & {
-                    text-align: center;
-                    padding: 0 0 30px 0;
+                    width: 100%; height: auto;
+                    position: relative;
+                    padding: 30px;
+                    border: 1px solid #f1f1f1;
                 }
 
-                & > button {
-                    & {
-                        display: inline-block;
-                        background: none;
-                        border: none;
-                        vertical-align: middle;
-                        cursor: pointer;
-                        border: 1px solid #ccc;
-                        border-radius: 10px;
-                        padding: 0 20px;
-                        margin: 0 15px;
-                        outline: none;
-                        @include transition(.2s all);
-                    }
-
-                    & > i {
-                        display: inline-block;
-                        font-size: #{$font-size + 2};
-                        line-height: 40px;
-                        color: #999;
-                        @include transition(.2s all);
-                    }
-
-                    & > span {
-                        display: inline-block;
-                        padding-left: 10px;
-                        font-size: #{$font-size + 2};
-                        line-height: 40px;
-                        color: #999;
-                    }
-
-                    &:hover {
+                & > div {
+                    & > .profile {
                         & {
-                            background-color: #f1f1f1;
-                            @include transition(.2s all);
+                            width: 70%; height: auto;
+                            font-size: 0;
+                            display: inline-block;
+                            vertical-align: middle;
+                        }
+
+                        & > .image {
+                            & {
+                                width: 50px; height: auto;
+                                display: table-cell;
+                                vertical-align: middle;
+                            }
+
+                            & > div {
+                                & {
+                                    width: 100%; height: auto;
+                                    border-radius: 50%;
+                                    background-color: #ccc;
+                                    overflow: hidden;
+                                }
+
+                                &:after {
+                                    content: " ";
+                                    display: block;
+                                    padding-bottom: 100%;
+                                }
+                            }
+                        }
+
+                        & > .intro {
+                            & {
+                                display: table-cell;
+                                vertical-align: middle;
+                                padding-left: 15px;
+                            }
+
+                            & > div {
+                                & {
+                                    font-size: #{$font-size};
+                                    color: #aaa;
+                                }
+
+                                &.name {
+                                    & {
+                                        font-weight: bold;
+                                        display: block;
+                                    }
+                                }
+
+                                &.decoration {
+                                    & {
+                                        display: block;
+                                        padding-top: 3px;
+                                        font-size: #{$font-size - 2};
+                                    }
+                                }
+                            }
                         }
                     }
 
-                    &:active {
+                    & > .sim {
                         & {
-                            border: 1px solid #e02554;
-                            @include transition(.2s all);
-                        }
-                        & > i {
-                            color: #e02554;
-                            @include transition(.2s all);
+                            width: 30%; height: auto;
+                            display: inline-block;
+                            text-align: right;
+                            vertical-align: middle;
                         }
 
-                        & > span{
-                            color: #e02554;
-                            @include transition(.2s all);
+                        & > button{
+                            & {
+                                position: relative;
+                                display: inline-block;
+                                width: auto; height: auto;
+                                border: 0; background: none;
+                                margin: 0; padding: 0;
+                                outline: none; cursor: pointer;
+                                padding: 0 15px;
+                            }
+
+                            & > i {
+                                & {
+                                    left: 50%; top: 50%;
+                                    font-size: #{$font-size + 12};
+                                    color: #bbb;
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                }
+                            }
+
+                            & > span {
+                                & {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                }
+                                & > i {
+                                    & {
+                                        font-size: #{$font-size - 2};
+                                        color: #bbb;
+                                        padding: 0 5px;
+                                        vertical-align: middle;
+                                    }
+                                }
+                                & > span {
+                                    & {
+                                        font-size: #{$font-size + 4};
+                                        color: #bbb;
+                                        font-weight: bold;
+                                        vertical-align: middle;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -357,7 +428,7 @@ export default {
             & > .setting {
                 & {
                     background-color: #f9f9f9;
-                    border-top: 1px solid #ddd;
+                    border-top: 1px solid #f1f1f1;
                     padding: 15px 15px;
                     text-align: right;
                 }

@@ -199,6 +199,7 @@ export default {
 		'tip-tap-menu' : tipTapMenu,
 		'tip-tap-editor' : tipTapEditor,
 	},
+	props: ['info'],
 	directives: {
 		swiper: directive
 	},
@@ -433,7 +434,7 @@ export default {
 			const data = {
 				title : this.Post.title,
 				content : ContentFixed,
-				board : 'free',
+				board : this.info.board,
 				meta : {
 					category : 'vrchat',
 					setting : {

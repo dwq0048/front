@@ -1,5 +1,6 @@
 const config = {
-    board: 'free'
+    board: 'free',
+    list: 'grid'
 }
 
 export { config }
