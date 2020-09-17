@@ -110,7 +110,7 @@
 			<!-- 작은 메뉴 Start -->
 			<div class="post-menu" :class="{ active : MenuFixed.BottomMenu }" ref="BottomMenu">
 				<div ref="BottomMenuSub">
-					<button type="button" title="고정하기">
+					<button type="button" title="고정하기" :class="{ active : FixedMenu }" @click="Fixed" ref="FixedMenu">
 						<span>
 							<i><font-awesome-icon :icon="faThumbtack" /></i>
 							<i><font-awesome-icon :icon="faThumbtack" /></i>
@@ -375,6 +375,7 @@ export default {
 			MinSizeImages : 0,
 			
 			// State
+			FixedMenu : false,
 			ImagesActive : {
 				index : false,
 				ratio : 0
@@ -547,6 +548,9 @@ export default {
 				}
 			});
 		},
+		Fixed() {
+			this.FixedMenu = (this.FixedMenu) ? false : true
+		},
 		Submit() {
 			const FileListItems = (files) => {
 				var b = new ClipboardEvent("").clipboardData || new DataTransfer()
@@ -599,6 +603,21 @@ export default {
 	mounted(){
 		SET_SCRIPT.optimizedResize();
 
+		// 슬라이드 이벤트
+		// 슬라이드 엑티브
+		// 슬라이드 버튼
+
+		// 메뉴 이미지 이동
+		// 메뉴 이미지 썸네일
+		// 썸네일이 없어요 부분에 썸네일 등록
+		// 메뉴 이미지 삭제
+
+		// 슬라이드 스와이프
+		// 메뉴 이미지 스와이프
+
+		// 테그 스페이스바 또는 엔터 또는 또는 ,로 분류
+		// 테그 JSON으로 저장
+
 		// Add Style
 		let EditorStyle = '';
 		this.EditorMenu.forEach((item, index) => {
@@ -639,18 +658,21 @@ export default {
                 left: BottomElement.left
 			}
 
-			if(BottomPosition.bottom < 0){
-				BottomMenuSub.style.left = `${BottomPosition.left}px`;
-				BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-				this.MenuFixed.BottomMenu = true;
+			if(!this.FixedMenu){
+				if(BottomPosition.bottom < 0){
+					BottomMenuSub.style.left = `${BottomPosition.left}px`;
+					BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
+					this.MenuFixed.BottomMenu = true;
+				}else{
+					BottomMenuSub.style.left = ``;
+					this.MenuFixed.BottomMenu = false;
+				}
 			}else{
 				BottomMenuSub.style.left = ``;
-				//BottomMenu.style.height = ``;
 				this.MenuFixed.BottomMenu = false;
 			}
 
 		}
-		// SET Scroll END
 
 		const ProgressSet = () => {
 			const ProgressMbSize = { width: ProgressMb.clientWidth };
@@ -660,11 +682,13 @@ export default {
 		}
 
         window.addEventListener('scroll', (data) => {
+			BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
 			EventMenu();
 			ProgressSet();
 		});
 
 		window.addEventListener("optimizedResize", function() {
+			BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
 			EventMenu();
 			ProgressSet();
 		});
@@ -674,7 +698,16 @@ export default {
 			EventMenu();
 			ProgressSet();
 		});
+
+		this.$refs.FixedMenu.addEventListener("click", function() {
+			BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
+			EventMenu();
+			ProgressSet();
+		});
+		// SET Scroll END
 		
+
+		// 밑에는 꾸욱 클릭하는 이벤트
 		let isDown = false;
 		let isAble = false;
 		let Able = {
@@ -724,8 +757,6 @@ export default {
 					},1000)
 				}
 			},500);
-
-			console.log(e);
 		});
 
 		this.$refs.Preview.addEventListener("mousemove", (e) => {
@@ -1151,7 +1182,7 @@ export default {
 								width: auto; height: auto;
 								overflow: hidden;
 								border-radius: 3px;
-								display: none;
+								visibility: hidden;
 								@include no-drag();
 							}
 
@@ -1229,7 +1260,7 @@ export default {
 
 							&.active {
 								& {
-									display: block;
+									visibility: visible;
 								}
 
 								& > div {
@@ -1259,7 +1290,7 @@ export default {
 								left: 0; top: 0;
 								width: 70px; height: auto;
 								opacity: 0;
-								display: none;
+								visibility: hidden;
 								@include no-drag();
 								@include transform(translate(-50%, -50%));
 								@include transition(.2s opacity);
@@ -1298,7 +1329,7 @@ export default {
 
 							&.active {
 								& {
-									display: block;
+									visibility: visible;
 									opacity: 1;
 									@include transition(.2s opacity);
 								}
@@ -1314,7 +1345,7 @@ export default {
 
 								&.nav {
 									& {
-										display: none;
+										visibility: hidden;
 										opacity: 0;
 										@include transition(.2s opacity);
 									}
@@ -1577,7 +1608,7 @@ export default {
 								& > i:nth-child(2) {
 									margin-top: 0px;
 									margin-left: 0px;
-									background-color: $bg-orange;
+									color: $bg-orange;
 									@include transition(.2s all);
 								}
 							}
