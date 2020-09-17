@@ -5,6 +5,19 @@
                 <div class="logo">
                     <router-link to="/" title="홈으로"><span>VV</span></router-link>
                 </div>
+                <div class="navigation">
+                    <ul>
+                        <li>
+                            <router-link to="/community">커뮤니티</router-link>
+                        </li>
+                        <li>
+                            <router-link to="/library">라이브러리</router-link>
+                        </li>
+                        <li>
+                            <router-link to="/libray/vrchat">VRCHAT API</router-link>
+                        </li>
+                    </ul>
+                </div>
                 <div class="menu" title="메뉴">
                     <router-link to="/auth/login" title="로그인" v-if="!GET_LOGIN" class="btn">로그인</router-link>
                     <router-link to="/auth/join" title="회원가입" v-if="!GET_LOGIN" class="btn">회원가입</router-link>
@@ -110,6 +123,40 @@ export default {
                         }
                     }
   
+                }
+
+                & > .navigation {
+                    & {
+                        width: auto; height: 50px;
+                        padding-left: 15px;
+                        float: left;
+                    }
+
+                    & > ul {
+                        & {
+                            width: auto; height: 100%;
+                            font-size: 0; list-style: none;
+                        }
+
+                        & > li {
+                            & {
+                                display: inline-block;
+                                width: auto; height: 100%;
+                                padding: 0 30px;
+                            }
+
+                            & > a {
+                                & {
+                                    display: block;
+                                    font-size: #{$font-size - 1};
+                                    color: #fff;
+                                    text-decoration: none;
+                                    line-height: 50px;
+                                    letter-spacing: 1px;
+                                }
+                            }
+                        }
+                    }
                 }
 
                 & > .menu {

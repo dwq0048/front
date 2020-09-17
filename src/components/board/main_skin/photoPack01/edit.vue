@@ -1,532 +1,593 @@
 <template>
-    <div class="post" ref="post">
-		<input type="file" ref="UploadImage" multiple @change="UpdateImage($event.target.name, $event.target.files)">
-    	<div class="content" ref="postContent" :class="{ display : slide.content.display, move : slide.content.move, absolute : slide.content.absolute, temp : slide.content.temp }">
-			<div class="post-nav">
-				<div>
-					<button type="button" class="prev" title="목록으로">
-						<i><font-awesome-icon :icon="faAngleLeft" /></i>
-					</button>
-					<div>
-						<h1>새 게시물</h1>
-					</div>
-					<button type="button" class="write" title="공유하기" @click="submit()">
-						<i><font-awesome-icon :icon="faEdit" /></i>
-					</button>
-				</div>
-			</div>
+    <div class="post">
 
-			<div class="post-title">
+		<!-- Title Start -->
+		<div class="send">
+			<div>
+				<button type="button" class="prev" title="목록으로">
+					<i><font-awesome-icon :icon="faList" /></i>
+					<span>목록으로</span>
+				</button>
+				<button type="submit" class="submit" @click="Submit()">
+					<i><font-awesome-icon :icon="faEdit" /></i>
+					<span>글쓰기</span>
+				</button>
+			</div>
+		</div>
+		<!-- Title End -->
+
+		<div class="write">
+
+			<div class="post-thumb">
 				<div class="title">
 					<h1>내용</h1>
-					<button type="button" title="사진 추가" @click="tempImage">
-						<i><font-awesome-icon :icon="faPlus" /></i>
-						<span>사진 추가</span>
-					</button>
 				</div>
-
-				<div class="thumbnail" v-if="!thumbState">
-					<div>
-						<i class="img"><font-awesome-icon :icon="faImage" /></i>
-						<span>썸네일이 없어요</span>
+				<div class="list">
+					<div class="title">
+						<div>
+							<div>
+								<span class="no">
+									<i><font-awesome-icon :icon="faImage" /></i>
+									<span>썸네일이 없어요</span>
+								</span>
+							</div>
+						</div>
 					</div>
-				</div>
-
-				<div class="thumbnail active" v-if="thumbState">
-					<div>
-						<img :src="thumbnail.base" />
-					</div>
-				</div>
-
-				<div class="textarea">
-					<div>
-						<editor-content :editor="editor" />
+					<div class="textarea">
+						<div>
+							<div>
+								<!-- Editor Start -->
+								<tip-tap-editor :editor="editor" />
+								<!-- Editor End -->
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 
-			<div class="post-photo">
+			<div class="post-tag">
 				<div class="title">
-					<h1>사진 수정</h1>
-					<div class="setting">
-						<button type="button" @click="CheckDelete()">
-							<i><font-awesome-icon :icon="faTrashAlt" /></i>
-							<span>선택 삭제</span>
+					<h1>테그 설정</h1>
+				</div>
+				<div class="set-tag">
+					<div></div>
+				</div>
+			</div>
+
+			<div class="post-preview">
+				<div class="title">
+					<h1>미리보기</h1>
+				</div>
+				<div class="list" ref="Preview">
+					<ul v-if="StorageImages.length > 0" :style="`padding-bottom:${ImagesActive.ratio}%`">
+						<li v-for="(item, i) in StorageImages" :key="i" :class="{ active : i ==  ImagesActive.index }">
+							<div class="image">
+								<img :src="item.base">
+							</div>
+						</li>
+						<button type="button" class="move left">
+							<span>
+								<i><font-awesome-icon :icon="faChevronLeft" /></i>
+							</span>
 						</button>
-						<button type="button" @click="CheckDisabled()">
-							<i><font-awesome-icon :icon="faExclamationCircle" /></i>
-							<span>선택 해제</span>
+						<button type="button" class="move right">
+							<span>
+								<i><font-awesome-icon :icon="faChevronRight" /></i>
+							</span>
 						</button>
-						<button type="button" @click="CheckAll()">
-							<i><font-awesome-icon :icon="faCheckCircle" /></i>
-							<span>모두 선택</span>
-						</button>
+						<div class="isDown" ref="isDown">
+							<div>
+								<div></div>
+							</div>
+						</div>
+						<div class="nav" ref="Able">
+							<div>
+								<button type="button" :class="{ active : ImagesClose.state }">닫기</button>
+								<ul>
+									<li v-for="(item, i) in ImagesNav" :key="i">
+										<button type="button" :data-en="item.en" :class="{ active : item.state }">{{ item.ko }}</button>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</ul>
+				</div>
+				<!--
+				<div class="pre-list">
+					<div>
+						<ul v-if="StorageImages.length > 0">
+							<li v-for="(item, i) in StorageImages" :key="i" :class="{ active : i ==  ImagesActive.index }">
+								<div class="image">
+									<img :src="item.base">
+								</div>
+							</li>
+						</ul>
 					</div>
 				</div>
-				<div class="list">
-					<draggable tag="ul" :move="photoMove" v-model="imageStorage" handle=".usemove" @end="photoChange">
-						<li v-for="(item, i) in imageStorage" :key="i">
-							<div :class="{ thumb : (i == thumbnail.num) }">
-								<div>
-									<img v-if="!item.isCrop" :src="item.base" />
-									<img v-if="item.isCrop" :src="item.crop.base" />
+				-->
+			</div>
 
-									<div class="bg"></div>
-									<div class="setting">
-										<button type="button" title="이미지 사이즈 변경" @click="crop(i)">
-											<span><i><font-awesome-icon :icon="faCropAlt" /></i></span>
+			<!-- 작은 메뉴 Start -->
+			<div class="post-menu" :class="{ active : MenuFixed.BottomMenu }" ref="BottomMenu">
+				<div ref="BottomMenuSub">
+					<button type="button" title="고정하기">
+						<span>
+							<i><font-awesome-icon :icon="faThumbtack" /></i>
+							<i><font-awesome-icon :icon="faThumbtack" /></i>
+						</span>
+					</button>
+
+						<div>
+							<div class="title" ref="TitleMenu">
+								<ul>
+									<li v-for="(item, i) in EditorMenu" :key="i" :data-index="i" :class="{ 'is-active' : EditorMenu[i].active }" @click="EditorActive(i)" ref="EditorHover">
+										<button type="button" :title="item.ko">
+											<i><font-awesome-icon :icon="item.icon" /></i>
 										</button>
-										<button type="button" title="대표 이미지 선택" @click="SetThumb(i)">
-											<span><i><font-awesome-icon :icon="faCrown" /></i></span>
-										</button>
-										<button type="button" title="순서 변경" class="usemove">
-											<span><i><font-awesome-icon :icon="faArrowsAlt" /></i></span>
-										</button>
+									</li>
+									<div class="active" ref="EditorActive"></div>
+								</ul>
+							</div>
+
+							<div class="list">
+								<ul ref="EditorList">
+									<li :class="{ active : EditorMenu[0].active }">
+										<ul class="upload">
+											<li>
+												<input type="file" @change="UpdateFile('UploadImage')" multiple="multiple" ref="UploadImage"/>
+												<button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
+													<span class="image">
+														<i>
+															<font-awesome-icon :icon="faImage" />
+															<span>사진 추가</span>
+														</i>
+													</span>
+													<span class="plus">
+														<i>
+															<font-awesome-icon :icon="faPlus" />
+														</i>
+													</span>
+												</button>
+											</li>
+										</ul>
+										<div class="list" ref="ImageSwiper" v-swiper:ImageSwiper="ImageSwipeOption">
+											<ul class="swiper-wrapper">
+												<li class="swiper-slide" v-for="(item, i) in StorageImages" :key="i">
+													<div>
+														<img :src="item.base">
+													</div>
+												</li>
+											</ul>
+										</div>
+										<div class="progress" ref="Progress">
+											<div class="bar">
+												<div class="bar" ref="SizeImages"></div>
+											</div>
+											<div class="info" ref="ProgressMb">
+												<div>
+													<span>{{ BytesToSize(MinSizeImages) }}</span> / <span>{{ BytesToSize(MaxSizeImages) }}</span>
+												</div>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+
+				</div>
+			</div>
+			<!-- 작은 메뉴 End -->
+
+			<!-- Option Start -->
+			<div class="post-option">
+				<div class="post-setting">
+					<table>
+						<tr class="category">
+							<td>카테고리</td>
+							<td>
+								<div class="select">
+									<div>
+										<select name="" id="">
+											<option value="default">카테고리가 없음</option>
+										</select>
 									</div>
-									<label class="check">
-										<input type="checkbox" v-model="photoList" :value="i" @change="CheckChange(i)">
+								</div>
+							</td>
+						</tr>
+						<tr class="open">
+							<td>공개 설정</td>
+							<td>
+								<div>
+									<label class="checkbox">
+										<input type="checkbox">
 										<div>
 											<i><font-awesome-icon :icon="faCheck" /></i>
 										</div>
+										<span>검색 허용</span>
 									</label>
-									<div class="title">
-										<p>대표</p>
-									</div>
 								</div>
-							</div>
-						</li>
-						<li class="active" @click="tempImage">
-							<div title="사진 추가">
+
 								<div>
-									<i class="img"><font-awesome-icon :icon="faImages" /></i>
-									<i class="upload"><font-awesome-icon :icon="faFileUpload" /></i>
-								</div>
-							</div>
-						</li>
-					</draggable>
-				</div>
-			</div>
-
-			<div class="post-setting">
-				<div v-for="(title, i) in setting" :key="i">
-					<div class="title">
-						<h1>{{ title.display }}</h1>
-						<button type="button" @click="RotateMenu(i)" :class="{ active : setting[i].state }">
-							<i><font-awesome-icon :icon="faAngleLeft" /></i>
-						</button>
-					</div>
-					<ul :class="{ active : setting[i].state }" ref="settingRef">
-						<li v-for="(item, i) in title.child" :key="i">
-							<div>
-								<label>
-									<input type="checkbox" v-model="item.value">
-									<div class="setting">
-										<p>{{ item.display }}</p>
-									</div>
-									<div>
+									<label class="checkbox">
+										<input type="checkbox">
 										<div>
-											<span></span>
-											<div>
-												<div></div>
-											</div>
-											<span></span>
+											<i><font-awesome-icon :icon="faCheck" /></i>
 										</div>
-									</div>
-								</label>
-							</div>
-						</li>
-					</ul>
+										<span>글쓴이 익명</span>
+									</label>
+								</div
+								>
+								<div>
+									<label class="checkbox">
+										<input type="checkbox">
+										<div>
+											<i><font-awesome-icon :icon="faCheck" /></i>
+										</div>
+										<span>게시글 비공개</span>
+									</label>
+								</div>
+							</td>
+						</tr>
+					</table>
 				</div>
 			</div>
-		</div>
-
-		<div class="crop" ref="postCrop" :class="{ display : slide.crop.display, move : slide.crop.move, absolute : slide.crop.absolute }">
-			<div class="post-nav">
-				<div>
-					<button type="button" class="prev" title="닫기" @click="cropToggle(false)">
-						<i><font-awesome-icon :icon="faAngleLeft" /></i>
-					</button>
-					<div>
-						<h1>이미지 자르기</h1>
-					</div>
-					<button type="button" class="write" @click="cropResult(cropImage.index)">
-						<p>적용하기</p>
-					</button>
-				</div>
-			</div>
-			<div class="post-content">
-				<div>
-					<div class="background" :style="{backgroundImage: 'url('+ cropImage.base +')'}"></div>
-					<cropper classname="cropper" :src="cropImage.base" :stencilProps="{ minAspectRatio: 8/8, maxAspectRatio: 8/8 }" ref="cropper"></cropper>
-				</div>
-			</div>
+			<!-- Option End -->
 		</div>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { Editor, EditorMenuBar } from 'tiptap'
+import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
+import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
+import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
+
+import { SET_SCRIPT } from '@/store/helper/index'
+//import Swipe from 'swipejs'
+
+
+import { 
+	Heading, Bold, Italic, Strike, Underline, Link,
+	AlignLeft, AlignCenter, AlignRight,
+	ListBullet, ListOrdered, ListItem, Blockquote, Image,
+	HorizontalRule, BlankAutoLink,
+
+	HardBreak, Search,
+} from '@/components/plugin/textarea/script'
+
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faImage, faImages, faFileUpload, faPlus, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faFileUpload, faFile, faChevronLeft, faChevronRight, faCheck, faImage, faSmile, faVideo, faList, faEdit, faThumbtack } from '@fortawesome/free-solid-svg-icons'
+import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
-import { Editor, EditorContent, EditorMenuBar } from 'tiptap'
-import { Placeholder } from 'tiptap-extensions'
-import draggable from 'vuedraggable'
-import { Cropper } from 'vue-advanced-cropper'
-import { SET_BOARD, SET_SCRIPT } from '@/store/helper'
+import { SET_BOARD } from '@/store/helper/index'
 
-const postStore = 'postStore';
+const sanitizeHtml = require('sanitize-html');
+const postStore = 'postStore'
 
 export default {
     name: 'DefaultPost',
     components: {
-		FontAwesomeIcon,
-		draggable,
-		EditorContent
+		Swiper,
+		SwiperSlide,
+		'tip-tap-menu' : tipTapMenu,
+		'tip-tap-editor' : tipTapEditor,
+	},
+	props: ['info'],
+	directives: {
+		swiper: directive
 	},
 	data() {
 		return {
-			faImage, faPlus, faImages, faFileUpload, faCropAlt, faCheck, faCrown, faCheckCircle, faExclamationCircle, faTrashAlt, faArrowsAlt, faAngleLeft, faEdit, faTimes,
-
-			imgIndex: 0,
-			imageStorage: [],
-			thumbState : false,
-			thumbnail: {
-				num : false,
-				base : ''
-			},
-
-			Cropper,
-			cropImage: '',
-
-			photoList: [],
-			message: '',
-
-			slide: {
-				content : {
-					move : false,
-					display : false,
-					absolute : false,
-					temp : false,
-				},
-				crop : {
-					move : false,
-					display : false,
-					absolute : false,
-				}
-			},
-			setting : [
-				{
-					name: 'detail',
-					display: '세부 설정',
-					state: false,
-					child: [
-						{
-							name: 'PrivateUser',
-							display: '작성자 비공개',
-							value: false
-						},
-						{
-							name: 'PrivateComment',
-							display: '댓글 비공개',
-							value: false
-						},
-						{
-							name: 'PrivatePost',
-							display: '게시글 비공개',
-							value: false
-						},
-					]
-				}
-			],
+			//Editor
 			editor: new Editor({
     			extensions: [
-					new Placeholder({
-						emptyEditorClass: 'is-editor-empty',
-						emptyNodeClass: 'is-empty',
-						emptyNodeText: '내용을 입력해주세요  #vrcaht  #화본역',
-						showOnlyWhenEditable: true,
-						showOnlyCurrent: true,
-					}),
-				],
-				//content: ``,
+					new Heading({ levels: [1, 2, 3, 4, 5, 6] }),
+					new Bold(),
+					new Italic(),
+					new Strike(),
+					new Underline(),
+					new Link(),
+
+					new AlignLeft(),
+					new AlignCenter(),
+					new AlignRight(),
+
+					new ListBullet(),
+					new ListOrdered(),
+					new ListItem(),
+					new Blockquote(),
+					new Image(),
+
+					new HorizontalRule(),
+					new BlankAutoLink(),
+
+					new HardBreak(),
+					new Search(),
+        		],
+				content: `<h1>첫줄은 제목으로 자동 인식됩니다.</h1><p>알잘딱깔센하게 쓰세요</p>`,
 				onUpdate: ({ getHTML }) => {
-					this.message = getHTML();
+					this.Post.content = getHTML();
 				},
 			}),
+
+			EditorMenu : [
+				{
+					ko : '사진',
+					en : 'Photo',
+					icon : faImage,
+					auth : 1,
+					active : false,
+				},
+				{
+					ko : '동영상',
+					en : 'Vidio',
+					icon : faVideo,
+					auth : 2,
+					active : false,
+				},
+				{
+					ko : '유튜브',
+					en : 'Youtube',
+					icon : faYoutube,
+					auth : 1,
+					active : false,
+				},
+				{
+					ko : '이모티콘',
+					en : 'Emoticon',
+					icon : faSmile,
+					auth : 1,
+					active : false,
+				},
+				{
+					ko : '파일',
+					en : 'File',
+					icon : faFileUpload,
+					auth : 2,
+					active : false,
+				},
+
+			],
+
+			// Swiper
+			ImageSwipeOption : {
+
+			},
+			
+			// Icon
+			faPlus, faFileUpload, faFile, faChevronLeft, faChevronRight,
+			faCheck, faImage, faSmile, faList, faEdit, faVideo,
+			faYoutube, faThumbtack,
+
+			MenuFixed : {
+                BottomMenu : false
+			},
+			
+			TimeWaiting : {
+				Bottom : true
+			},
+
+			// Storage
+			StorageImages : [],
+			MaxSizeImages : 7340032,
+			MinSizeImages : 0,
+			
+			// State
+			ImagesActive : {
+				index : false,
+				ratio : 0
+			},
+			ImagesThumbnail : false,
+			ImagesClose : {
+				en : 'close',
+				ko : '닫기',
+				state : true
+			},
+			ImagesNav : [
+				{
+					en : 'original',
+					ko : '원본보기',
+					state : false
+				},
+				{
+					en : 'sizeUp',
+					ko : '크게보기',
+					state : false
+				},
+				{
+					en : 'download',
+					ko : '다운로드',
+					state : false
+				}
+			],
+
+			// Post
+			Post : {
+				title : '',
+				content : '',
+			},
 		}
 	},
 	methods: {
 		...mapActions(postStore, [
 			'POST'
 		]),
-		displayTag(payload){
-			this.setting[0].child.map((item) => {
-				if(item.name == payload){
-					const object = {
-						name: event.target.innerText
+		TriggerInput(type){
+			try{
+				this.$refs[type].click();
+			} catch(err) {
+				console.log('Undefined Element');
+			}
+		},
+		UpdateFile(type){
+			const _this = this;
+			const ref = _this.$refs;
+
+			const Spend = {
+				async UploadImage(type){
+					const files = ref[type].files;
+					const storage = [];
+
+					files.forEach(item => {
+						switch(item.type){
+							case 'image/jpeg':
+								storage.push(item);
+								break;
+							case 'image/png':
+								storage.push(item);
+								break;
+							default:
+						}
+					});
+
+					for await (const item of storage){
+						const src = await SET_BOARD.encodeBase64ImageFile(item);
+						const options = await SET_SCRIPT.getImageDimensions(src);
+						const index = _this.StorageImages.length;
+						const position = {
+							width: options.w,
+							height: options.h,
+							ratio: (options.h / options.w) * 100
+						}
+
+						_this.StorageImages.push({
+							base : src,
+							type : item.type,
+							size : item.size,
+							name : item.name,
+							position : position,
+							state : {
+								active : false,
+								thumbnail : false,
+							}
+						});
 					}
 
-					item.array.push(object);
-				}
-			});
+					_this.MinSizeImages = 0;
+					_this.StorageImages.forEach((item, index) => {
+						_this.MinSizeImages += item.size;
+						_this.StorageImages[index].state.active = (index == 0) ? true : false;
+						_this.StorageImages[index].state.thumbnail = (index == 0) ? true : false;
 
-			event.target.innerText = '';
+						(index == 0) ? _this.ImagesActive.index = index : false;
+						(index == 0) ? _this.ImagesActive.ratio = _this.StorageImages[index].position.ratio : 0;
+						(index == 0) ? _this.ImagesThumbnail = index : false;
+					});
+
+					const CurrentSize = (Number(_this.MinSizeImages) / Number(_this.MaxSizeImages) * 100).toFixed(4);
+					ref['SizeImages'].style.width = `${CurrentSize}%`;
+
+					// SET ACTIVE
+					//ref['PreUl'].style.paddingbottom = `${_this.StorageImages[_this.ImagesActive].position.ratio}px`;
+				},
+			}
+
+			try{
+				Spend[type](type);
+			} catch(err) {
+				console.log(err);
+			}
 		},
-		tempImage(){
-			const elem = this.$refs.UploadImage;
-			elem.click();
-		},
-		CheckAll(){
-			let index = 0;
-			this.imageStorage.map(item => {
-				this.photoList.push(index);
-				item.checked = true;
-				index++;
+		EditorActive(index){
+			this.EditorMenu.map(item => {
+				if (item.active == true){
+					item.active = false;
+				}
 			})
+
+			this.EditorMenu[index].active = true;
 		},
-		CheckDisabled(){
-			this.imageStorage.map(item => {
-				if(item.checked == true){
-					item.checked = false;
-				}
-			})
-			this.photoList = [];
+		BytesToSize(bytes) {
+			const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+			if (bytes == 0) return '0 MB';
+			let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+			if (i == 0) return bytes + ' ' + sizes[i];
+			return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
 		},
-		CheckChange(index){
-			if(this.imageStorage[index].checked == true){
-				this.imageStorage[index].checked = false
-			}else {
-				this.imageStorage[index].checked = true
-			}
-		},
-		CheckDelete(){
-			const array = [];
-
-			this.imageStorage.filter((item) => {
-				if(item.checked != true){
-					array.push(item)
-				}
-			});
-
-			this.imageStorage = array;
-			this.photoList = [];
-			if(this.imageStorage.length > 0){
-				this.thumbnail = {
-					num : 0,
-					base : this.imageStorage[0].base
-				}
-			}else{
-				this.thumbnail = {
-					num : false,
-					base : ''
-				}
-				this.thumbState = false;
-			}
-
-			this.CheckDisabled();
-		},
-		crop(index){
-			const crop = this.imageStorage[index];
-			this.cropImage = {
-				index : index,
-				base : crop.base
-			};
-
-			if(!crop.isCrop){
-				this.$refs.cropper.setCoordinates([
-					(coordinates, imageSize) => ({
-						width: (imageSize.width > imageSize.height) ? imageSize.height : imageSize.width,
-						height: (imageSize.width < imageSize.height) ? imageSize.width : imageSize.height,
-					}),
-					(coordinates, imageSize) => ({
-						left: imageSize.width/2 - coordinates.width/2,
-						top: imageSize.height/2 - coordinates.height/2,
-					})
-				])
-			}else{
-				this.$refs.cropper.setCoordinates([
-					(coordinates, imageSize) => ({
-						width: crop.crop.positon.width,
-						height: crop.crop.positon.height,
-					}),
-					(coordinates, imageSize) => ({
-						left: crop.crop.positon.left,
-						top: crop.crop.positon.top,
-					})
-				])
-			}
-
-			this.cropToggle(true);
-		},
-		cropToggle(payload){
-			if(payload == false){
-				this.$refs.post.style.height = this.$refs.postCrop.offsetHeight+'px';
-				this.slide.content.absolute = true;
-				//this.slide.content.display = false;
-				this.slide.content.move = false;
-				this.slide.content.temp = true;
-
-				this.slide.crop.move = false;
-				this.slide.crop.absolute = true;
-				setTimeout(() => {
-					this.$refs.post.style.height = this.$refs.postContent.offsetHeight+'px';
-					this.slide.content.absolute = false;
-					this.slide.content.temp = false;
-
-					this.slide.crop.display = true;
-					this.slide.crop.absolute = false;
-
-					delHeight();
-				},500);
-			}else {
-				this.$refs.post.style.height = this.$refs.postContent.offsetHeight+'px';
-				this.slide.content.move = true;
-
-				this.slide.crop.move = true;
-				this.slide.crop.display = true;
-				setTimeout(() => {
-					this.$refs.post.style.height = this.$refs.postCrop.offsetHeight+'px';
-					//this.slide.content.display = true;
-
-					//delHeight();
-				},500);
-			}
-
-			const delHeight = () => {
-				setTimeout(() => {
-					this.$refs.post.style.height = '';
-				}, 200)
-			}
-		},
-		cropResult(index) {
-			const { coordinates, canvas, } = this.$refs.cropper.getResult();
-			this.imageStorage[index].isCrop = true;
-			this.imageStorage[index].crop = {
-				position : coordinates,
-				base : canvas.toDataURL()
-			}
-
-			if(this.thumbnail.num == index){
-				this.SetThumb(index);
-			}
-
-			this.cropToggle(false);
-		},
-		UpdateImage(name, file){
-			this.CheckDisabled();
-			for(let i=0;i<file.length;i++){
-				this.SETBASE(file[i]);
-			}
-		},
-		SetThumb(payload){
-			if(!this.imageStorage[payload].isCrop){
-				this.thumbnail = {
-					num : payload,
-					base : this.imageStorage[payload].base,
-				};
-			} else {
-				this.thumbnail = {
-					num : payload,
-					base : this.imageStorage[payload].crop.base,
-				};
-			}
-			this.thumbState = true;
-		},
-		photoMove(evt){
-			try {
-				return (evt.draggedContext.element.name);
-			} catch{
-				return false;
-			}
-		},
-		photoChange(evt){
-			let index = 0;
-
-			this.photoList = [];
-			this.imageStorage.map(item => {
-				if(item.checked == true){
-					this.photoList.push(index)
-				};
+		dataURLtoFile(dataurl, fileName) {
+			var arr = dataurl.split(','),
+				mime = arr[0].match(/:(.*?);/)[1],
+				bstr = atob(arr[1]), 
+				n = bstr.length, 
+				u8arr = new Uint8Array(n);
 				
-				index++;
-			});
-
-			if(evt.oldIndex == this.thumbnail.num){
-				this.thumbnail.num = evt.newIndex;
+			while(n--){
+				u8arr[n] = bstr.charCodeAt(n);
 			}
-
-			console.log(this.thumbnail.num);
-		},
-		RotateMenu(index){
-			const element = this.setting[index];
-			if(element.state){
-				this.setting[index].state = false;
-			} else {
-				this.setting[index].state = true;
-			}
-
-			console.log(this.setting[index]);
-		},
-		async SETBASE(payload){
-			return await SET_BOARD.encodeBase64ImageFile(payload).then((req) => {
-				payload.index = this.imgIndex;
-				payload.base = req;
-				payload.checked = false;
-				payload.iscrop = false;
-				payload.crop = {
-					position : {
-						width: 0,
-						height: 0,
-						left: 0,
-						top: 0,
-					},
-					base : ''
-				}
-				this.imgIndex++;
-				this.imageStorage.push(payload);
-
-				if(this.thumbState == false){
-					this.thumbnail = {
-						num : this.imageStorage[0].index,
-						base : this.imageStorage[0].base
-					};
-					this.thumbState = true;
-				};
-			});
-		},
-		submit() {
-			const data = {
-				position: 'photo',
-				title: 'null',
-				post: this.message,
-			}
-
-			const IMG = this.imageStorage;
-			const meta = {};
-			meta.imgMeta = [];
-			meta.thumbnail = {};
 			
-			const fs = new FormData();
-			fs.append('position', data.position);
-			fs.append('title', data.title);
-			fs.append('post', data.post);
+			return new File([u8arr], fileName, {type:mime});
+		},
+		SetHtml(content) {
+			return sanitizeHtml(content ,{
+				allowedTags: [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'i', 's', 'a', 'p', 'hr', 'br', 'ul', 'ol', 'li', 'blockquote', 'img', 'iframe' ],
+				allowedAttributes: {
+					'a': [ 'href', 'name', 'target' ],
+					'*': [ 'style' ],
+					'img': [ 'data-index', 'src' ]
+				},
+				allowedStyles: {
+					'*': {
+						'text-align': [/^left$/, /^right$/, /^center$/]
+					}
+				},
+				allowedIframeHostnames: ['www.youtube.com'],
+				transformTags: {
+					'img': function(tagName, attribs) {
+						let imageIndex = attribs['data-index'];
 
-			for(let i=0;i<IMG.length;i++){
-				delete IMG[i].crop.base;
-				
-				meta.imgMeta.push({
-					isCrop: (IMG[i].isCrop)? true : false,
-					crop: IMG[i].crop
-				});
-
-				delete IMG[i].base;
-				delete IMG[i].checked;
-				fs.append('images', IMG[i]);
+						return {
+							tagName: 'img',
+							attribs: {
+								'data-index': imageIndex
+							}
+						};
+					}
+				}
+			});
+		},
+		Submit() {
+			const FileListItems = (files) => {
+				var b = new ClipboardEvent("").clipboardData || new DataTransfer()
+				for (var i = 0, len = files.length; i<len; i++) b.items.add(files[i])
+				return b.files
 			}
 
-			meta.thumbnail.num = this.thumbnail.num;
-			fs.append('meta', JSON.stringify(meta));
+			const ContentFixed = this.SetHtml(this.Post.content);
+
+			const ImageList = [];
+			const data = {
+				title : this.Post.title,
+				content : ContentFixed,
+				board : this.info.board,
+				meta : {
+					category : 'vrchat',
+					setting : {
+						search : true,
+						anonymous : false,
+						private : false,
+					},
+					tag : {},
+				},
+			}
+
+			this.StorageImages.map(item => {
+				const toFile = this.dataURLtoFile(item.base, item.name);
+				ImageList.push(toFile);
+			});
+
+			const ImageRequest = new FileListItems(ImageList);
+
+			const fs = new FormData();
+			fs.append('board', data.board);
+			fs.append('title', data.title);
+			fs.append('content', data.content);
+			fs.append('meta', data.meta);
+
+			for(let i=0;i<ImageRequest.length;i++){
+				fs.append('images', ImageRequest[i]);
+			}
 
 			this.POST(fs).then((req) => {
 				console.log(req);
@@ -535,675 +596,631 @@ export default {
 			});
 		}
 	},
-	mounted() {
-		/*
-		const tag = this.$refs.listag[0];
-		tag.addEventListener('focusin', () => {
-			console.log('in')
-			SET_SCRIPT.addClass({ el: tag, class: 'focused' })
+	mounted(){
+		SET_SCRIPT.optimizedResize();
+
+		// Add Style
+		let EditorStyle = '';
+		this.EditorMenu.forEach((item, index) => {
+			const element = document.querySelector(`.post > .write > .post-menu > div > div > .title > ul > li:nth-child(${index + 1})`);
+			const width = element.clientWidth;
+			const left = element.offsetLeft;
+
+			EditorStyle += `
+				.post > .write > .post-menu > div > div > .title > ul > li.is-active:nth-child(${index + 1}) ~ .active {
+					left: ${left}px;
+					width: ${width}px;
+					transition: .2s all;
+					-webkit-transition: .2s all;
+					-moz-transition: .2s all;
+					-ms-transition: .2s all;
+					-o-transition: .2s all;
+				}
+			`;
+		});
+		this.styleTag = document.createElement('style');
+		this.styleTag.appendChild(document.createTextNode(EditorStyle));
+		document.head.appendChild(this.styleTag);
+		// Add Style END
+
+
+		// SET Scroll
+        const BottomMenu = this.$refs.BottomMenu;
+		const BottomMenuSub = this.$refs.BottomMenuSub;
+		const WinHeight = window.innerHeight;
+
+		const Progress = this.$refs.Progress;
+		const ProgressMb = this.$refs.ProgressMb;
+
+		const EventMenu = () => {
+            const BottomElement = BottomMenu.getBoundingClientRect();
+            const BottomPosition = {
+                bottom: WinHeight - BottomElement.bottom,
+                left: BottomElement.left
+			}
+
+			if(BottomPosition.bottom < 0){
+				BottomMenuSub.style.left = `${BottomPosition.left}px`;
+				BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
+				this.MenuFixed.BottomMenu = true;
+			}else{
+				BottomMenuSub.style.left = ``;
+				//BottomMenu.style.height = ``;
+				this.MenuFixed.BottomMenu = false;
+			}
+
+		}
+		// SET Scroll END
+
+		const ProgressSet = () => {
+			const ProgressMbSize = { width: ProgressMb.clientWidth };
+			const Padding = 30;
+
+			Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
+		}
+
+        window.addEventListener('scroll', (data) => {
+			EventMenu();
+			ProgressSet();
+		});
+
+		window.addEventListener("optimizedResize", function() {
+			EventMenu();
+			ProgressSet();
+		});
+
+		this.$refs.TitleMenu.addEventListener("click", function() {
+			BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
+			EventMenu();
+			ProgressSet();
 		});
 		
-		tag.addEventListener('focusout', () => {
-			console.log('out');
-			SET_SCRIPT.removeClass({ el: tag, class: 'focused' })
-		});
-		*/
+		let isDown = false;
+		let isAble = false;
+		let Able = {
+			x : false,
+			y : false
+		}
 
-		// 썸네일 대표 이미지							o
-		// 내용 - 썸네일 이미지 없음만 표시				 o
-		// 내용 - + 옆에 사진 추가 버튼					 o
-		// 사진 수정 - 오른쪽 + 삭제					o
-		// 세부 설정 - 열고 닫기 기능 + padding			o
-		// 이미지 삭제 index 설정						o
-		// 이미지 수정 후 base64 수정
+		let offsetDown = {
+			x : 0,
+			y : 0
+		}
+
+		this.$refs.Preview.addEventListener("mousedown", (e) => {
+			isDown = true;
+			isAble = false;
+			const position = {
+				x : e.offsetX,
+				y : e.offsetY
+			}
+			offsetDown = position;
+
+			setTimeout(() => {
+				if(isDown){
+					this.$refs.isDown.style.left = `${position.x}px`;
+					this.$refs.isDown.style.top = `${position.y}px`;
+					this.$refs.isDown.classList.add('active');
+
+					setTimeout(() => {
+						if(isDown){
+							isAble = true;
+							this.$refs.isDown.classList.add('nav');
+							Able.x = ((this.$refs.Preview.offsetWidth/2) < position.x) ? true : false;
+							//Able.y = ((this.$refs.Preview.offsetHeight/2) < position.y) ? true : false;
+
+							this.$refs.Able.classList.add('active');
+							this.$refs.Able.style.left = `${position.x}px`;
+							this.$refs.Able.style.top = `${position.y}px`;
+
+							if(Able.x){
+								this.$refs.Able.classList.add('x');
+							}
+
+							//if(Able.y){
+							//	this.$refs.Able.classList.add('y');
+							//}
+						}
+					},1000)
+				}
+			},500);
+
+			console.log(e);
+		});
+
+		this.$refs.Preview.addEventListener("mousemove", (e) => {
+			if(isDown){
+				if(!isAble){
+					isDown = false;
+					this.$refs.isDown.classList.remove('active');
+					this.$refs.isDown.classList.remove('nav');
+
+					this.$refs.Able.classList.remove('active');
+					setTimeout(() => {
+						this.$refs.Able.classList.remove('x');
+						this.$refs.Able.classList.remove('y');
+					},200)
+				}else {
+					setOfsset(e.offsetY);
+				}
+			}
+		});
+
+		this.$refs.Preview.addEventListener("mouseup", (e) => {
+			if(isDown){
+				if(isAble){
+					console.log(setOfsset(e.offsetY));
+				}
+				isDown = false;
+				isAble = false;
+				this.$refs.isDown.classList.remove('active');
+				this.$refs.isDown.classList.remove('nav');
+
+				this.$refs.Able.classList.remove('active');
+
+				this.ImagesClose.state = true;
+				this.ImagesNav.forEach((item, index) => {
+					this.ImagesNav[index].state = false;
+				})
+				setTimeout(() => {
+					this.$refs.Able.classList.remove('x');
+					this.$refs.Able.classList.remove('y');
+				},200)
+			}
+		});
+
+		const setOfsset = (yyy) => {
+			if((offsetDown.y + (35 * 1)) >= yyy){
+				this.ImagesClose.state = true;
+				this.ImagesNav.forEach((item, index) => {
+					this.ImagesNav[index].state = false;
+				});
+
+				return false;
+			}else if((offsetDown.y + (35 * 1)) < yyy && (offsetDown.y + (35 * 2)) >= yyy){
+				this.ImagesClose.state = false;
+				this.ImagesNav.forEach((item, index) => {
+					if(item.en == 'original'){
+						this.ImagesNav[index].state = true;
+					}else{
+						this.ImagesNav[index].state = false;
+					}
+				});
+
+				return 'original';
+			}else if((offsetDown.y + (35 * 2)) < yyy && (offsetDown.y + (35 * 3)) >= yyy){
+				this.ImagesClose.state = false;
+				this.ImagesNav.forEach((item, index) => {
+					if(item.en == 'sizeUp'){
+						this.ImagesNav[index].state = true;
+					}else{
+						this.ImagesNav[index].state = false;
+					}
+				});
+
+				return 'sizeUp';
+			}else if((offsetDown.y + (35 * 3)) < yyy){
+				this.ImagesClose.state = false;
+				this.ImagesNav.forEach((item, index) => {
+					if(item.en == 'download'){
+						this.ImagesNav[index].state = true;
+					}else{
+						this.ImagesNav[index].state = false;
+					}
+				});
+
+				return 'download';
+			}else {
+				return false;
+			}
+		}
+
 	}
 }
 </script>
 
 <style lang="scss" scoped>
-	input[type=file] {
-		display: none;
-	}
-
 	.post {
 		& {
 			background-color: #fff;
 			border:1px solid #ccc;
-			white-space: nowrap;
-			overflow: hidden;
-			height: auto;
-			position: relative;
 			@include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
-			@include transition(.2s all);
+			position: relative;
 		}
 
-		& > .content {
+		& > .send {
 			& {
 				width: 100%;
-				height: auto;
-				left: 0%;
-				display: inline-block;
-				position: relative;
-				vertical-align: top;
-				white-space: normal;
-				padding-bottom: 30px;
-				@include transition(.5s all);
+				height: 45px;
+				background-color: #fff;
+				border-bottom: 1px solid #ddd;
 			}
 
-			& > .post-nav {
+			& > div {
 				& {
 					width: 100%;
-					height: 50px;
-					border-bottom: 1px solid #ccc;
+					height: 100%;
+					position: relative;
 				}
 
-				& > div {
+				& > button {
 					& {
-						width: 100%;
-						height: 100%;
-						position: relative;
+						border: 0;
+						background: none;
+						outline: none;
+						font-size: #{$font-size};
+						padding:0; margin: 0;
+						color: #fff;
+						cursor: pointer;
 					}
 
-					& > div {
+					& > i {
 						& {
-							position: absolute;
-							width: 100%;
+							display: inline-block;
+							font-size: #{$font-size - 2};
+							padding-left: 7px;
+						}
+					}
+
+					& > span {
+						& {
+							display: inline-block;
+							vertical-align: middle;
+							font-size: #{$font-size - 2};
+						}
+					}
+
+					&.submit {
+						& {
 							height: 100%;
-							left: 0; top: 0;
-							z-index: 1;
+							position: absolute;
+							right: 0; top: 50%;
+							padding: 0 30px;
+							font-weight: bold;
+							color: $bg-blue;
+							@include transition(.2s all);
+							@include transform(translateY(-50%) scale(1));
 						}
 
-						& > h1 {
+						& > i {
 							& {
-								font-size: #{$font-size + 2};
-								font-weight: bold;
-								text-align: center;
-								line-height: 49px;
+								display: inline-block;
 								vertical-align: middle;
-							}
-						}
-					}
-					& > button {
-						& {
-							border: none;
-							background: none;
-							outline: none;
-							cursor: pointer;
-							font-size: #{$font-size + 8};
-							color: #999;
-							z-index: 2
-						}
-
-						&.prev {
-							& {
-								width: 50px;
-								height: 100%;
-								border-right: 1px solid #ccc;
-								position: absolute;
-								left: 0; top: 0;
-								@include transition(.2s all);
+								font-size: #{$font-size - 2};
+								padding-right: 10px;
 							}
 						}
 
-						&.write {
+						& > span {
 							& {
-								width: 70px;
-								height: 100%;
-								position: absolute;
-								right: 0; top: 0;
-								font-size: #{$font-size + 4};
-								color: $bg-blue;
-								@include transition(.2s all);
+								display: inline-block;
+								vertical-align: middle;
+								font-size: #{$font-size - 2};
 							}
 						}
 
 						&:hover {
-							&.prev {
-								color: #555;
+							& {
+								color: $bg-blue-bold;
+								@include transform(translateY(-50%) scale(1.1));
 								@include transition(.2s all);
 							}
+						}
+					}
 
-							&.write {
-								color: $bg-blue-bold;
-								@include transition(.2s all);
+					&.prev {
+						& {
+							width: auto; height: 100%;
+							border-right: 1px solid #ddd;
+							background-color: #fff;
+							padding: 0 15px;
+						}
+
+						& > i {
+							& {
+								font-size: #{font-size + 2};
+								color: #555;
+								padding-left: 0;
+								display: inline-block;
+								vertical-align: middle;
+							}
+						}
+
+						& > span {
+							& {
+								padding-left: 15px;
+								color: #555;
+								display: inline-block;
+								font-size: #{$font-size - 2};
+								vertical-align: middle;
 							}
 						}
 					}
 				}
 			}
+		}
 
-			& > .post-title {
+		& > .write {
+
+			& > .post-thumb {
 				& {
-					width: 100%;
-					height: auto;
-					padding: 30px 30px 0 30px;
+					width: 100%; height: auto;
+					padding: 25px;
 				}
 
-				&:after {
-					content: " ";
-					display: block;
-					clear: both;
+				& > .title {
+					& > h1 {
+						& {
+							font-size: #{$font-size + 2};
+							color: $font-color;
+							padding-left: 10px;
+							padding-bottom: 10px;
+						}
+					}
 				}
+				
+				& > .list {
+					& {
+						width: 100%; height: auto;
+						font-size: 0;
+					}
 
-				& > div {
-
-					&.title {
-						& > h1 {
-							font-size: #{$font-size + 4};
-							color: #555;
-							font-weight: bold;
-							padding-bottom: 15px;
+					& > .title{
+						& {
+							width: 20%; height: auto;
+							position: relative;
 							display: inline-block;
 						}
 
-						& > button {
-							& {
-								font-size: #{$font-size + 2};
-								border: none;
-								background: none;
-								outline: none;
-								float: right;
-								color: #999;
-								cursor: pointer;
-								padding: 10px 15px;
-								@include transition(.2s all);
-							}
-
-							& > i {
-								& {
-									vertical-align: middle;
-								}
-							}
-
-							& > span {
-								& {
-									font-size: #{$font-size};
-									font-weight: bold;
-									padding-left: 10px;
-									vertical-align: middle;
-								}
-							}
-
-							&:hover {
-								& {
-									color: #555;
-									@include transition(.2s all);
-								}
-							}
-						}
-					}
-
-					&.thumbnail {
-						& {
-							width: 20%;
-							height: auto;
-							float: left;
+						&:after {
+							content: " ";
+							display: block;
+							padding-top: 100%;
 						}
 
 						& > div {
 							& {
-								width: 100%;
-								position: relative;
-								overflow: hidden;
-								background-color: #f1f1f1;
-								border: 2px solid #ccc;
-								border-style: dashed;
-								@include transition(.2s all);
-							}
-
-							&:after {
-								content: " ";
-								display: block;
-								padding-bottom: 100%;
-							}
-
-							& > i {
-								& {
-									position: absolute;
-									left: 50%; top: 50%;
-									font-size: #{$font-size + 15};
-									color: #ccc;
-									@include transform(translate(-50%, -50%));
-								}
-
-								&.img {
-									& {
-										z-index: 1;
-										font-size: #{$font-size + 20};
-									}
-								}
-
-								&.time {
-									& {
-										z-index: 2;
-										color: #f1f1f1;
-										margin-left: 5px;
-										margin-top: 1px;
-									}
-								}
-
-								&.times {
-									& {
-										z-index: 3;
-									}
-								}
-							}
-
-							& > span {
-								& {
-									position: absolute;
-									left: 50%; top: 50%;
-									color: #ccc;
-									margin-top: 30px;
-									white-space: nowrap;
-									font-size: #{font-size};
-									font-weight: bold;
-									@include transform(translate(-50%, -50%));
-								}
-							}
-
-							& > img {
-								width: 100%;
-								height: 100%;
 								position: absolute;
-								left: 50%; top: 50%;
-								object-fit: cover;
-								@include transform(translate(-50%, -50%));
+								left: 0; top: 0;
+								width: 100%; height: 100%;
+								padding: 5px;
+								overflow: hidden;
 							}
 
 							& > div {
 								& {
 									width: 100%; height: 100%;
-									position: absolute;
-									left: 50%; top: 50%;
-									background-color: rgba(0,0,0,0.5);
-									opacity: 0;
-									@include transition(.2s all);
-									@include transform(translate(-50%, -50%));
+									background-color: #f1f1f1;
+									border: 2px dashed #ddd;
+									border-radius: 3px;
+									position: relative;
+									cursor: pointer;
 								}
 
-								& > p {
+								& > span.no {
 									& {
 										position: absolute;
 										left: 50%; top: 50%;
-										font-size: #{$font-size + 2};
-										color: #f1f1f1;
-										font-weight: bold;
+										display: block;
+										text-align: center;
+										white-space: nowrap;
 										@include transform(translate(-50%, -50%));
 									}
-									
+
+									& > i {
+										& {
+											display: block;
+											font-size: #{$font-size + 12};
+											color: #aaa;
+										}
+									}
+
+									& > span {
+										& {
+											display: block;
+											font-size: #{$font-size - 2};
+											font-weight: bold;
+											color: #aaa;
+										}
+									}
 								}
 							}
 						}
-
-						&.active {
-							& > div {
-								& {
-									border: 1px solid #ddd;
-									border-radius: 3px;
-								}
-							}
-						}
-
 					}
-					
-					&.textarea {
+
+					& > .textarea{
 						& {
-							width: 80%;
-							height: auto;
-							float: left;
+							width: 80%; height: auto;
+							position: relative;
+							display: inline-block;
+						}
+
+						&:after {
+							content: " ";
+							display: block;
+							padding-top: 25%;
 						}
 
 						& > div {
 							& {
-								width: 100%;
-								background-color: #f5f5f5;
-								position: relative;
-								overflow: hidden;
-							}
-
-							&:after {
-								content: " ";
-								display: block;
-								padding-bottom: 25%;
+								position: absolute;
+								left: 0; top: 0;
+								width: 100%; height: 100%;
+								padding: 5px;
 							}
 
 							& > div {
-								position: absolute;
-								width: 100%;
-								height: 100%;
-								overflow-y: scroll;
-								outline: none;
+								& {
+									width: 100%; height: 100%;
+									background-color: #f9f9f9;
+									border-radius: 3px;
+									overflow: hidden;
+									border: 1px solid #ddd;
+								}
+
+								& > .editor {
+									& {
+										padding: 0;
+										min-height: 100%;
+									}
+
+									& > .editor-content {
+										& {
+											min-height: 100%;
+										}
+									}
+								}
 							}
 						}
 					}
 				}
 			}
 
-			& > .post-photo {
+			& > .post-tag {
 				& {
-					width: 100%;
-					margin-top: 30px;
-					padding: 0 30px;
+					width: 100%; height: auto;
+					padding: 0px 30px 0 30px;
 				}
 
 				& > .title {
-					&:after {
-						content: " ";
-						display: block;
-						clear: both;
-					}
-
 					& > h1 {
-						font-size: #{$font-size + 4};
-						color: #555;
-						font-weight: bold;
-						padding-bottom: 15px;
-						float: left;
+						& {
+							font-size: #{$font-size + 2};
+							color: $font-color;
+							padding-left: 5px;
+							padding-bottom: 10px;
+						}
+					}
+				}
+
+				& > .set-tag {
+					& {
+						width: 100%; height: auto;
 					}
 
-					& > .setting {
+					& > div {
 						& {
-							padding-bottom: 15px;
-							float: right;
+							width: 100%; height: 35px;
+							background-color: #ccc;
+							border-radius: 3px;
+							overflow: hidden;
 						}
+					}
+				}
+			}
 
-						&:after {
-							content: " ";
-							display: block;
-							clear: both;
-						}
+			& > .post-preview {
+				& {
+					width: 100%; height: auto;
+					padding: 30px 0 30px 0;
+				}
 
-						& > button {
-							& {
-								float: right;
-								border: 0;
-								background: none;
-								outline: none;
-								font-size: #{$font-size};
-								font-weight: bold;
-								color: #999;
-								cursor: pointer;
-								@include transition(.2s all);
-							}
-
-							& > i {
-								& {
-									vertical-align: middle;
-								}
-							}
-
-							& > span {
-								& {
-									padding-left: 7px;
-									vertical-align: middle;
-									font-size: #{$font-size - 2};
-								}
-							}
-
-							&:hover {
-								& {
-									color: #555;
-									@include transition(.2s all);
-								}
-							}
+				& > .title {
+					& > h1 {
+						& {
+							font-size: #{$font-size + 2};
+							color: $font-color;
+							padding-left: 35px;
+							padding-bottom: 10px;
 						}
 					}
 				}
 
 				& > .list {
+					& {
+						margin: 0 30px;
+						background-color: $bg-black-light;
+					}
 
 					& > ul {
 						& {
-							width: 100%;
+							width: 100%; height: auto;
+							display: block; position: relative;
 							font-size: 0;
-							text-decoration: none;
-							margin-left: -15px;
+							list-style: none;
+							white-space: nowrap;
+							border-radius: 3px;
+							overflow: hidden;
+							@include no-drag();
 						}
 
-						& > li {
+						& > .nav {
 							& {
-								width: 20%;
-								height: auto;
-								display: inline-block;
-								padding-left: 15px;
-								padding-bottom: 15px;
+								position: absolute;
+								left: 0; top: 0;
+								width: auto; height: auto;
+								overflow: hidden;
+								border-radius: 3px;
+								display: none;
+								@include no-drag();
 							}
 
 							& > div {
 								& {
-									width: 100%;
-									height: auto;
-									background-color: #ddd;
-									border-radius: 3px;
+									white-space: nowrap;
+									@include transform(translateY(-100%));
+									@include transition(.2s all);
 								}
 
-								& > div:nth-child(1) {
+								& > button {
 									& {
-										width: 100%;
-										height: auto;
-										position: relative;
-										background-color: #f1f1f1;
-										overflow: hidden;
-										border: 1px solid #ddd;
-										border-radius: 3px;
+										display: block;
+										width: 150px; height: 35px;
+										border: 0; background: none;
+										margin: 0; padding: 0;
+										outline: none;
+										text-align: center;
+										font-size: #{$font-size - 2};
+										color: #aaa;
+										background-color: #fff;
+										font-weight: bold;
 										@include transition(.2s all);
 									}
 
-									&:after {
-										content: " ";
-										display: block;
-										padding-bottom: 100%;
-									}
-
-									& > i {
-										position: absolute;
-										left: 50%; top: 50%;
-										@include transform(translate(-50%, -50%));
-										font-size: #{$font-size + 20};
-										color: #ccc;
-									}
-
-									& > img {
-										width: 100%;
-										height: 100%;
-										position: absolute;
-										left: 50%; top: 50%;
-										@include transform(translate(-50%, -50%));
-										object-fit: cover;
-									}
-
-									& > div.bg {
+									&.active {
 										& {
-											position: absolute;
-											left: 50%; top: 50%;
-											width: 100%; height: 100%;
-											background-color: rgba(0,0,0,0.5);
-											z-index: 1;
-											opacity: 0;
-											@include transform(translate(-50%, -50%));
+											background-color: $bg-blue;
+											color: #fff;
 											@include transition(.2s all);
 										}
 									}
+								}
 
-									& > div.setting {
+								& > ul {
+									& {
+										width: auto; height: auto;
+										list-style: none;
+										font-size: 0;
+										@include no-drag();
+									}
+
+									& > li {
 										& {
-											position: absolute;
-											width: 100%; height: auto;
-											padding: 5px;
-											left: 0; bottom: 0;
-											z-index: 3;
-											background-color: rgba(0,0,0,0.3);
-										}
-
-										&:after {
-											content: " ";
 											display: block;
-											clear: both;
+											width: auto; height: 35px;
 										}
 
 										& > button {
 											& {
-												border: 0;
-												padding: 3px 10px;
-												background: none;
+												display: block;
+												width: 150px; height: 35px;
+												border: 0; background: none;
+												margin: 0; padding: 0;
 												outline: none;
-												cursor: pointer;
-												float: right;
+												text-align: center;
+												font-size: #{$font-size - 2};
+												color: #aaa;
+												background-color: #fff;
+												font-weight: bold;
+												@include transition(.2s all);
 											}
 
-											& > span {
+											&.active {
 												& {
-													position: relative;
-													display: inline-block;
+													background-color: $bg-blue;
 													color: #fff;
-												}
-
-												& > i {
-													display: inline-block;
-													@include transform(scale(1));
 													@include transition(.2s all);
 												}
-											}
-
-											&:nth-last-child(1){
-												cursor: move;
-											}
-
-											&:hover {
-												& > span > i {
-													@include transform(scale(1.1));
-													@include transition(.2s all);
-												}
-											}
-										}
-									}
-
-									& > .title {
-										& {
-											position: absolute;
-											left: 0; top: 0;
-											background-color: $bg-orange;
-											font-size: #{$font-size - 4};
-											color: #fff;
-											opacity: 0;
-											@include transition(.2s all);
-										}
-
-										& > p {
-											padding: 3px 7px;
-										}
-									}
-
-									& > label {
-										& {
-											display: block;
-											cursor: pointer;
-											width: 100%; height: 100%;
-											position: absolute;
-											left: 50%; top: 50%;
-											z-index: 2;
-											@include transform(translate(-50%, -50%));
-										}
-
-										&:after {
-											content: " ";
-											display: block;
-											clear: both;
-										}
-
-										& > input[type=checkbox] {
-											display: none;
-										}
-
-										& > div {
-											& {
-												background: none;
-												border: none;
-												outline: none;
-												width: 23px;
-												height: 23px;
-												background-color: #f9f9f9;
-												border: 2px solid #ddd;
-												border-radius: 50%;
-												float: right;
-												margin-right: 10px;
-												margin-top: 10px;
-												position: relative;
-												@include box-shadow(3px 3px 3px rgba(0,0,0,0.1));
-												@include transition(.2s all);
-											}
-
-											& > i {
-												& {
-													position: absolute;
-													font-size: #{$font-size};
-													color: #f1f1f1;
-													left: 50%; top: 50%;
-													@include transform(translate(-50%, -50%));
-												}
-											}
-										}
-
-										& > input[type=checkbox]:checked + div {
-											border: 1px solid $bg-orange!important;
-											@include transition(.2s all);
-										}
-
-										& > input[type=checkbox]:checked + div > i {
-											color: $bg-orange!important;
-											@include transition(.2s all);
-										}
-									
-									}
-
-									&:hover{
-										& > div {
-											&.bg {
-												& {
-													opacity: 1;
-													@include transition(.2s all);
-												}
-											}
-
-											&.setting {
-												& {
-													background-color: #333;
-													@include transition(.2s all);
-												}
-											}
-										}
-
-										& > label {
-											& > div {
-												& {
-													background-color: #fff;
-													@include transition(.2s all);
-												}
-												
-												& > i {
-													& {
-														color: #ccc;
-														@include transition(.2s all);
-													}
-												}
-											}
-										}
-									}
-
-								}
-
-								&.thumb {
-									& > div:nth-child(1) {
-										& {
-											border: 2px solid $bg-orange;
-											@include transition(.2s all);
-										}
-
-										& > .title {
-											& {
-												opacity: 1;
-												@include transition(.2s all);
 											}
 										}
 									}
@@ -1211,586 +1228,917 @@ export default {
 							}
 
 							&.active {
+								& {
+									display: block;
+								}
+
 								& > div {
 									& {
-										cursor: pointer;
-										border: 2px solid #ccc;
-										border-style: dashed;
+										@include transform(translateY(0));
+										@include transition(.2s all);
+									}
+								}
+							}
+
+							&.x {
+								& {
+									@include transform(translateX(-100%));
+								}
+							}
+
+							&.y {
+								& {
+									@include transform(translateY(-100%));
+								}
+							}
+						}
+
+						& > .isDown {
+							& {
+								position: absolute;
+								left: 0; top: 0;
+								width: 70px; height: auto;
+								opacity: 0;
+								display: none;
+								@include no-drag();
+								@include transform(translate(-50%, -50%));
+								@include transition(.2s opacity);
+							}
+
+							& > div {
+								& {
+									position: relative;
+									width: 100%; height: auto;
+									padding-bottom: 100%;
+									border-radius: 50%;
+									background-color: rgba(255,255,255,0.5);
+								}
+
+								& > div {
+									& {
+										position: absolute;
+										width: 0px; height: auto;
+										left: 50%; top: 50%;
+										background-color: rgba(255,255,255,0.4);
+										border-radius: 50%;
+										overflow: hidden;
+										@include transform(translate(-50%, -50%));
+										@include transition(.2s all);
 									}
 
-									& > div {
+									&:after {
 										& {
-											border: 0;
-										}
-
-										& > .img {
-											& {
-												opacity: 1;
-												@include transition(.2s all);
-											}
-										}
-
-										& > .upload {
-											& {
-												opacity: 0;
-												@include transition(.2s all);
-												color: $bg-orange;
-											}
-										}
-									}
-
-									&:hover {
-										& {
-											border: 2px solid $bg-orange;
-											border-style: dashed;
-										}
-
-										& > div {
-											& > .img {
-												& {
-													opacity: 0;
-													@include transition(.2s all);
-												}
-											}
-
-											& > .upload {
-												& {
-													opacity: 1;
-													@include transition(.2s all);
-												}
-											}
+											content: " ";
+											display: block;
+											padding-bottom: 100%;
 										}
 									}
 								}
 							}
 
+							&.active {
+								& {
+									display: block;
+									opacity: 1;
+									@include transition(.2s opacity);
+								}
+
+								& > div {
+									& > div {
+										& {
+											width: 100%;
+											@include transition(1s all);
+										}
+									}
+								}
+
+								&.nav {
+									& {
+										display: none;
+										opacity: 0;
+										@include transition(.2s opacity);
+									}
+
+									& > div {
+										& > div {
+											& {
+												width: 0%;
+												@include transition(.2s all);
+											}
+										}
+									}
+								}
+							}
+						}
+
+						& > button.move {
+							& {
+								position: absolute;
+								width: 50px; height: 100%;
+								left: 0; top: 0;
+								border: none; background: none;
+								padding: 0; margin: 0;
+								background-color: rgba(0,0,0,0.3);
+								outline: none; cursor: pointer;
+								font-size: #{$font-size + 4};
+								opacity: 0;
+								@include transform(sacle(1));
+								@include transition(.2s all);
+							}
+
+							&.right {
+								& {
+									left: 100%;
+									@include transform(translateX(-100%));
+								}
+							}
+
+							& > span {
+								& {
+									position: relative; display: block;
+									width: 100%; height: 100%;
+									@include transform(scale(1));
+									@include transition(.2s all);
+								}
+
+								& > i {
+									& {
+										position: absolute;
+										left: 50%; top: 50%;
+										font-size: #{$font-size + 8};
+										color: #fff;
+										@include transform(translate(-50%, -50%));
+									}
+								}
+							}
+
+							&:hover {
+								& {
+									background-color: rgba(0,0,0,0.4);
+								}
+
+								& > span {
+									& {
+										@include transform(scale(1.2));
+										@include transition(.2s all);
+									}
+								}
+							}
+						}
+
+						& > li {
+							& {
+								display: block;
+								position: absolute;
+								width: 100%; height: 100%;
+								left: 0; top: 0;
+								overflow: hidden;
+								opacity: 0;
+								border-radius: 5px;
+								@include no-drag();
+								@include box-shadow(5px 5px 5px rgba(0,0,0,0.1));
+							}
+							
+							& > div.image {
+								& {
+									position: relative;
+									width: 100%; height: 100%;
+									background-color: #f9f9f9;
+									@include no-drag();
+								}
+
+								& > img {
+									& {
+										width: 100%; height: 100%;
+										left: 50%; top: 50%;
+										position: absolute;
+										object-fit: cover;
+										-webkit-user-drag: none;
+										@include no-drag();
+										@include transform(translate(-50%, -50%));
+									}
+								}
+							}
+
+							&.active {
+								& {
+									opacity: 1;
+								}
+							}
+						}
+
+						&:hover {
+							& > button.move {
+								& {
+									opacity: 1;
+									@include transition(.2s all);
+								}
+							}
+						}
+					}
+				}
+
+				& > .pre-list {
+					& {
+						width: 100%; height: auto;
+						padding: 0 30px;
+					}
+
+					& > div {
+						& {							
+							padding: 15px 5px;
+							overflow: hidden;
+							background-color: $bg-black-light;
+						}
+
+						& > ul {
+							& {
+								width: 100%; height: auto;
+								list-style: 0;
+								font-size: 0;
+								white-space: nowrap;
+								overflow: hidden;
+								padding: 0px 10px;
+							}
+
+							& > li {
+								& {
+									display: inline-block;
+									width: 14.3%; height: auto;
+									padding: 0 10px;
+								}
+
+								& > div {
+									& {
+										display: block;
+										width: 100%; height: auto;
+										position: relative;
+										border-radius: 3px;
+										overflow: hidden;
+										border: 1px solid #ddd;
+										background-color: #ddd;
+									}
+
+									&:after {
+										& {
+											content: " ";
+											display: block;
+											padding-bottom: 100%;
+										}
+									}
+
+									& > img {
+										& {
+											width: 100%; height: 100%;
+											position: absolute;
+											left: 50%; top: 50%;
+											object-fit: cover;
+											@include transform(translate(-50%, -50%));
+										}
+									}
+								}
+							}
 						}
 					}
 				}
 			}
 
-			& > .post-setting {
+			& > .post-menu {
 				& {
-					width: 100%;
-					margin-top: 30px;
-					padding: 0 30px;
+					width: 100%; height: auto;
+					position: relative;
+					z-index: 10;
+					padding-top: 46px;
 				}
 
 				& > div {
+					& {
+						border: 1px solid #ddd;
+						border-left: 0;
+						border-right: 0;
+						position: absolute;
+						left: 0; bottom: 0;
+						width: 100%;
+						background-color: #fff;
+					}
 
-					& > .title {
+					& > button {
 						& {
-							padding-top: 30px;
-							padding-bottom: 15px;
+							position: absolute;
+							right: 0; top: 0;
+							width: 48px; height: 48px;
+							border: 0;
+							background: none;
+							outline: none;
+							cursor: pointer;
+							@include transition(.2s all);
+							z-index: 10;
 						}
 
-						&:after {
-							content: " ";
-							display: block;
-							clear: both;
-						}
-
-						& > h1 {
+						& > span {
 							& {
-								font-size: #{$font-size + 4};
-								color: #555;
-								font-weight: bold;
-								float: left;
-								vertical-align: middle;
-							}
-						}
-
-						& > button {
-							& {
-								float: right;
-								border: none;
-								background: none;
-								outline: none;
-								font-size: #{$font-size + 15};
-								color: #ccc;
-								padding: 0 30px;
-								cursor: pointer;
-								vertical-align: middle;
-								margin-top: -5px;
-								@include transition(.2s all);
+								display: block;
+								position: relative;
+								width: 100%; height: 100%;
 							}
 
 							& > i {
-								display: block;
-								@include transform(rotate(-90deg));
-								@include transition(.2s all);
-							}
-
-							&:hover {
 								& {
-									color: #555;
-									@include transition(.2s all);
+									position: absolute;
+									left: 50%; top: 50%;
+									font-size: #{$font-size + 4};
+									color: #ccc;
+									@include transform(translate(-50%, -50%));
 								}
-							}
 
-							&.active {
-								& > i {
-									@include transform(rotate(90deg));
-									@include transition(.2s all);
-								}
-							}
-						}
-						
-					}
-
-					&:nth-child(1) > .title {
-						& {
-							padding-top: 0;
-						}
-					}
-
-					& > ul {
-						& {
-							font-size: 0;
-							width: 100%;
-							height: auto;
-							@include transition(.2s all);
-						}
-
-						& > li {
-							& {
-								display: block;
-								width: 100%;
-								border-bottom: 1px solid #f1f1f1;
-							}
-
-							&:nth-last-child(1) {
-								border: none;
-							}
-
-							& > div {
-								& > label {
+								&:nth-child(2){
 									& {
-										cursor: pointer;
-										display: block;
-										padding: 15px 30px;
-										background-color: #fff;
-										@include transition(.2s all);
-									}
-
-									&:after {
-										content: " ";
-										display: block;
-										clear: both;
-									}
-							
-									&:hover {
-										background-color: #f1f1f1;
-										@include transition(.2s all);
-									}
-
-									& > input {
-										display: none;
-									}
-
-									& > div {
-										& {
-											float: left;
-											font-size: #{$font-size};
-										}
-
-										&.setting {
-											& {
-												font-weight: bold;
-											}
-										}
-
-										&:nth-last-child(1) {
-											& {
-												float: right;
-												padding-right: 20px;
-											}
-
-											& > div {
-												& {
-													background-color: #fff;
-													width: 30px;
-													height: 26px;
-													position: relative;
-													border: 2px solid #ccc;
-													z-index: 1;
-													@include transition(.2s all);
-												}
-
-												& > span {
-													display: block;
-													position: absolute;
-													width: 26px;
-													height: 26px;
-													background-color: #fff;
-													border-radius: 50%;
-													border: 2px solid #ccc;
-													@include transition(.2s all);
-												}
-
-												& > span:nth-child(1){
-													left: 0; top: 50%;
-													@include transform(translate(-50%, -50%));
-												}
-
-												& > span:nth-last-child(1){
-													right: 0; top: 50%;
-													@include transform(translate(50%, -50%));
-												}
-
-												& > div {
-													& {
-														width: 100%;
-														height: 100%;
-														position: absolute;
-														z-index: 1;
-														left: 0; top: 0;
-														background-color: #fff;
-													}
-
-													& > div {
-														width: 28px;
-														height: 28px;
-														background-color: #ccc;
-														border-radius:50%;
-														position: absolute;
-														left:0; top: 50%;
-														@include transform(translate(-50%, -50%));
-														@include box-shadow(3px 3px 5px rgba(0,0,0,0.2));
-														@include transition(.2s all);
-														z-index: 2;
-													}
-												}
-											}
-										}
-									}
-
-									& > input:checked ~ div:nth-last-child(1) > div {
-										border: 2px solid $bg-orange;
-										@include transition(.2s all);
-									}
-
-									& > input:checked ~ div:nth-last-child(1) > div > span {
-										border: 2px solid $bg-orange;
-										@include transition(.2s all);
-									}
-
-									& > input:checked ~ div:nth-last-child(1) > div > div > div {
-										left: 100%; top: 50%;
-										background-color: $bg-orange;
+										margin-top: -3px;
+										margin-left: -3px;
+										color: $bg-blue-light;
 										@include transition(.2s all);
 									}
 								}
+							}
+						}
 
-								& > div.child {
-									& {
-										width: 100%;
-										padding-bottom: 15px;
-									}
-
-									&.tag {
-										& > div {
-											& {
-												width: 100%;
-												padding: 0 30px;	
-											}
-
-											& > label {
-												cursor: text;
-												display: block;
-											}
-
-											& > label > div {
-												& {
-													width: 100%;
-													border: 1px solid #ccc;
-													outline: none;
-													border-radius: 5px;
-													font-size: #{$font-size};
-													color: $font-color;
-													padding: 3px 15px;
-													margin-bottom: 5px;
-													background-color: #f1f1f1;
-												}
-
-												& > div {
-													& {
-														display: inline-block;
-														width: auto;
-														height: 100%;
-														padding-right: 15px;
-														line-height: 2.5;
-													}
-
-													& > p {
-														& {
-															display: inline;
-															font-size: #{$font-size - 2};
-															font-weight: bold;
-															background-color: $bg-blue;
-															padding: 5px 12px;
-															color: #f1f1f1;
-															border-radius: 5px;
-														}
-
-														& > span {
-															display: inline-block;
-															padding-right: 5px;
-														}
-
-														& > i {
-															display: inline-block;
-															outline: none;
-														}
-													}
-
-													&.active {
-														& {
-															opacity: 0;
-															@include transition(.2s all);
-														}
-
-														& > p {
-															background-color: $bg-orange;
-															min-width: 15px;
-														}
-													}
-
-													&.focused {
-														& {
-															opacity: 1;
-															@include transition(.2s all);
-														}
-													}
-												}
-											}
-										}
-									}
+						&:hover {
+							& > span {
+								& > i:nth-child(2) {
+									margin-top: 0px;
+									margin-left: 0px;
+									@include transition(.2s all);
 								}
 							}
 						}
 
 						&.active {
-							& {
-								display: none;
+							& > span {
+								& > i:nth-child(2) {
+									margin-top: 0px;
+									margin-left: 0px;
+									background-color: $bg-orange;
+									@include transition(.2s all);
+								}
 							}
 						}
-					}
-				}
-
-			}
-
-			&.move {
-				& {
-					left: -100%;
-					@include transition(.5s all);
-				}
-			}
-
-			&.display {
-				& {
-					display: none;
-				}
-			}
-
-			&.absolute {
-				& {
-					position: absolute;
-					left: 0%;
-					@include transition(.5s all);
-				}
-			}
-
-			&.temp {
-				& {
-					left: 0%;
-					@include transition(.5s all);
-				}
-			}
-		}
-
-		& > .crop {
-			& {
-				width: 100%;
-				left: 100%;
-				display: none;
-				position: relative;
-				vertical-align: top;
-				@include transition(.5s all);
-			}
-
-			& > .post-nav {
-				& {
-					width: 100%;
-					height: 50px;
-					border-bottom: 1px solid #ccc;
-				}
-
-				& > div {
-					& {
-						width: 100%;
-						height: 100%;
-						position: relative;
 					}
 
 					& > div {
 						& {
-							position: absolute;
-							width: 100%;
-							height: 100%;
-							left: 0; top: 0;
-							z-index: 1;
+							width: 100%; height: auto;
+							overflow:hidden;
 						}
 
-						& > h1 {
+						& > .title {
 							& {
-								font-size: #{$font-size + 2};
-								font-weight: bold;
-								text-align: center;
-								line-height: 49px;
-								vertical-align: middle;
+								width: 100%;
+								height: auto;
+								padding: 0 15px;
+								z-index: 1;
+							}
+
+							& > ul {
+								& {
+									width: auto; height: auto;
+									list-style: none;
+									font-size: 0;
+									position: relative;
+									overflow: hidden;
+								}
+
+								& > .active {
+									& {
+										position: absolute;
+										width: 52px; height: 3px;
+										background-color: $bg-blue;
+										left: -100px; bottom: 0;
+										@include transition(.2s all);
+									}
+								}
+
+								& > li {
+									& {
+										display: inline-block;
+									}
+
+									& > button {
+										& {
+											display: block;
+											margin: 0; padding: 0;
+											border: 0; background: none;
+											font-size: #{$font-size + 8};
+											padding: 10px 15px;
+											color: #999;
+											outline: none;
+											cursor: pointer;
+											@include transition(.2s all);
+										}
+
+										&:hover {
+											& {
+												color: $bg-blue;
+												@include transition(.2s all);
+											}
+										}
+									}
+
+									&.is-active {
+										& > button {
+											& {
+												color: $bg-blue;
+												@include transition(.2s all);
+											}
+										}
+									}
+								}
+							}
+						}
+
+						& > .list {
+							& {
+								width: 100%; height: auto;
+								border-top: 1px solid #ddd;
+							}
+
+							& > ul {
+								& {
+									width: 100%; height: auto;
+									font-size: 0;
+									list-style: none;
+								}
+
+								& > li {
+									& {
+										width: 100%; height: auto;
+										display: none;
+										position: relative;
+										background-color: #fff;	
+										font-size: 0;
+										white-space: nowrap;
+										overflow: hidden;
+										padding: 15px;
+									}
+
+									&.active {
+										& {
+											display: block;
+										}
+									}
+
+									& > .progress {
+										& {
+											width: 100%; height: auto;
+											position: relative;
+											padding-right: 100px;
+											margin-top: 10px;
+										}
+
+										& > .info {
+											& {
+												position: absolute;
+												right: 0; top: 50%;
+												@include transform(translateY(-50%));
+												text-align: right;
+											}
+
+											& > div {
+												& {
+													font-size: #{$font-size - 1};
+													font-weight: bold;
+													color: #999;
+													margin-top: -3px;
+												}
+
+												& > span {
+													&:nth-child(1){
+														& {
+															color: $bg-orange;
+														}
+													}
+
+													&:nth-child(2){
+														& {
+															color: #555;
+														}
+													}
+												}
+											}
+										}
+
+										& > .bar {
+											& {
+												width: 100%; height: 16px;
+												background-color: #ddd;
+												border-radius: 15px;
+												position: relative;
+												padding: 4px 5px;
+											}
+
+											& > .bar {
+												& {
+													width: 0px; height: 100%;
+													background-color: $bg-orange;
+													position: relative;
+													border-radius: 15px;
+												}
+											}
+										}
+									}
+
+									& > ul.upload {
+										& {
+											width: 15%;
+											font-size: 0;
+											list-style: none;
+											display: inline-block;
+											position: relative;
+											background-color: #fff;
+											z-index: 10;
+											vertical-align: top;
+										}
+
+										&:after {
+											content: " ";
+											display: block;
+											padding-bottom: 100%;
+										}
+
+										& > li {
+											& {
+												display: block;
+												position: absolute;
+												width: 100%; height: 100%;
+												left: 50%; top: 50%;
+												@include transform(translate(-50%, -50%));
+												padding: 5px;
+											}
+
+											& > input {
+												& {
+													display: none;
+												}
+											}
+
+											& > button {
+												& {
+													
+													display: block;
+													width: 100%; height: 100%;
+													border: 0; background: none;
+													margin: 0; padding: 0;
+													position: relative;
+													border: 2px dashed #ddd;
+													background-color: #f1f1f1;
+													border-radius: 3px;
+													overflow: hidden;
+													outline: none;
+													cursor: pointer;
+												}
+
+												& > span {
+													& {
+														display: block;
+														position: absolute;
+														left: 50%; top: 50%;
+														@include transform(translate(-50%, -50%));
+													}
+
+													&.image {
+														& {
+															opacity: 1;
+															@include transition(.2s all);
+															text-align: center;
+														}
+
+														& > i {
+															& {
+																font-size: #{$font-size + 4};
+																color: #999;
+															}
+
+															& > span {
+																& {
+																	display: block;
+																	font-size: #{$font-size - 2};
+																	font-style: normal;
+																	font-weight: bold;
+																}
+															}
+														}
+													}
+
+													&.plus {
+														& {
+															opacity: 0;
+															@include transition(.2s all);
+														}
+
+														& > i {
+															& {
+																font-size: #{$font-size + 4};
+																color: $bg-orange;
+															}
+														}
+													} 
+												}
+
+												&:hover {
+													& {
+														border: 2px dashed $bg-orange;
+														@include transition(.2s all);
+													}
+
+													& > span {
+														&.image {
+															& {
+																opacity: 0;
+																@include transition(.2s all);
+															}
+														}
+
+														&.plus {
+															& {
+																opacity: 1;
+																@include transition(.2s all);
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+
+									& > .list {
+										& {
+											display: inline-block;
+											width: 100%; height: auto;
+											font-size: 0;
+											list-style: none;
+											position: relative;
+											vertical-align: top;
+										}
+
+										& > ul {
+											& {
+												display: inline-block;
+												width: 100%; height: auto;
+												font-size: 0;
+												list-style: none;
+												position: relative;
+												vertical-align: top;
+											}
+
+											& > li {
+												& {
+													display: inline-block;
+													width: 15%!important; height: auto;
+													padding: 5px;
+												}
+
+												& > div {
+													& {
+														display: block;
+														width: 100%; height: auto;
+														position: relative;
+														background-color: #ddd;
+														overflow: hidden;
+														border: 1px solid #ddd;
+														border-radius: 3px;
+													}
+
+													&:after {
+														content: " ";
+														display: block;
+														padding-bottom: 100%;
+													}
+
+													& > img {
+														& {
+															display: block;
+															position: absolute;
+															width: 100%; height: 100%;
+															left: 0; top: 0;
+															object-fit: cover;
+														}
+													}
+												}
+											}
+
+										}
+									}
+								}
 							}
 						}
 					}
-					& > button {
+				}
+
+				&.active {
+					& > div {
 						& {
-							border: none;
-							background-color: none;
-							outline: none;
+							position: fixed;
+							left: 0; bottom: 0;
+							width: 100%; max-width: 838px;
+						}
+					}
+				}
+			}
+
+			& > .post-option {
+				& {
+					width: 100%; height: auto;
+					padding: 30px 30px 50px 30px;
+				}
+
+				& > .post-setting {
+					& {
+						width: 100%;
+						height: auto;
+					}
+
+					& .checkbox {
+						& {
+							display: block;
 							cursor: pointer;
-							font-size: #{$font-size + 8};
-							color: #999;
-							z-index: 2
+							font-size: 0;
 						}
 
-						&.prev {
+						& > input[type=checkbox] {
 							& {
-								width: 50px;
-								height: 100%;
-								border-right: 1px solid #ccc;
-								position: absolute;
-								left: 0; top: 0;
-								@include transition(.2s all);
+								display: none;
 							}
 						}
 
-						&.write {
+						& > div {
 							& {
-								width: auto;
-								position: absolute;
-								right: 0; top: 50%;
-								font-size: #{$font-size - 2};
-								color: #fff;
-								margin-right: 10px;
-								background-color: $bg-blue;
-								border-radius: 5px;
-								padding: 7px 20px;
-								@include transform(translateY(-50%));
+								display: inline-block;
+								width: 15px;
+								height: 15px;
+								border: 1px solid #ccc;
+								background-color: #f9f9f9;
+								position: relative;
+								vertical-align: middle;
+								overflow: hidden;
 								@include transition(.2s all);
+							}
+
+							& > i {
+								& {
+									position: absolute;
+									left: 50%; top: 50%;
+									font-size: #{$font-size - 4};
+									color: #666;
+									opacity: 0;
+									@include transition(.2s all);
+									@include transform(translate(-50%, -50%));
+								}
+							}
+						}
+
+						& > span {
+							& {
+								display: inline-block;
+								font-size: #{$font-size - 1};
+								color: #666;
+								vertical-align: middle;
+								padding-left: 7px;
+							}
+						}
+
+						& > input[type=checkbox]:checked ~ div {
+							& > i {
+								& {
+									opacity: 1;
+									@include transition(.2s all);
+								}
 							}
 						}
 
 						&:hover {
-							&.prev {
-								color: #555;
-								@include transition(.2s all);
+							& > div {
+								& {
+									background-color: #f1f1f1;
+									@include transition(.2s all);
+								}
 							}
 
-							&.write {
-								background-color: $bg-blue-bold;
-								@include transition(.2s all);
+							& > span {
+								& {
+									color: #333;
+								}
 							}
 						}
 					}
-				}
-			}
 
-			& > .post-content {
-				& {
-					padding: 30px;
-				}
+					& .select {
+						& {
+							width: 300px;
+							height: 30px;
+							font-size: #{$font-size - 2};
+						}
 
-				& > div {
-					& {
-						width: 100%; height: 100%;
-						position: relative;
-						overflow: hidden;
-						border: 2px solid #ccc;
+						& > div {
+							& {
+								width: 100%;
+								height: 100%;
+								border: 1px solid #ccc;
+								border-radius: 2px;
+								overflow: hidden;
+							}
+
+							& > select {
+								& {
+									width: 100%;
+									height: 100%;
+									background-color: #fff;
+									border:none;
+									outline: none;
+									padding: 5px;
+									margin: 0;
+									cursor: pointer;
+									color: #666;
+								}
+
+								& > option {
+									color: #666;
+								}
+							}
+							
+						}
 					}
 
-					& > div.background {
+					& > table {
 						& {
 							width: 100%;
-							height: 100%;
-							background-size: cover;
-							background-position: 50% 50%;
-							filter: blur(5px);
-							position: absolute;
-							left: 0; top: 0;
-							@include transform(scale(1.1));
+							height: auto;
 						}
 
-						&:after {
-							content: " ";
-							display: block;
-							background-color: rgba(0,0,0,0.5);
-							width: 100%; height: 100%;
-							left: 0; top: 0;
-							position: absolute;
+						& > tr {
+
+							& > td {
+								& {
+									padding-bottom: 15px;
+								}
+
+								&:nth-child(1){
+									width: 100px;
+									vertical-align: top;
+									font-size: #{$font-size + 1};
+									font-weight: bold;
+								}
+							}
+
+							&.open {
+								& > td:nth-child(2) {
+									& > div {
+										& {
+											display: inline-block;
+											vertical-align: middle;
+											padding-right: 15px;
+										}
+
+										&:nth-last-child(1){
+											& {
+												padding-right: 0;
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}
 			}
-
-			& > .nav {
-				width: 100%;
-			}
-
-			& > .content {
-				width: 100%;
-			}
-
-			&.display {
-				display: inline-block;
-				position: relative;
-			}
-
-			&.move {
-				left: 0%;
-				position: absolute;
-				@include transition(.5s all);
-			}
 		}
-
 	}
 </style>
+
 <style lang="scss">
-	.vue-bounding-box {
-		& {
-			border: 1px dashed $bg-blue;
-		}
-	}
-
-	.vue-square-handler {
-		& {
-			border: 2px solid $bg-orange;
-			background-color: #f1f1f1;
-		}
-	}
-
 	.ProseMirror {
 		& {
-			outline: none;
-			padding: 15px;
 			min-height: 100%;
+		}
+
+		& h1 {
+			& {
+				font-weight: bold;
+				padding-bottom: 20px;
+				font-size: #{$font-size + 2};
+			}
 		}
 	}
 
-	p.is-editor-empty:first-child::before {
-		content: attr(data-empty-text);
-		float: left;
-		color: #aaa;
-		pointer-events: none;
-		height: 0;
+	.editor {
+		& > .editor-content {
+			& {
+				min-height: 160px;
+			}
+
+			& > div {
+				& {
+					min-height: 160px!important;
+				}
+			}
+		}
 	}
 </style>

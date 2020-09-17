@@ -20,20 +20,19 @@
             </div>
             <!-- Title End -->
             <div class="info">
-                <div class="title">
-                    <h1>제목</h1>
+                <div class="title" v-if="post">
+                    <h1>{{ post.title }}</h1>
                 </div>
-                <div class="display">
+                <div class="display" v-if="post">
                     <div>
-                        <span>게시판 이름</span>
-                        <span>날짜</span>
-                        <span>조회수</span>
+                        <span>{{ post.board.name }}</span>
+                        <span>{{ post.state.displayDate }}</span>
+                        <span>조회수 : 0</span>
                     </div>
                 </div>
             </div>
-            <div class="post">
-                <!-- <div v-html="post.post"></div> -->
-                <div>내용</div>
+            <div class="post" v-if="post">
+                <div v-html="post.post" class="editor-post"></div>
             </div>
 
             <div class="card">
@@ -97,7 +96,7 @@ export default {
         return {
             id: this.$route.params.id,
             board: this.info.board,
-            post: {},
+            post: false,
 
             faHeartR, faHeartS, faList, faCaretLeft,  faCaretRight, faShareSquare, faPlus
         }
@@ -110,7 +109,7 @@ export default {
             'POST_VIEW'
         ]),
     },
-    created: function(){
+    created(){
         const data = {
             index: this.id,
             board: this.board
@@ -123,7 +122,7 @@ export default {
         }).catch((err) => {
             console.log(err)
         })
-    },
+    }
 }
 </script>
 
@@ -450,6 +449,117 @@ export default {
                             cursor: pointer;
                         }
                     }
+                }
+            }
+        }
+    }
+</style>
+
+<style lang="scss">
+    .editor-post {
+        & > div {
+            & {
+                font-size: #{$font-size};
+                color: $font-color;
+                line-height: 1.7;
+            }
+
+            h1 {
+                & {
+                    font-size: #{$font-size + 12};
+                    font-weight: normal;
+                }
+            }
+            h2 {
+                & {
+                    font-size: #{$font-size + 10};
+                    font-weight: normal;
+                }
+            }
+            h3 {
+                & {
+                    font-size: #{$font-size + 8};
+                    font-weight: normal;
+                }
+            }
+            h4 {
+                & {
+                    font-size: #{$font-size + 6};
+                    font-weight: normal;
+                }
+            }
+            h5 {
+                & {
+                    font-size: #{$font-size + 4};
+                    font-weight: normal;
+                }
+            }
+            h6 {
+                & {
+                    font-size: #{$font-size + 2};
+                    font-weight: normal;
+                }
+            }
+
+            img {
+                & {
+                    width: 100%;
+                }
+            }
+
+            ul {
+                & {
+                    list-style-position: inside;
+                    padding-left: 5px;
+                    margin: 15px 0;
+                }
+
+                & > li {
+                    & > p {
+                        display: inline-block;
+                    }
+                }
+            }
+
+            ol {
+                & {
+                    list-style-position: inside;
+                    padding-left: 5px;
+                    margin: 15px 0;
+                }
+
+                & > li {
+                    & > p {
+                        display: inline-block;
+                    }
+                }
+            }
+
+            blockquote {
+                & {
+                    background-color: #f1f1f1;
+                    padding: 15px;
+                    padding-left: 20px;
+                    position: relative;
+                    margin: 15px 0;
+                }
+
+                &:after {
+                    content: " ";
+                    display: block;
+                    position: absolute;
+                    width: 5px;
+                    height: 100%;
+                    left: 0;
+                    top: 0;
+                    background-color: #b9b9b9;
+                }
+            }
+
+            hr {
+                & {
+                    border-top: 1px solid #ddd;
+                    margin: 30px 0;
                 }
             }
         }

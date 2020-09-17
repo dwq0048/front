@@ -39,6 +39,34 @@ const SET_SCRIPT = {
         if (array.indexOf(payload.class) == -1) {
             payload.el.className = payload.el.className.replace(check, "").trim();
         }
+    },
+    optimizedResize: () => {
+        (function() {
+			var throttle = function(type, name, obj) {
+				obj = obj || window;
+				var running = false;
+				var func = function() {
+					if (running) { return; }
+					running = true;
+					requestAnimationFrame(function() {
+						obj.dispatchEvent(new CustomEvent(name));
+						running = false;
+					});
+				};
+				obj.addEventListener(type, func);
+			};
+
+			throttle("resize", "optimizedResize");
+		})();
+    },
+    getImageDimensions(file) {
+        return new Promise (function (resolved, rejected) {
+          var i = new Image()
+          i.onload = function(){
+            resolved({w: i.width, h: i.height})
+          };
+          i.src = file
+        })
     }
 }
 
@@ -55,7 +83,7 @@ const SET_BOARD = {
                 return 'NULL';
         }
     },
-    encodeBase64ImageFile: function(image) {
+    encodeBase64ImageFile: (image) => {
         return new Promise((resolve, reject) => {
             let reader = new FileReader();
             reader.readAsDataURL(image);

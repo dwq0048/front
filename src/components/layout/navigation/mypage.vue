@@ -25,7 +25,7 @@
                             </p>
                         </div>
                         <div class="button">
-                            <button type="button" class="page" v-on:click="Mypage">마이페이지</button>
+                            <button type="button" class="page" v-on:click="Mypage">라이브러리 / Vrchat API</button>
 
                             <button type="button" v-on:click="LOGOUT">로그아웃</button>
                         </div>

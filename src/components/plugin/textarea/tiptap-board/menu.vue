@@ -154,6 +154,8 @@ import { faTimes, faQuoteLeft, faLink, faAlignLeft, faAlignRight, faAlignJustify
 import { faCheckSquare } from '@fortawesome/free-regular-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
+import { SET_SCRIPT } from '@/store/helper/index'
+
 export default {
     name: 'edit-menu',
     props: ['editor'],
@@ -208,25 +210,7 @@ export default {
         }
     },
     mounted() {
-		(function() {
-			var throttle = function(type, name, obj) {
-				obj = obj || window;
-				var running = false;
-				var func = function() {
-					if (running) { return; }
-					running = true;
-					requestAnimationFrame(function() {
-						obj.dispatchEvent(new CustomEvent(name));
-						running = false;
-					});
-				};
-				obj.addEventListener(type, func);
-			};
-
-			/* init - you can init any event */
-			throttle("resize", "optimizedResize");
-		})();
-
+        SET_SCRIPT.optimizedResize();
 
         window.addEventListener('click', (data) => {
             

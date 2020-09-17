@@ -1,9 +1,11 @@
 <template>
-    <div class="search">            
+    <div class="search">
+        <!--
         <div class="title">
             <h1>V<span>R</span></h1>
             <h1>V<span>IEWER</span></h1>
         </div>
+        -->
         <div class="box">
             <div class="menu">
                 <ul>
@@ -19,7 +21,7 @@
                     <input type="submit" value="검색">
                 </div>
                 <div class="input">
-                    <input type="text">
+                    <input type="text" placeholder="# 아아.. 이건 검색이라고 한단다.." >
                 </div>
             </div>
         </div>
@@ -59,7 +61,7 @@ export default {
     .search {
         & {
             width: 100%;
-            max-width: 700px;
+            max-width: 800px;
             margin: 0 auto;
             position: relative;
             @include box-shadow(5px 5px 5px rgba(0,0,0,0.1));

@@ -4,13 +4,10 @@
 		<default-header />
 
         <div class="contents" :class="{ active : this.$route.params.id == 'join' }">
-            <div class="background" :style="'background-image:url(' + require(`@/assets/beat.jpeg`)+ ')'">
+            <!--  -->
+            <div class="background" :style="'background-image:url(' + require(`@/assets/ra.jpg`)+ ')'">
                 <div>
                     <div class="intro">
-                        <h1>
-                            <b>VV</b>
-                        </h1>
-
                         <p>Vrchat 정보를 쉽게 검색하기 위해 제작된 홈페이지 입니다.<br>
                         로그인 후 Vrchat 계정 인증을 하시면 여러 가지 정보를<br>
                         간편하게 조회 할 수 있습니다.</p>
@@ -79,8 +76,8 @@ export default {
                 background-color: #fff;
                 padding: 15px 0;
                 position: relative;
-                margin: 50px auto 0 auto;
-                border-radius: 50px;
+                margin: 100px auto 0 auto;
+                border-radius: 10px;
                 overflow: hidden;
                 text-align: right;
                 @include box-shadow(5px 5px 15px rgba(0,0,0,0.1));
@@ -97,11 +94,9 @@ export default {
                 & {
                     position: absolute;
                     left: 0; right: 50%; top: 0; bottom: 0;
-                    background-color: #ccc;
                     background-size: cover;
-                    background-repeat: no-repeat;
                     background-position: 50% 50%;
-                    background-attachment: fixed;
+                    background-color: $bg-blue-light;
                     @include transition(.2s all);
                     z-index: 10;
                 }
@@ -112,7 +107,7 @@ export default {
                         left: 0; top: 0;
                         width: 100%;
                         height: 100%;
-                        background-color: rgba(0,0,0,0.5);
+                        background-color: rgba(0,0,0,0.7);
                     }
 
                     & > .button {
@@ -168,13 +163,50 @@ export default {
 
                             & > b {
                                 & {
+                                    border: 5px solid $bg-orange;
+                                    width: 65px; height: 65px;
                                     display: inline-block;
-                                    font-family: $notoKR-M;
-                                    font-style: normal;
-                                    font-weight: 300;
-                                    letter-spacing: -5px;
-                                    @include transform(rotate(90deg));
+                                    position: relative;
+                                    white-space: nowrap;
+                                    //@include transform(rotate(90deg));
                                 }
+
+                                & > div {
+                                    & {
+                                        position: absolute;
+                                        left: 50%; top: 50%;
+                                        font-size: #{$font-size + 30};
+                                        font-weight: bold;
+                                        @include transform(translate(-50%, -50%));
+                                    }
+
+                                    & > span {
+                                        & {
+                                            display: inline-block;
+                                            vertical-align: bottom;
+                                            font-size: #{$font-size};
+                                            margin-bottom: 13px;
+                                            line-height: 1;
+                                        }
+                                    }
+                                }
+
+                                /*
+                                & > span {
+                                    & {
+                                        position: absolute;
+                                        display: block;
+                                        left: 50%; top: 50%;
+                                        letter-spacing: -6px;
+                                        font-family: $notoKR-M;
+                                        font-style: normal;
+                                        font-weight: 300;
+                                        margin-left: -2px;
+                                        margin-top: -8px;
+                                        @include transform(translate(-50%, -50%));
+                                    }
+                                }
+                                */
                             }
                         }
 

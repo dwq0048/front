@@ -168,6 +168,8 @@ import { Editor, EditorMenuBar } from 'tiptap'
 import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
 import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
 import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
+
+import { SET_SCRIPT } from '@/store/helper/index'
 //import Swipe from 'swipejs'
 
 
@@ -471,23 +473,7 @@ export default {
 		}
 	},
 	mounted(){
-		(function() {
-			var throttle = function(type, name, obj) {
-				obj = obj || window;
-				var running = false;
-				var func = function() {
-					if (running) { return; }
-					running = true;
-					requestAnimationFrame(function() {
-						obj.dispatchEvent(new CustomEvent(name));
-						running = false;
-					});
-				};
-				obj.addEventListener(type, func);
-			};
-
-			throttle("resize", "optimizedResize");
-		})();
+		SET_SCRIPT.optimizedResize();
 
 		let EditorStyle = '';
 		this.EditorMenu.forEach((item, index) => {
@@ -519,7 +505,7 @@ export default {
 		const ProgressMb = this.$refs.ProgressMb;
 
 		const EventMenu = () => {
-            const BottomElement = BottomMenu.getBoundingClientRect();;
+            const BottomElement = BottomMenu.getBoundingClientRect();
             const BottomPosition = {
                 bottom: WinHeight - BottomElement.bottom,
                 left: BottomElement.left

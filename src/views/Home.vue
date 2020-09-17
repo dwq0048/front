@@ -37,7 +37,7 @@
 
 			<!-- Pee -->
 			<div class="section-2">
-				<pee />
+				<pee :grid="{ img : 'auto' }" />
 			</div>
 			<!-- Pee End -->
 
@@ -49,7 +49,7 @@
 import Header from '@/components/layout/header'
 import Navigation from '@/components/layout/navigation'
 import Search from '@/components/widget/main/search'
-import Grid from '@/components/widget/main/grid-post'
+import Grid from '@/components/widget/main/grid-square'
 
 export default {
 	name: 'Home',

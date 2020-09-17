@@ -60,22 +60,38 @@ const Post = {
                 }).then((req) => {
                     let post = req.data.payload;
                     post.state.displayDate = SET_TIME(post.state.date_fix);
-                    post.board = {
-                        original: post.board,
-                        name: SET_BOARD.category(post.board)
-                    }
+                    post.board = { original: post.board, name: SET_BOARD.category(post.board) }
         
-                    const element = document.createElement('div');
-                    element.innerHTML = post.post;
-                    for(let i=0; i<post.images.length; i++){
-                        const src = element.querySelectorAll(`[data-index]`);
-                        for(let j=0; j<src.length; j++){
-                            const index = src[j].getAttribute("data-index");
-                            src[j].setAttribute("src", `http://127.0.0.1:3000/images/${post.images[index]}`);
-                        }
-                    }
-                    post.post = element.outerHTML;
+                    const Element = document.createElement('div');
+                    Element.innerHTML = post.post;
 
+                    const DataElement = Element.querySelectorAll(`[data-index]`);
+                    DataElement.forEach(item => {
+                        const index = item.getAttribute("data-index");
+                        let query = [];
+
+                        try {
+                            let resize = { option : false, width: 0 };
+                            resize.option = post.ImageMeta[index].meta.options.resize;
+                            resize.option.forEach(value => {
+                                if(resize.width < value){
+                                    resize.width = value
+                                }
+                            });
+                            // if pc
+                                if(resize.width < 960){
+                                    resize.width = 0;
+                                }
+                            // if pc end
+                            (resize.width != 0) ? query.push(`${encodeURIComponent('resize')}=${encodeURIComponent(resize.width)}`) : undefined;
+                        } catch(error) { undefined }
+
+                        const result = (query.length != 0) ? '?'+query.join('&') : '';
+                        item.setAttribute("src", `http://127.0.0.1:3000/images/${post.ImageMeta[index]._id + result}`);
+                        item.setAttribute("style", `max-width: ${post.ImageMeta[index].meta.width}px`);
+                    });
+
+                    post.post = Element.outerHTML;
                     resolve(post)
                 }).catch((err) => {
                     reject(err)
