@@ -86,6 +86,7 @@ export default {
     },
     methods : {
 		SlideBtn(btn){
+            this.$emit('btn-click', true);
 			switch(btn){
 				case true:
 					this.SlideOption(btn);
@@ -152,37 +153,39 @@ export default {
 		}
 
 		this.$refs.Preview.addEventListener("mousedown", (e) => {
-			isDown = true;
-			isAble = false;
-			const position = {
-				x : e.offsetX,
-				y : e.offsetY
-			}
-			offsetDown = position;
+            if(e.path[0].nodeName == 'img' || e.path[0].nodeName == 'IMG'){
+                isDown = true;
+                isAble = false;
+                const position = {
+                    x : e.offsetX,
+                    y : e.offsetY
+                }
+                offsetDown = position;
 
-			setTimeout(() => {
-				if(isDown){
-					this.$refs.isDown.style.left = `${position.x}px`;
-					this.$refs.isDown.style.top = `${position.y}px`;
-					this.$refs.isDown.classList.add('active');
+                setTimeout(() => {
+                    if(isDown){
+                        this.$refs.isDown.style.left = `${position.x}px`;
+                        this.$refs.isDown.style.top = `${position.y}px`;
+                        this.$refs.isDown.classList.add('active');
 
-					setTimeout(() => {
-						if(isDown){
-							isAble = true;
-							this.$refs.isDown.classList.add('nav');
-							Able.x = ((this.$refs.Preview.offsetWidth/2) < position.x) ? true : false;
+                        setTimeout(() => {
+                            if(isDown){
+                                isAble = true;
+                                this.$refs.isDown.classList.add('nav');
+                                Able.x = ((this.$refs.Preview.offsetWidth/2) < position.x) ? true : false;
 
-							this.$refs.Able.classList.add('active');
-							this.$refs.Able.style.left = `${position.x}px`;
-							this.$refs.Able.style.top = `${position.y}px`;
+                                this.$refs.Able.classList.add('active');
+                                this.$refs.Able.style.left = `${position.x}px`;
+                                this.$refs.Able.style.top = `${position.y}px`;
 
-							if(Able.x){
-								this.$refs.Able.classList.add('x');
-							}
-						}
-					},1000)
-				}
-			},500);
+                                if(Able.x){
+                                    this.$refs.Able.classList.add('x');
+                                }
+                            }
+                        },1000)
+                    }
+                },500);
+            }
 		});
 
 		this.$refs.Preview.addEventListener("mousemove", (e) => {

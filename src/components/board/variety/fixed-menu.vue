@@ -81,7 +81,7 @@ import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 export default {
     name: 'FixedMenu',
-    props: ['StorageImages', 'MaxSizeImages', 'MinSizeImages', 'ImagesActive'],
+    props: ['StorageImages', 'ImagesActive', 'option'],
     components: {
 		//Swiper,
         //SwiperSlide,
@@ -130,8 +130,11 @@ export default {
 
             ],
             MenuFixed : { BottomMenu : false },
-			FixedMenu : false,
-			
+            FixedMenu : false,
+            
+            MinSizeImages : 0,
+            MaxSizeImages : 0,
+            
 			//ImageSwipeOption : {},
         }
     },
@@ -205,9 +208,9 @@ export default {
 						});
 					}
 
-                    _this.$emit('update-min-image', 0);
+                    _this.MinSizeImages = 0;
 					_this.StorageImages.forEach((item, index) => {
-                        _this.$emit('update-min-image', _this.MinSizeImages + item.size);
+                        _this.MinSizeImages += item.size;
 						_this.StorageImages[index].state.active = (index == 0) ? true : false;
 						_this.StorageImages[index].state.thumbnail = (index == 0) ? true : false;
 
@@ -216,7 +219,7 @@ export default {
 						(index == 0) ? _this.ImagesThumbnail = index : false;
 					});
 
-					const CurrentSize = (Number(_this.MinSizeImages) / Number(_this.MaxSizeImages) * 100).toFixed(4);
+                    const CurrentSize = (Number(_this.MinSizeImages) / Number(_this.MaxSizeImages) * 100).toFixed(4);
                     ref['SizeImages'].style.width = `${CurrentSize}%`;
                     
                     _this.$emit('update-image-active', _this.ImagesActive);
@@ -229,10 +232,14 @@ export default {
 			} catch(err) {
 				console.log(err);
 			}
-		},
+        },
+    },
+    created(){
+        this.MinSizeImages = (this.option.min) ? this.option.min : 0;
+        this.MaxSizeImages = (this.option.max) ? this.option.max : 0;
     },
     mounted(){
-		SET_SCRIPT.optimizedResize();
+        SET_SCRIPT.optimizedResize();
 
 		// Add Style
 		let EditorStyle = '';
@@ -259,66 +266,62 @@ export default {
         // Add Style END
 
 		// SET Scroll
-        const BottomMenu = this.$refs.BottomMenu;
-		const BottomMenuSub = this.$refs.BottomMenuSub;
-		const WinHeight = window.innerHeight;
+        const EventMenu = () => {
+            const BottomMenu = this.$refs.BottomMenu;
+            const BottomMenuSub = this.$refs.BottomMenuSub;
+            const WinHeight = window.innerHeight;
 
-		const Progress = this.$refs.Progress;
-		const ProgressMb = this.$refs.ProgressMb;
-
-		const EventMenu = () => {
             const BottomElement = BottomMenu.getBoundingClientRect();
             const BottomPosition = {
                 bottom: WinHeight - BottomElement.bottom,
                 left: BottomElement.left
-			}
+            }
+            
+            BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
 
-			if(!this.FixedMenu){
-				if(BottomPosition.bottom < 0){
-					BottomMenuSub.style.left = `${BottomPosition.left}px`;
-					BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-					this.MenuFixed.BottomMenu = true;
-				}else{
-					BottomMenuSub.style.left = ``;
-					this.MenuFixed.BottomMenu = false;
-				}
-			}else{
-				BottomMenuSub.style.left = ``;
-				this.MenuFixed.BottomMenu = false;
-			}
+            if(!this.FixedMenu){
+                if(BottomPosition.bottom < 0){
+                    BottomMenuSub.style.left = `${BottomPosition.left}px`;
+                    BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
+                    this.MenuFixed.BottomMenu = true;
+                }else{
+                    BottomMenuSub.style.left = ``;
+                    this.MenuFixed.BottomMenu = false;
+                }
+            }else{
+                BottomMenuSub.style.left = ``;
+                this.MenuFixed.BottomMenu = false;
+            }
+        };
 
-		}
+        const ProgressSet = () => {
+            const Progress = this.$refs.Progress;
+            const ProgressMb = this.$refs.ProgressMb;
+            const ProgressMbSize = { width: ProgressMb.clientWidth };
+            const Padding = 30;
 
-		const ProgressSet = () => {
-			const ProgressMbSize = { width: ProgressMb.clientWidth };
-			const Padding = 30;
+            Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
+        };
 
-			Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
-		}
+        window.addEventListener('scroll', function() {
+            EventMenu();
+            ProgressSet();
+        });
 
-        window.addEventListener('scroll', (data) => {
-			BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-			EventMenu();
-			ProgressSet();
-		});
+        window.addEventListener("optimizedResize", function() {
+            EventMenu();
+            ProgressSet();
+        });
 
-		window.addEventListener("optimizedResize", function() {
-			BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-			EventMenu();
-			ProgressSet();
-		});
+        this.$refs.TitleMenu.addEventListener("click", function() {
+            EventMenu();
+            ProgressSet();
+        });
 
-		this.$refs.TitleMenu.addEventListener("click", function() {
-			BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-			EventMenu();
-			ProgressSet();
-		});
-
-		this.$refs.FixedMenu.addEventListener("click", function() {
-			BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-			EventMenu();
-			ProgressSet();
-		});
+        this.$refs.FixedMenu.addEventListener("click", function() {
+            EventMenu();
+            ProgressSet();
+            });
 		// SET Scroll END	
     }
 }

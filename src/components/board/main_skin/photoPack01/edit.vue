@@ -73,13 +73,14 @@
 			<!-- Fixed Menu -->
 			<fixed-menu
 				:StorageImages="StorageImages"
-				:MaxSizeImages="MaxSizeImages"
-				:MinSizeImages="MinSizeImages"
 				:ImagesActive="ImagesActive"
+				:option = "{
+					min : 0,
+					max : 7340032
+				}"
 
 				@push-image="PushImage"
 				@update-image="UpdateImage"
-				@update-min-image="UpdateMinImage"
 				@update-image-active="UpdateImageActive"
 			/>
 			<!-- Fixed Menu -->
@@ -212,8 +213,6 @@ export default {
 
 			// Storage
 			StorageImages : [],
-			MaxSizeImages : 7340032,
-			MinSizeImages : 0,
 			
 			// State
 			ImagesActive : {
@@ -242,11 +241,8 @@ export default {
 		UpdateImage(option){
 			this.StorageImages = option;
 		},
-		UpdateMinImage(option){
-			this.MinSizeImages = option;
-		},
 		UpdateImageActive(option){
-
+			this.ImagesActive = option;
 		},
 		dataURLtoFile(dataurl, fileName) {
 			var arr = dataurl.split(','),
