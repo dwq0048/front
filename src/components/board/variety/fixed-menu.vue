@@ -26,17 +26,17 @@
                             <!-- <div class="list" ref="ImageSwiper" v-swiper:ImageSwiper="ImageSwipeOption"> -->
                             <div class="list">
                                 <input type="file" @change="UpdateFile('UploadImage')" multiple="multiple" ref="UploadImage"/>
-                                <button type="button" class="move left">
+                                <button type="button" class="move left" @click="FixedMove(false)">
                                     <span>
                                         <i><font-awesome-icon :icon="faChevronLeft" /></i>
                                     </span>
                                 </button>
-                                <button type="button" class="move right">
+                                <button type="button" class="move right" @click="FixedMove(true)">
                                     <span>
                                         <i><font-awesome-icon :icon="faChevronRight" /></i>
                                     </span>
                                 </button>
-                                <ul class="swiper-wrapper">
+                                <ul class="swiper-wrapper" ref="Wrapper">
                                     <li class="btn">
                                         <button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
                                             <span class="image"><i><font-awesome-icon :icon="faImage" /><span>사진 추가</span></i></span>
@@ -146,6 +146,28 @@ export default {
     methods : {
 		Fixed(type) {
             this.FixedMenu = (this.FixedMenu) ? false : true
+        },
+        FixedMove(option) {
+            const Wrap = this.$refs.Wrapper;
+            const WrapOption = {
+                width : Wrap.clientWidth,
+                left : Wrap.scrollLeft,
+                object : Wrap.querySelector('li').clientWidth
+            };
+
+            if(!option){
+                let Move = Math.round(WrapOption.left / WrapOption.object) - 1;
+                Move = (Move < 0) ? 0 : Move;
+                const To = (Move * WrapOption.object);
+
+                Wrap.scrollLeft = To;
+            }else{
+                let Move = Math.round(WrapOption.left / WrapOption.object) + 1;
+                Move = (Move < 0) ? 0 : Move;
+                const To = (Move * WrapOption.object);
+
+                Wrap.scrollLeft = To;
+            }
         },
 		EditorActive(index){
 			this.EditorMenu.map(item => {
@@ -605,6 +627,7 @@ export default {
                                     list-style: none;
                                     position: relative;
                                     vertical-align: top;
+                                    padding: 0 45px;
                                 }
 
                                 & > input {
@@ -624,12 +647,15 @@ export default {
                                         cursor: pointer; outline: none;
                                         z-index: 10;
                                         border-radius: 1px;
+                                        @include transition(.2s all);
                                     }
 
                                     & > span {
                                         & {
                                             position: relative;
                                             width: 100%; height: 100%;
+                                            @include transition(.2s all);
+                                            @include transform(scale(1));
                                         }
 
                                         & > i {
@@ -649,6 +675,20 @@ export default {
                                             @include transform(translateX(-100%));
                                         }
                                     }
+
+                                    &:hover {
+                                        & {
+                                            background-color: rgba(95,164,233,1);
+                                            @include transition(.2s all);
+                                        }
+
+                                        & > span {
+                                            & {
+                                                @include transition(.2s all);
+                                                @include transform(scale(1.05));
+                                            }
+                                        }
+                                    }
                                 }
 
                                 & > ul {
@@ -660,7 +700,7 @@ export default {
                                         position: relative;
                                         vertical-align: top;
                                         overflow-x: scroll;
-                                        padding: 0 45px;
+                                        scroll-behavior: smooth;
                                     }
 
                                     &::-webkit-scrollbar {
