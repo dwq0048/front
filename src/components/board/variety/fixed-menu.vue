@@ -23,31 +23,36 @@
                 <div class="list">
                     <ul ref="EditorList">
                         <li :class="{ active : EditorMenu[0].active }">
-                            <ul class="upload">
-                                <li>
-                                    <input type="file" @change="UpdateFile('UploadImage')" multiple="multiple" ref="UploadImage"/>
-                                    <button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
-                                        <span class="image">
-                                            <i>
-                                                <font-awesome-icon :icon="faImage" />
-                                                <span>사진 추가</span>
-                                            </i>
-                                        </span>
-                                        <span class="plus">
-                                            <i>
-                                                <font-awesome-icon :icon="faPlus" />
-                                            </i>
-                                        </span>
-                                    </button>
-                                </li>
-                            </ul>
                             <!-- <div class="list" ref="ImageSwiper" v-swiper:ImageSwiper="ImageSwipeOption"> -->
                             <div class="list">
+                                <input type="file" @change="UpdateFile('UploadImage')" multiple="multiple" ref="UploadImage"/>
+                                <button type="button" class="move left">
+                                    <span>
+                                        <i><font-awesome-icon :icon="faChevronLeft" /></i>
+                                    </span>
+                                </button>
+                                <button type="button" class="move right">
+                                    <span>
+                                        <i><font-awesome-icon :icon="faChevronRight" /></i>
+                                    </span>
+                                </button>
                                 <ul class="swiper-wrapper">
+                                    <li class="btn">
+                                        <button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
+                                            <span class="image"><i><font-awesome-icon :icon="faImage" /><span>사진 추가</span></i></span>
+                                            <span class="plus"><i><font-awesome-icon :icon="faPlus" /></i></span>
+                                        </button>
+                                    </li>
                                     <li class="swiper-slide" v-for="(item, i) in StorageImages" :key="i">
                                         <div>
                                             <img :src="item.base">
                                         </div>
+                                    </li>
+                                    <li class="btn" v-if="StorageImages.length > 0">
+                                        <button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
+                                            <span class="image"><i><font-awesome-icon :icon="faImage" /><span>사진 추가</span></i></span>
+                                            <span class="plus"><i><font-awesome-icon :icon="faPlus" /></i></span>
+                                        </button>
                                     </li>
                                 </ul>
                             </div>
@@ -76,7 +81,7 @@
 import { SET_SCRIPT } from '@/store/helper/index'
 import { SET_BOARD } from '@/store/helper/index'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 export default {
@@ -89,7 +94,7 @@ export default {
 	//directives: { swiper: directive },
     data(){
         return {
-            faImage, faVideo, faYoutube, faSmile, faFileUpload, faThumbtack, faPlus,
+            faImage, faVideo, faYoutube, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight,
 
 			EditorMenu : [
 				{
@@ -139,8 +144,8 @@ export default {
         }
     },
     methods : {
-		Fixed() {
-			this.FixedMenu = (this.FixedMenu) ? false : true
+		Fixed(type) {
+            this.FixedMenu = (this.FixedMenu) ? false : true
         },
 		EditorActive(index){
 			this.EditorMenu.map(item => {
@@ -150,6 +155,41 @@ export default {
 			})
 
 			this.EditorMenu[index].active = true;
+        },
+        EventMenu() {
+            const BottomMenu = this.$refs.BottomMenu;
+            const BottomMenuSub = this.$refs.BottomMenuSub;
+            const WinHeight = window.innerHeight;
+
+            const BottomElement = BottomMenu.getBoundingClientRect();
+            const BottomPosition = {
+                bottom: WinHeight - BottomElement.bottom,
+                left: BottomElement.left
+            }
+            
+            BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
+
+            if(!this.FixedMenu){
+                if(BottomPosition.bottom < 0){
+                    BottomMenuSub.style.left = `${BottomPosition.left}px`;
+                    BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
+                    this.MenuFixed.BottomMenu = true;
+                }else{
+                    BottomMenuSub.style.left = ``;
+                    this.MenuFixed.BottomMenu = false;
+                }
+            }else{
+                BottomMenuSub.style.left = ``;
+                this.MenuFixed.BottomMenu = false;
+            }
+        },
+        ProgressSet() {
+            const Progress = this.$refs.Progress;
+            const ProgressMb = this.$refs.ProgressMb;
+            const ProgressMbSize = { width: ProgressMb.clientWidth };
+            const Padding = 30;
+
+            Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
         },
 		BytesToSize(bytes) {
 			const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
@@ -222,6 +262,8 @@ export default {
                     const CurrentSize = (Number(_this.MinSizeImages) / Number(_this.MaxSizeImages) * 100).toFixed(4);
                     ref['SizeImages'].style.width = `${CurrentSize}%`;
                     
+                    
+			        _this.EditorActive(0);
                     _this.$emit('update-image-active', _this.ImagesActive);
                     _this.$emit('update-image', _this.StorageImages);
 				},
@@ -239,6 +281,7 @@ export default {
         this.MaxSizeImages = (this.option.max) ? this.option.max : 0;
     },
     mounted(){
+        const _this = this;
         SET_SCRIPT.optimizedResize();
 
 		// Add Style
@@ -266,62 +309,25 @@ export default {
         // Add Style END
 
 		// SET Scroll
-        const EventMenu = () => {
-            const BottomMenu = this.$refs.BottomMenu;
-            const BottomMenuSub = this.$refs.BottomMenuSub;
-            const WinHeight = window.innerHeight;
-
-            const BottomElement = BottomMenu.getBoundingClientRect();
-            const BottomPosition = {
-                bottom: WinHeight - BottomElement.bottom,
-                left: BottomElement.left
-            }
-            
-            BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-
-            if(!this.FixedMenu){
-                if(BottomPosition.bottom < 0){
-                    BottomMenuSub.style.left = `${BottomPosition.left}px`;
-                    BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-                    this.MenuFixed.BottomMenu = true;
-                }else{
-                    BottomMenuSub.style.left = ``;
-                    this.MenuFixed.BottomMenu = false;
-                }
-            }else{
-                BottomMenuSub.style.left = ``;
-                this.MenuFixed.BottomMenu = false;
-            }
-        };
-
-        const ProgressSet = () => {
-            const Progress = this.$refs.Progress;
-            const ProgressMb = this.$refs.ProgressMb;
-            const ProgressMbSize = { width: ProgressMb.clientWidth };
-            const Padding = 30;
-
-            Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
-        };
-
         window.addEventListener('scroll', function() {
-            EventMenu();
-            ProgressSet();
+            _this.EventMenu();
+            _this.ProgressSet();
         });
 
         window.addEventListener("optimizedResize", function() {
-            EventMenu();
-            ProgressSet();
+            _this.EventMenu();
+            _this.ProgressSet();
         });
 
         this.$refs.TitleMenu.addEventListener("click", function() {
-            EventMenu();
-            ProgressSet();
+            _this.EventMenu();
+            _this.ProgressSet();
         });
 
         this.$refs.FixedMenu.addEventListener("click", function() {
-            EventMenu();
-            ProgressSet();
-            });
+            _this.EventMenu();
+            _this.ProgressSet();
+        });
 		// SET Scroll END	
     }
 }
@@ -589,110 +595,6 @@ export default {
                                     display: block;
                                     padding-bottom: 100%;
                                 }
-
-                                & > li {
-                                    & {
-                                        display: block;
-                                        position: absolute;
-                                        width: 100%; height: 100%;
-                                        left: 50%; top: 50%;
-                                        @include transform(translate(-50%, -50%));
-                                        padding: 5px;
-                                    }
-
-                                    & > input {
-                                        & {
-                                            display: none;
-                                        }
-                                    }
-
-                                    & > button {
-                                        & {
-                                            
-                                            display: block;
-                                            width: 100%; height: 100%;
-                                            border: 0; background: none;
-                                            margin: 0; padding: 0;
-                                            position: relative;
-                                            border: 2px dashed #ddd;
-                                            background-color: #f1f1f1;
-                                            border-radius: 3px;
-                                            overflow: hidden;
-                                            outline: none;
-                                            cursor: pointer;
-                                        }
-
-                                        & > span {
-                                            & {
-                                                display: block;
-                                                position: absolute;
-                                                left: 50%; top: 50%;
-                                                @include transform(translate(-50%, -50%));
-                                            }
-
-                                            &.image {
-                                                & {
-                                                    opacity: 1;
-                                                    @include transition(.2s all);
-                                                    text-align: center;
-                                                }
-
-                                                & > i {
-                                                    & {
-                                                        font-size: #{$font-size + 4};
-                                                        color: #999;
-                                                    }
-
-                                                    & > span {
-                                                        & {
-                                                            display: block;
-                                                            font-size: #{$font-size - 2};
-                                                            font-style: normal;
-                                                            font-weight: bold;
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            &.plus {
-                                                & {
-                                                    opacity: 0;
-                                                    @include transition(.2s all);
-                                                }
-
-                                                & > i {
-                                                    & {
-                                                        font-size: #{$font-size + 4};
-                                                        color: $bg-orange;
-                                                    }
-                                                }
-                                            } 
-                                        }
-
-                                        &:hover {
-                                            & {
-                                                border: 2px dashed $bg-orange;
-                                                @include transition(.2s all);
-                                            }
-
-                                            & > span {
-                                                &.image {
-                                                    & {
-                                                        opacity: 0;
-                                                        @include transition(.2s all);
-                                                    }
-                                                }
-
-                                                &.plus {
-                                                    & {
-                                                        opacity: 1;
-                                                        @include transition(.2s all);
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
                             }
 
                             & > .list {
@@ -705,6 +607,50 @@ export default {
                                     vertical-align: top;
                                 }
 
+                                & > input {
+                                    & {
+                                        display: none;
+                                    }
+                                }
+
+                                & > button.move {
+                                    & {
+                                        position: absolute;
+                                        width: 40px; height: 100%;
+                                        left: 0; top: 0;
+                                        border: 0; background: none;
+                                        margin: 0; padding: 0;
+                                        background-color: rgba(95,164,233,0.8);
+                                        cursor: pointer; outline: none;
+                                        z-index: 10;
+                                        border-radius: 1px;
+                                    }
+
+                                    & > span {
+                                        & {
+                                            position: relative;
+                                            width: 100%; height: 100%;
+                                        }
+
+                                        & > i {
+                                            & {
+                                                position: absolute;
+                                                left: 50%; top: 50%;
+                                                font-size: #{$font-size + 4};
+                                                color: #fff;
+                                                @include transform(translate(-50%, -50%));
+                                            }
+                                        }
+                                    }
+
+                                    &.right {
+                                        & {
+                                            left: 100%;
+                                            @include transform(translateX(-100%));
+                                        }
+                                    }
+                                }
+
                                 & > ul {
                                     & {
                                         display: inline-block;
@@ -713,13 +659,123 @@ export default {
                                         list-style: none;
                                         position: relative;
                                         vertical-align: top;
+                                        overflow-x: scroll;
+                                        padding: 0 45px;
+                                    }
+
+                                    &::-webkit-scrollbar {
+                                        display: none;
+                                    }
+
+                                    & > li.btn {
+                                        & {
+                                            display: inline-block;
+                                            width: 17%; height: auto;
+                                            padding: 0 5px;
+                                            vertical-align: top;
+                                        }
+
+                                        & > button {
+                                            & {
+                                                display: block;
+                                                width: 100%; height: auto;
+                                                border: 0; background: none;
+                                                margin: 0; padding: 0;
+                                                position: relative;
+                                                border: 2px dashed #ddd;
+                                                background-color: #f1f1f1;
+                                                border-radius: 3px;
+                                                overflow: hidden;
+                                                outline: none;
+                                                cursor: pointer;
+                                            }
+
+                                            &:after {
+                                                & {
+                                                    content: " ";
+                                                    display: block;
+                                                    padding-bottom: 100%;
+                                                }
+                                            }
+
+                                            & > span {
+                                                & {
+                                                    display: block;
+                                                    position: absolute;
+                                                    left: 50%; top: 50%;
+                                                    @include transform(translate(-50%, -50%));
+                                                }
+
+                                                &.image {
+                                                    & {
+                                                        opacity: 1;
+                                                        @include transition(.2s all);
+                                                        text-align: center;
+                                                    }
+
+                                                    & > i {
+                                                        & {
+                                                            font-size: #{$font-size + 4};
+                                                            color: #999;
+                                                        }
+
+                                                        & > span {
+                                                            & {
+                                                                display: block;
+                                                                font-size: #{$font-size - 2};
+                                                                font-style: normal;
+                                                                font-weight: bold;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                &.plus {
+                                                    & {
+                                                        opacity: 0;
+                                                        @include transition(.2s all);
+                                                    }
+
+                                                    & > i {
+                                                        & {
+                                                            font-size: #{$font-size + 4};
+                                                            color: $bg-orange;
+                                                        }
+                                                    }
+                                                } 
+                                            }
+
+                                            &:hover {
+                                                & {
+                                                    border: 2px dashed $bg-orange;
+                                                    @include transition(.2s all);
+                                                }
+
+                                                & > span {
+                                                    &.image {
+                                                        & {
+                                                            opacity: 0;
+                                                            @include transition(.2s all);
+                                                        }
+                                                    }
+
+                                                    &.plus {
+                                                        & {
+                                                            opacity: 1;
+                                                            @include transition(.2s all);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
 
                                     & > li {
                                         & {
                                             display: inline-block;
-                                            width: 15%!important; height: auto;
-                                            padding: 5px;
+                                            width: 17%!important; height: auto;
+                                            padding: 0 5px;
+                                            vertical-align: top;
                                         }
 
                                         & > div {

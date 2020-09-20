@@ -54,26 +54,24 @@
 							<div class="list">
 								<ul ref="EditorList">
 									<li :class="{ active : EditorMenu[0].active }">
-										<ul class="upload">
-											<li>
-												<input type="file" @change="UpdateFile('UploadImage', commands.image)" multiple="multiple" ref="UploadImage"/>
-												<button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
-													<span class="image">
-														<i>
-															<font-awesome-icon :icon="faImage" />
-															<span>사진 추가</span>
-														</i>
-													</span>
-													<span class="plus">
-														<i>
-															<font-awesome-icon :icon="faPlus" />
-														</i>
-													</span>
-												</button>
-											</li>
-										</ul>
+										<input type="file" @change="UpdateFile('UploadImage', commands.image)" multiple="multiple" ref="UploadImage"/>
 										<div class="list" ref="ImageSwiper" v-swiper:ImageSwiper="ImageSwipeOption">
 											<ul class="swiper-wrapper">
+												<li class="btn">
+													<button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
+														<span class="image">
+															<i>
+																<font-awesome-icon :icon="faImage" />
+																<span>사진 추가</span>
+															</i>
+														</span>
+														<span class="plus">
+															<i>
+																<font-awesome-icon :icon="faPlus" />
+															</i>
+														</span>
+													</button>
+												</li>
 												<li class="swiper-slide" v-for="(item, i) in StorageImages" :key="i">
 													<div>
 														<img :src="item.base">
@@ -776,8 +774,23 @@ export default {
 										@include transition(.2s all);
 									}
 								}
+							}
+						}
 
-								& > li {
+						& > .list {
+							& {
+								width: 100%; height: auto;
+								border-top: 1px solid #ddd;
+							}
+
+							& > ul {
+								& {
+									width: 100%; height: auto;
+									font-size: 0;
+									list-style: none;
+								}
+
+								& > li.btn {
 									& {
 										display: inline-block;
 									}
@@ -811,21 +824,6 @@ export default {
 											}
 										}
 									}
-								}
-							}
-						}
-
-						& > .list {
-							& {
-								width: 100%; height: auto;
-								border-top: 1px solid #ddd;
-							}
-
-							& > ul {
-								& {
-									width: 100%; height: auto;
-									font-size: 0;
-									list-style: none;
 								}
 
 								& > li {

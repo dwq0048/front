@@ -259,7 +259,7 @@ export default {
 				});
 
 				return 'sizeUp';
-			}else if((offsetDown.y + (35 * 3)) < yyy){
+			}else if((offsetDown.y + (35 * 3)) < yyy && (offsetDown.y + (35 * 4)) >= yyy){
 				this.ImagesClose.state = false;
 				this.ImagesNav.forEach((item, index) => {
 					if(item.en == 'download'){
@@ -270,6 +270,13 @@ export default {
 				});
 
 				return 'download';
+			}else if((offsetDown.y + (35 * 4)) < yyy){
+				this.ImagesClose.state = true;
+				this.ImagesNav.forEach((item, index) => {
+					this.ImagesNav[index].state = false;
+				});
+
+				return false;
 			}else {
 				return false;
 			}

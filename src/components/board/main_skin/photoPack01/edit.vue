@@ -62,26 +62,37 @@
 					<h1>미리보기</h1>
 				</div>
 
+				<div class="preview-none" v-if="StorageImages.length <= 0 || !StorageImages">
+					<div>
+						<h1>이미지를 업로드 해주세요</h1>
+						<p>이미지 가로보기 , 세로보기 등을 선택 할 수 있습니다.</p>
+						<button type="button" @click="ImageClick">
+							업로드
+						</button>
+					</div>
+				</div>
+
 				<swipe-slide 
 					:StorageImages="StorageImages"
 					:ImagesActive="ImagesActive"
 					@slide-data="SlideData"
+
+					v-if="StorageImages.length > 0"
 				/>
 			</div>
 			<!-- Set Slide END -->
 
 			<!-- Fixed Menu -->
 			<fixed-menu
+				:option = "{ min : 0, max : 7340032 }"
 				:StorageImages="StorageImages"
 				:ImagesActive="ImagesActive"
-				:option = "{
-					min : 0,
-					max : 7340032
-				}"
 
 				@push-image="PushImage"
 				@update-image="UpdateImage"
 				@update-image-active="UpdateImageActive"
+
+				ref="fixMenu"
 			/>
 			<!-- Fixed Menu -->
 
@@ -243,6 +254,9 @@ export default {
 		},
 		UpdateImageActive(option){
 			this.ImagesActive = option;
+		},
+		ImageClick(){
+			this.$refs.fixMenu.TriggerInput("UploadImage");
 		},
 		dataURLtoFile(dataurl, fileName) {
 			var arr = dataurl.split(','),
@@ -619,7 +633,8 @@ export default {
 					& > div {
 						& {
 							width: 100%; height: 35px;
-							background-color: #ccc;
+							background-color: #f9f9f9;
+							border: 1px solid #ddd;
 							border-radius: 3px;
 							overflow: hidden;
 						}
@@ -640,6 +655,61 @@ export default {
 							color: $font-color;
 							padding-left: 35px;
 							padding-bottom: 10px;
+						}
+					}
+				}
+
+				& > .preview-none {
+					& {
+						width: 100%; height: auto;
+						padding: 0 30px;
+						text-align: center;
+					}
+
+					& > div {
+						& {
+							width: 100%; height: auto;
+							padding: 30px;
+							background-color: #f1f1f1;
+							border-radius: 3px;
+						}
+
+						& > h1 {
+							& {
+								color: #555;
+								font-size: #{$font-size + 6};
+								padding-bottom: 5px;
+							}
+						}
+
+						& > p {
+							& {
+								color: #777;
+								font-size: #{$font-size};
+								padding-bottom: 30px;
+							}
+						}
+
+						& > button {
+							& {
+								display: inline-block;
+								border: 0; background: none;
+								margin: 0; padding: 0;
+								background-color: $bg-orange;
+								padding: 10px 60px;
+								border-radius: 3px;
+								font-size: #{$font-size};
+								color: #fff;
+								cursor: pointer; outline: none;
+								@include transition(.2s all);
+							}
+
+							&:hover {
+								& {
+									background-color: #ea915e;
+									@include transition(.2s all);
+								}
+							}
 						}
 					}
 				}
