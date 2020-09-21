@@ -1,7 +1,7 @@
 <template>
     <div class="list" ref="Preview">
         <ul v-if="StorageImages.length > 0" :style="`padding-bottom:${ImagesActive.ratio}%`">
-            <li v-for="(item, i) in StorageImages" :key="i" :class="{ active : i ==  ImagesActive.index }">
+            <li v-for="(item, i) in StorageImages" :key="i" :class="{ active : i ==  ImagesActive.index, prev : i == ImagesActive.prev, next : i == ImagesActive.next }">
                 <div class="image">
                     <img :src="item.base">
                 </div>
@@ -118,25 +118,35 @@ export default {
 		SlideAnimate(option){
 			const refs = this.$refs.Preview;
 			const Element = refs.querySelector('ul');
-			const ElementCurrent = refs.querySelector('ul > li.active');
-			const ElementNext = refs.querySelector(`ul > li:nth-child(${option.next.index + 1})`);
+            const nodes = Array.prototype.slice.call( Element.children );
+            const lists = [];
+            nodes.map((item, index) => {
+                if(item.localName == 'li'){
+                    lists.push(item);
+                }
+            });
+
+            let max = lists.length - 1;
+            let PrevNext = {
+                prev : (option.next.index - 1),
+                next : (option.next.index + 1),
+                index : option.next.index,
+                ratio : option.next.ratio
+            }
+
+            PrevNext.prev = (PrevNext.prev < 0) ? max : PrevNext.prev;
+            PrevNext.next = (PrevNext.next > max) ? 0 : PrevNext.next;
+
 			Element.style.paddingBottom = `${option.next.ratio}%`;
-			Element.style.transition = `.2s all`;
+            Element.style.transition = `.2s all`;
 
-			if(option.move){
-				ElementCurrent.classList.add('left');
-				ElementNext.classList.add('next-left');
-			}else{
-				ElementCurrent.classList.add('right');
-				ElementNext.classList.add('next-right-before');
-				setTimeout(() => {
-					ElementNext.classList.add('next-right');
-				},10);
-			};
-
-			setTimeout(() => {
-                this.$emit('slide-data', option.next);
-			},200);
+            let move = (!option.move) ? 'right' : 'left';
+            Element.querySelector('li.active').classList.add(move);
+            Element.querySelector(`li:nth-child(${option.next.index + 1})`).classList.add(move);
+            
+            setTimeout(() => {
+                this.$emit('slide-data', PrevNext);
+            }, 200);
 		},
     },
     mounted(){
@@ -578,20 +588,19 @@ export default {
                     }
                 }
 
-                &.active {
+                &.prev {
                     & {
-                        left: 0;
+                        left: -100%;
+                    }
+                }
+
+                &.next {
+                    & {
+                        left: 100%;
                     }
                 }
 
                 &.left {
-                    & {
-                        left: -100%;
-                        @include transition(.2s all);
-                    }
-                }
-
-                &.next-left {
                     & {
                         left: 0;
                         @include transition(.2s all);
@@ -600,21 +609,28 @@ export default {
 
                 &.right {
                     & {
-                        left: 100%;
+                        left: 0;
                         @include transition(.2s all);
                     }
                 }
 
-                &.next-right-before {
-                    & {
-                        left: -100%;
-                    }
-                }
-
-                &.next-right {
+                &.active {
                     & {
                         left: 0;
-                        @include transition(.19s all);
+                    }
+
+                    &.left {
+                        & {
+                            left: -100%;
+                            @include transition(.2s all);
+                        }
+                    }
+
+                    &.right {
+                        & {
+                            left: 100%;
+                            @include transition(.2s all);
+                        }
                     }
                 }
             }

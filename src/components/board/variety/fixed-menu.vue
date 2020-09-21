@@ -24,19 +24,19 @@
                     <ul ref="EditorList">
                         <li :class="{ active : EditorMenu[0].active }">
                             <!-- <div class="list" ref="ImageSwiper" v-swiper:ImageSwiper="ImageSwipeOption"> -->
-                            <div class="list">
+                            <div class="list" ref="Wrapper">
                                 <input type="file" @change="UpdateFile('UploadImage')" multiple="multiple" ref="UploadImage"/>
-                                <button type="button" class="move left" @click="FixedMove(false)">
+                                <button type="button" class="move left" @click="FixedMove(false)" ref="FixedLeft">
                                     <span>
                                         <i><font-awesome-icon :icon="faChevronLeft" /></i>
                                     </span>
                                 </button>
-                                <button type="button" class="move right" @click="FixedMove(true)">
+                                <button type="button" class="move right" @click="FixedMove(true)" ref="FixedRight">
                                     <span>
                                         <i><font-awesome-icon :icon="faChevronRight" /></i>
                                     </span>
                                 </button>
-                                <ul class="swiper-wrapper" ref="Wrapper">
+                                <draggable tag="ul" v-model="StorageImages">
                                     <li class="btn">
                                         <button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
                                             <span class="image"><i><font-awesome-icon :icon="faImage" /><span>사진 추가</span></i></span>
@@ -54,7 +54,7 @@
                                             <span class="plus"><i><font-awesome-icon :icon="faPlus" /></i></span>
                                         </button>
                                     </li>
-                                </ul>
+                                </draggable>
                             </div>
                             <div class="progress" ref="Progress">
                                 <div class="bar">
@@ -84,18 +84,27 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
+//import { Cropper } from 'vue-advanced-cropper'
+import draggable from 'vuedraggable'
+
 export default {
     name: 'FixedMenu',
     props: ['StorageImages', 'ImagesActive', 'option'],
     components: {
+        draggable
 		//Swiper,
         //SwiperSlide,
     },
 	//directives: { swiper: directive },
     data(){
         return {
+            // Icon
             faImage, faVideo, faYoutube, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight,
 
+            // Plugin
+            draggable,
+
+            // Editor
 			EditorMenu : [
 				{
 					ko : '사진',
@@ -148,7 +157,7 @@ export default {
             this.FixedMenu = (this.FixedMenu) ? false : true
         },
         FixedMove(option) {
-            const Wrap = this.$refs.Wrapper;
+            const Wrap = this.$refs.Wrapper.querySelector('ul');
             const WrapOption = {
                 width : Wrap.clientWidth,
                 left : Wrap.scrollLeft,
@@ -159,16 +168,62 @@ export default {
                 let Move = Math.round(WrapOption.left / WrapOption.object) - 1;
                 Move = (Move < 0) ? 0 : Move;
                 const To = (Move * WrapOption.object);
-
+                
                 Wrap.scrollLeft = To;
+                this.FixedDisabled(To);
             }else{
                 let Move = Math.round(WrapOption.left / WrapOption.object) + 1;
                 Move = (Move < 0) ? 0 : Move;
                 const To = (Move * WrapOption.object);
 
                 Wrap.scrollLeft = To;
+                this.FixedDisabled(To);
             }
         },
+        FixedDisabled(ScrollLeft = undefined) {
+            const Wrap = this.$refs.Wrapper.querySelector('ul');
+            const WrapOption = {
+                left : Wrap.scrollLeft,
+                scroll : Wrap.scrollWidth,
+                width : Wrap.clientWidth,
+            }
+
+            if(ScrollLeft == undefined){
+                if(WrapOption.left <= 0){
+                    this.$refs.FixedLeft.classList.add('disable');
+                }else{
+                    this.$refs.FixedLeft.classList.remove('disable');
+                }
+
+                if((WrapOption.left + WrapOption.width) >= WrapOption.scroll ){
+                    this.$refs.FixedRight.classList.add('disable');
+                }else{
+                    this.$refs.FixedRight.classList.remove('disable');
+                }
+            }else{
+                if(ScrollLeft <= 0){
+                    this.$refs.FixedLeft.classList.add('disable');
+                }else{
+                    this.$refs.FixedLeft.classList.remove('disable');
+                }
+
+                if((ScrollLeft + WrapOption.width) >= WrapOption.scroll ){
+                    this.$refs.FixedRight.classList.add('disable');
+                }else{
+                    this.$refs.FixedRight.classList.remove('disable');
+                }
+            }
+        },
+		photoMove(evt){
+			try {
+				return (evt.draggedContext.element.name);
+			} catch{
+				return false;
+			}
+		},
+		photoChange(evt){
+			let index = 0;
+		},
 		EditorActive(index){
 			this.EditorMenu.map(item => {
 				if (item.active == true){
@@ -286,6 +341,7 @@ export default {
                     
                     
 			        _this.EditorActive(0);
+                    _this.FixedDisabled();
                     _this.$emit('update-image-active', _this.ImagesActive);
                     _this.$emit('update-image', _this.StorageImages);
 				},
@@ -305,6 +361,8 @@ export default {
     mounted(){
         const _this = this;
         SET_SCRIPT.optimizedResize();
+
+        this.FixedDisabled();
 
 		// Add Style
 		let EditorStyle = '';
@@ -329,6 +387,10 @@ export default {
 		this.styleTag.appendChild(document.createTextNode(EditorStyle));
 		document.head.appendChild(this.styleTag);
         // Add Style END
+
+        this.$refs.Wrapper.querySelector('ul').addEventListener('scroll', (data) => {
+            _this.FixedDisabled();
+        });
 
 		// SET Scroll
         window.addEventListener('scroll', function() {
@@ -687,6 +749,13 @@ export default {
                                                 @include transition(.2s all);
                                                 @include transform(scale(1.05));
                                             }
+                                        }
+                                    }
+
+                                    &.disable {
+                                        & {
+                                            background-color: #ddd;
+                                            @include transition(.2s all);
                                         }
                                     }
                                 }

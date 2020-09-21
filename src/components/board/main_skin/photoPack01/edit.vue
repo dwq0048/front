@@ -228,6 +228,8 @@ export default {
 			// State
 			ImagesActive : {
 				index : false,
+				prev : false,
+				next : false,
 				ratio : 0
 			},
 			ImagesThumbnail : false,
