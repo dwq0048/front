@@ -36,19 +36,13 @@
                                         <i><font-awesome-icon :icon="faChevronRight" /></i>
                                     </span>
                                 </button>
-                                <draggable tag="ul" v-model="StorageImages">
-                                    <li class="btn">
-                                        <button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
-                                            <span class="image"><i><font-awesome-icon :icon="faImage" /><span>사진 추가</span></i></span>
-                                            <span class="plus"><i><font-awesome-icon :icon="faPlus" /></i></span>
-                                        </button>
-                                    </li>
-                                    <li class="swiper-slide" v-for="(item, i) in StorageImages" :key="i">
+                                <draggable tag="ul" v-model="StorageImages" draggable=".item" :move="ImageDrag" @end="ImageDrop">
+                                    <li class="item" v-for="(item, i) in StorageImages" :key="i">
                                         <div>
                                             <img :src="item.base">
                                         </div>
                                     </li>
-                                    <li class="btn" v-if="StorageImages.length > 0">
+                                    <li class="btn" v-if="StorageImages.length <= 0">
                                         <button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
                                             <span class="image"><i><font-awesome-icon :icon="faImage" /><span>사진 추가</span></i></span>
                                             <span class="plus"><i><font-awesome-icon :icon="faPlus" /></i></span>
@@ -56,13 +50,20 @@
                                     </li>
                                 </draggable>
                             </div>
-                            <div class="progress" ref="Progress">
-                                <div class="bar">
-                                    <div class="bar" ref="SizeImages"></div>
+                            <div class="options">
+                                <div class="upload">
+                                    <button type="button" @click="TriggerInput('UploadImage')">
+                                        <span>사진 업로드</span>
+                                    </button>
                                 </div>
-                                <div class="info" ref="ProgressMb">
-                                    <div>
-                                        <span>{{ BytesToSize(MinSizeImages) }}</span> / <span>{{ BytesToSize(MaxSizeImages) }}</span>
+                                <div class="progress" ref="progress">
+                                    <div class="bar">
+                                        <div class="bar" ref="SizeImages"></div>
+                                    </div>
+                                    <div class="info" ref="ProgressMb">
+                                        <div>
+                                            <span>{{ BytesToSize(MinSizeImages) }}</span> / <span>{{ BytesToSize(MaxSizeImages) }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -148,6 +149,8 @@ export default {
             
             MinSizeImages : 0,
             MaxSizeImages : 0,
+
+            SubStorageImages : []
             
 			//ImageSwipeOption : {},
         }
@@ -214,15 +217,16 @@ export default {
                 }
             }
         },
-		photoMove(evt){
-			try {
-				return (evt.draggedContext.element.name);
-			} catch{
-				return false;
-			}
-		},
-		photoChange(evt){
-			let index = 0;
+
+		ImageDrop(evt){
+            //this.SubStorageImages = this.StorageImages;
+            //console.log(this.SubStorageImages);
+            this.$emit('update-image', this.StorageImages);
+            //console.log(this.StorageImages);
+        },
+		ImageDrag(evt){
+            console.log(evt.draggedContext);
+            //this.SubStorageImages = this.StorageImages;
 		},
 		EditorActive(index){
 			this.EditorMenu.map(item => {
@@ -602,64 +606,109 @@ export default {
                                 }
                             }
 
-                            & > .progress {
+                            & > .options {
                                 & {
                                     width: 100%; height: auto;
-                                    position: relative;
-                                    padding-right: 100px;
-                                    margin-top: 10px;
+                                    display: block;
+                                    font-size: 0;
+                                    padding-top: 15px;
                                 }
 
-                                & > .info {
+                                & > .upload {
                                     & {
-                                        position: absolute;
-                                        right: 0; top: 50%;
-                                        @include transform(translateY(-50%));
-                                        text-align: right;
+                                        width: 15%; height: auto;
+                                        display: inline-block;
+                                        vertical-align: middle;
+                                        padding-right: 15px;
                                     }
 
-                                    & > div {
+                                    & > button {
                                         & {
-                                            font-size: #{$font-size - 1};
-                                            font-weight: bold;
-                                            color: #999;
-                                            margin-top: -3px;
+                                            display: block;
+                                            width: 100%; height: 30px;
+                                            border: 0; background: none;
+                                            margin: 0; padding: 0;
+                                            text-align: center;
+                                            cursor: pointer; outline: none;
+                                            background-color: $bg-orange;
+                                            color: #fff;
+                                            border-radius: 5px;
+                                            font-size: #{$font-size - 2};
+                                            @include transition(.2s all);
                                         }
 
-                                        & > span {
-                                            &:nth-child(1){
-                                                & {
-                                                    color: $bg-orange;
-                                                }
-                                            }
-
-                                            &:nth-child(2){
-                                                & {
-                                                    color: #555;
-                                                }
+                                        &:hover {
+                                            & {
+                                                background-color: #ea915e;
+                                                @include transition(.2s all);
                                             }
                                         }
                                     }
                                 }
 
-                                & > .bar {
+                                & > .progress {
                                     & {
-                                        width: 100%; height: 16px;
-                                        background-color: #ddd;
-                                        border-radius: 15px;
+                                        width: 85%; height: auto;
+                                        display: inline-block;
                                         position: relative;
-                                        padding: 4px 5px;
+                                        padding-right: 100px;
+                                        //margin-top: 10px;
+                                        vertical-align: middle;
+                                    }
+
+                                    & > .info {
+                                        & {
+                                            position: absolute;
+                                            right: 0; top: 50%;
+                                            @include transform(translateY(-50%));
+                                            text-align: right;
+                                        }
+
+                                        & > div {
+                                            & {
+                                                font-size: #{$font-size - 1};
+                                                font-weight: bold;
+                                                color: #999;
+                                                margin-top: -3px;
+                                            }
+
+                                            & > span {
+                                                &:nth-child(1){
+                                                    & {
+                                                        color: $bg-orange;
+                                                    }
+                                                }
+
+                                                &:nth-child(2){
+                                                    & {
+                                                        color: #555;
+                                                    }
+                                                }
+                                            }
+                                        }
                                     }
 
                                     & > .bar {
                                         & {
-                                            width: 0px; height: 100%;
-                                            background-color: $bg-orange;
-                                            position: relative;
+                                            width: 100%; height: 16px;
+                                            background-color: #ddd;
                                             border-radius: 15px;
+                                            position: relative;
+                                            padding: 4px 5px;
+                                        }
+
+                                        & > .bar {
+                                            & {
+                                                width: 0px; height: 100%;
+                                                background-color: $bg-orange;
+                                                position: relative;
+                                                border-radius: 15px;
+                                            }
                                         }
                                     }
                                 }
+
+
                             }
 
                             & > ul.upload {

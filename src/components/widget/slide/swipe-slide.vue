@@ -399,6 +399,7 @@ export default {
                 &.active {
                     & {
                         visibility: visible;
+                        //visibility: collapse;
                     }
 
                     & > div {
