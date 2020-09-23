@@ -13,7 +13,7 @@
                         <button type="button">
                             <div>
                                 <i><font-awesome-icon :icon="faHashtag" /></i>
-                                <span class="text" :data-index="i" @keypress="EditPress($event, i)" contenteditable="false">{{ item.text }}</span>
+                                <span class="text" @keypress="EditPress($event, i)" contenteditable="false">{{ item.text }}</span>
                             </div>
                             <span class="option">
                                 <ul>
