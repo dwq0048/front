@@ -56,7 +56,7 @@
                                         <span>사진 업로드</span>
                                     </button>
                                 </div>
-                                <div class="progress" ref="progress">
+                                <div class="progress" ref="Progress">
                                     <div class="bar">
                                         <div class="bar" ref="SizeImages"></div>
                                     </div>
@@ -219,14 +219,10 @@ export default {
         },
 
 		ImageDrop(evt){
-            //this.SubStorageImages = this.StorageImages;
-            //console.log(this.SubStorageImages);
             this.$emit('update-image', this.StorageImages);
-            //console.log(this.StorageImages);
         },
 		ImageDrag(evt){
             console.log(evt.draggedContext);
-            //this.SubStorageImages = this.StorageImages;
 		},
 		EditorActive(index){
 			this.EditorMenu.map(item => {

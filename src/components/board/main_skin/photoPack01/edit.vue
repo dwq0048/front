@@ -8,8 +8,8 @@
 					<i><font-awesome-icon :icon="faList" /></i>
 					<span>목록으로</span>
 				</button>
-				<button type="submit" class="submit" @click="Submit()">
-					<i><font-awesome-icon :icon="faArrowsAltH" /></i>
+				<button type="submit" class="submit" @click="Submit()" title="넓게보기">
+					<i><font-awesome-icon :icon="faBell" /></i>
 				</button>
 			</div>
 		</div>
@@ -49,54 +49,10 @@
 				<div class="title">
 					<h1>테그 설정</h1>
 				</div>
-				<div class="set-tag">
-					<div>
-						<div>
-							<ul ref="HashList">
-								<li class="first">
-									<button type="button">
-										<div>
-											<i><font-awesome-icon :icon="faHashtag" /></i>
-											<span contenteditable placeholder="입력해주세요.." ref="Hash" class="text">
 
-											</span>
-										</div>
-									</button>
-								</li>
-								<li v-for="(item, i) in StorageHashs" :key="i" class="item" :class="{ active : StorageHashs[i].active }" @click="HashOption(i)">
-									<button type="button" data-submit>
-										<div>
-											<i><font-awesome-icon :icon="faHashtag" /></i>
-											<span class="text">{{ item.text }}</span>
-										</div>
-										<span class="option">
-											<ul>
-												<li>
-													<button type="button">
-														<i><font-awesome-icon :icon="faPen" /></i>
-													</button>
-												</li>
-												<li>
-													<button type="button">
-														<i><font-awesome-icon :icon="faTrashAlt" /></i>
-													</button>
-												</li>
-											</ul>
-										</span>
-									</button>
-								</li>
-							</ul>
-						</div>
-						<button type="button">
-							<span>
-								<i><font-awesome-icon :icon="faTrashAlt" /></i>
-							</span>
-						</button>
-					</div>					
-					<span class="alert" ref="HashAlert">
-						<p>특수문자는 입력에서 제외됩니다.</p>
-					</span>
-				</div>
+				<hash-area
+					:StorageHashs="StorageHashs"
+				/>
 			</div>
 			<!-- Set Tag END -->
 
@@ -161,7 +117,7 @@
 							<td>
 								<div>
 									<label class="checkbox">
-										<input type="checkbox">
+										<input type="checkbox" checked>
 										<div>
 											<i><font-awesome-icon :icon="faCheck" /></i>
 										</div>
@@ -204,6 +160,7 @@ import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
 import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
 import SwipeSlide from '@/components/widget/slide/swipe-slide'
 import FixedMenu from '@/components/board/variety/fixed-menu'
+import HashArea from '@/components/board/variety/hash-area'
 
 import { 
 	Heading, Bold, Italic, Strike, Underline, Link,
@@ -216,7 +173,7 @@ import {
 import { Placeholder } from 'tiptap-extensions'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faCheck, faImage, faList, faEdit, faArrowsAltH, faTrashAlt, faHashtag, faPen } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faImage, faList, faEdit, faHashtag, faBell } from '@fortawesome/free-solid-svg-icons'
 
 const sanitizeHtml = require('sanitize-html');
 const postStore = 'postStore'
@@ -226,6 +183,7 @@ export default {
     components: {
 		'swipe-slide' : SwipeSlide,
 		'fixed-menu' : FixedMenu,
+		'hash-area' : HashArea,
 		'tip-tap-menu' : tipTapMenu,
 		'tip-tap-editor' : tipTapEditor,
 	},
@@ -233,7 +191,7 @@ export default {
 	data() {
 		return {
 			// Icon
-			faCheck, faImage, faList, faEdit, faArrowsAltH, faTrashAlt, faHashtag, faPen,
+			faCheck, faImage, faList, faEdit, faHashtag, faBell,
 
 			//Editor
 			editor: new Editor({
@@ -312,25 +270,6 @@ export default {
 		},
 		ImageClick(){
 			this.$refs.fixMenu.TriggerInput("UploadImage");
-		},
-		AddHashs(event){
-			const hash = this.$refs.Hash;
-			const object = {
-				text : hash.textContent,
-				active : false,
-			};
-
-			this.StorageHashs.unshift(object);
-			hash.innerText = '';
-		},
-		HashOption(option){
-			this.StorageHashs.forEach((item, index) => {
-				if(index == option){
-					this.StorageHashs[index].active = true
-				}else{
-					this.StorageHashs[index].active = false
-				}
-			});
 		},
 		dataURLtoFile(dataurl, fileName) {
 			var arr = dataurl.split(','),
@@ -421,46 +360,6 @@ export default {
 				console.log(err);
 			});
 		}
-	},
-	mounted(){
-		const _this = this;
-		const hash = this.$refs.Hash;
-		const HashList = this.$refs.HashList;
-		hash.addEventListener('keypress', (event) => {
-			if (event.which === 13 || event.which === 32) {
-				event.preventDefault();
-
-				_this.AddHashs(event);
-			}
-
-			// ! " # $ % & ' ( ) * + , - . / : ; < = > ? @ [ ] \ ^ _ ` { } | ~
-			if (
-				(event.which >= 33 && event.which <= 47) ||
-				(event.which >= 58 && event.which <= 64) ||
-				(event.which >= 91 && event.which <= 94) ||
-				(event.which === 96) ||
-				(event.which >= 123 && event.which <= 126)
-			) {
-				event.preventDefault();
-
-				_this.$refs.HashAlert.classList.add("active");
-				setTimeout(() => {
-					_this.$refs.HashAlert.classList.remove("active");
-				},1500);
-			}
-		});
-
-		window.addEventListener('click', (event) => {
-			const element = document.activeElement;
-			const HashBtn = HashList.querySelectorAll('.item > button');
-			let none = false;
-
-			HashBtn.forEach((item, index) => {
-				if(element == item){ none = true }
-			});
-
-			if(!none){ _this.HashOption(-1) }
-		})
 	}
 }
 </script>
@@ -524,7 +423,7 @@ export default {
 							padding: 0 15px;
 							font-weight: bold;
 							color: #999;
-							border-left: 1px solid #ddd;
+							//border-left: 1px solid #ddd;
 							@include transition(.2s all);
 							@include transform(translateY(-50%) scale(1));
 						}
@@ -743,312 +642,6 @@ export default {
 					}
 				}
 
-				& > .set-tag {
-					& {
-						width: 100%; height: auto;
-						position: relative;
-					}
-
-					& > div {
-						& {
-							width: 100%; height: 35px;
-							padding-right: 35px;
-							background-color: #f9f9f9;
-							border: 1px solid #ddd;
-							border-radius: 3px;
-							overflow: hidden;
-							position: relative;
-						}
-
-						& > div {
-							& {
-								width: 100%; height: 100%;
-								overflow-x: scroll;
-							}
-
-							&::-webkit-scrollbar {
-								display: none;
-							}
-
-							& > ul {
-								& {
-									font-size: 0;
-									width: 100%; height: 100%;
-									list-style: none;
-									white-space: nowrap;
-								}
-
-								& > li {
-									& {
-										display: inline-block;
-										width: auto; height: 100%;
-										padding: 5px;
-										border-radius: 3px;
-										position: relative;
-										@include transition(.2s all);
-									}
-
-									& > button {
-										& {
-											width: auto; height: 100%;
-											border: 0; background: none;
-											margin: 0; padding: 0;
-											outline: none;
-											text-align: left;
-											cursor: move;
-										}
-
-										& > div {
-											& {
-												width: auto; height: 100%;
-												background-color: $bg-blue;
-												border-radius: 3px;
-												display: table;
-												padding-right: 5px;
-												cursor: pointer;
-												opacity: 0.85;
-												position: relative;
-												z-index:1;
-												@include transition(.2s all);
-											}
-
-											& > input[type=text] {
-												& {
-													display: none;
-												}
-											}
-
-											& > i {
-												& {
-													display: table-cell;
-													vertical-align: middle;
-													font-size: #{$font-size - 2};
-													padding: 0 5px;
-													color: #fff;
-												}
-											}
-
-											& > span.text {
-												& {
-													display: table-cell;
-													vertical-align: middle;
-													font-size: #{$font-size - 1};
-													color: #fff;
-													outline: none;
-													padding-right: 5px;
-													letter-spacing: 1px;
-													font-weight: 300;
-													@include transition(.2s all);
-												}
-											}
-
-											& > span[contenteditable=true]:empty:before{
-												content: attr(placeholder);
-												display: table-cell;
-												@include transition(.2s all);
-											}
-
-										}
-										&:hover {
-											& {
-												opacity: 1;
-												@include transition(.2s all);
-											}
-										}
-									}
-
-									& > button > span.option {
-										& {
-											width: auto; height:23px;
-											top: 50%; right: 0;
-											position: absolute;
-											opacity: 0;
-											visibility: hidden;
-											border-radius: 3px;
-											background-color: #555;
-											padding-left: 15px;
-											margin-left: -15px;
-											@include transform(translateY(-50%));
-										}
-
-										& > ul {
-											& {
-												width: auto; height: 100%;
-												font-size: 0;
-												list-style: none;
-												white-space: nowrap;
-											}
-
-											& > li {
-												& {
-													vertical-align: top;
-													display: inline-block;
-													width: 23px; height: 100%;
-												}
-
-												& > button {
-													& {
-														display: block;
-														width: 100%; height: 100%;
-														position: relative;
-														border: 0; background: none;
-														margin: 0; padding: 0;
-														cursor: pointer; outline: none;
-													}
-
-													& > i {
-														& {
-															position: absolute;
-															left: 50%; top: 50%;
-															font-size: #{$font-size - 1};
-															color: #ccc;
-															@include transform(translate(-50%, -50%));
-														}
-													}
-												}
-											}
-										}
-									}
-
-									&.first {
-										& > button {
-											& {
-												cursor: text;
-											}
-
-											& > div {
-												& {
-													background-color: #ccc;
-													opacity: 1;
-													cursor: text;
-												}
-
-												& > i {
-													& {
-														color: #999;
-													}
-												}
-
-												& > span {
-													& {
-														min-width: 50px;
-														color: #999;
-														font-weight: bold;
-														font-size: #{$font-size - 2};
-													}
-												}
-											}
-										}
-									}
-
-									&.item.active {
-										& {
-											padding-right: 51px;
-											background-color: #555;
-											@include transition(.2s all);
-											cursor: move;
-										}
-
-										& > button {
-											& {
-												cursor: move;
-											}
-										}
-
-										& > button > div {
-											& {
-												opacity: 1;
-												
-											}
-										}
-
-										& > button > span.option {
-											& {
-												visibility: visible;
-												opacity: 1;
-												right: 0;
-												color: #fff;
-												@include transition(.2s all);
-											}
-										}
-									}
-								}
-							}
-						}
-						
-						& > button {
-							& {
-								position: absolute;
-								right: 0; bottom: 0;
-								border: 0; background: none;
-								margin: 0; padding: 0;
-								cursor: pointer; outline: none;
-								width: 35px; height: auto;
-							}
-
-							& > span {
-								& {
-									width: 100%; height: auto;
-									position: relative;
-									display: block;
-									padding-bottom: 100%;
-								}
-
-								& > i {
-									& {
-										position: absolute;
-										left: 50%; top: 50%;
-										font-size: #{$font-size};
-										color: #aaa;
-										@include transform(translate(-50%, -50%));
-									}
-								}
-							}
-						}
-					}
-
-					& > span.alert {
-						& {
-							display: block;
-							position: absolute;
-							left: 0; top: 100%;
-							background-color: #999;
-							font-size: #{$font-size - 2};
-							color: #fff;
-							padding: 5px 10px;
-							border-radius: 0px 30px 30px 10px;
-							margin-top: 5px;
-							margin-left: 20px;
-							visibility: hidden;
-							opacity: 0;
-							@include transition(.2s all);
-						}
-
-						&:after {
-							& {
-                                content: " ";
-                                display: block;
-                                position: absolute;
-                                left: 0;
-                                bottom: 100%;
-                                width: 0px;
-                                height: 0px;
-                                border-top: 8px solid transparent;
-                                border-bottom: 8px solid #999;
-                                border-left: 8px solid transparent;
-								border-right: 8px solid transparent;
-							}
-						}
-
-						&.active {
-							& {
-								opacity: 1;
-								visibility: visible;
-								@include transition(.2s all);
-							}
-						}
-					}
-				}
 			}
 
 			& > .post-preview {
