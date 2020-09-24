@@ -639,13 +639,7 @@ export default {
 								& > .editor {
 									& {
 										padding: 0;
-										min-height: 100%;
-									}
-
-									& > .editor-content {
-										& {
-											min-height: 100%;
-										}
+										height: 100%;
 									}
 								}
 							}
@@ -916,29 +910,29 @@ export default {
 </style>
 
 <style lang="scss">
-	.ProseMirror {
-		& {
-			min-height: 100%;
-		}
-
-		& h1 {
-			& {
-				font-weight: bold;
-				padding-bottom: 20px;
-				font-size: #{$font-size + 2};
-			}
-		}
-	}
 
 	.editor {
 		& > .editor-content {
 			& {
-				min-height: 160px;
+				height: 100%;
 			}
 
 			& > div {
 				& {
-					min-height: 160px!important;
+					width: 100%; height: 100%;
+					min-height: auto!important;
+					overflow-y: scroll;
+					position: relative;
+					cursor: text;
+				}
+
+				& > .ProseMirror {
+					& {
+						position: absolute;
+						left: 0; top: 0;
+						width: 100%; height: auto;
+						min-height: 100%;
+					}
 				}
 			}
 		}
