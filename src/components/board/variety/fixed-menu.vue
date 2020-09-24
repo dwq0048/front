@@ -36,26 +36,29 @@
                                         <i><font-awesome-icon :icon="faChevronRight" /></i>
                                     </span>
                                 </button>
-                                <draggable tag="ul" v-model="SubStorageImages" draggable=".item" :move="ImageDrag" @end="ImageDrop">
-                                    <li class="item" v-for="(item, i) in SubStorageImages" :key="i">
+                                <draggable tag="ul" v-model="SubStorageImages" draggable=".item" handle="img" :move="ImageDrag" @end="ImageDrop">
+                                    <li class="item" v-for="(item, i) in SubStorageImages" :key="i" :class="{ thumbnail : SubImagesThumbnail == i }">
                                         <div>
                                             <img :src="item.base">
                                             <ul>
                                                 <li>
-                                                    <button type="button" title="썸네일 설정">
+                                                    <button type="button" title="썸네일 설정" @click="ImageThumb(i)">
                                                         <span>
                                                             <i><font-awesome-icon :icon="faCrown" /></i>
                                                         </span>
                                                     </button>
                                                 </li>
                                                 <li>
-                                                    <button type="button" title="이미지 삭제">
+                                                    <button type="button" title="이미지 삭제" @click="ImageRemove(i)">
                                                         <span>
                                                             <i><font-awesome-icon :icon="faTrashAlt" /></i>
                                                         </span>
                                                     </button>
                                                 </li>
                                             </ul>
+                                            <span>
+                                                <span>대표</span>
+                                            </span>
                                         </div>
                                     </li>
                                     <li class="btn" v-if="SubStorageImages.length <= 0">
@@ -106,7 +109,7 @@ import draggable from 'vuedraggable'
 
 export default {
     name: 'FixedMenu',
-    props: ['StorageImages', 'ImagesActive', 'option'],
+    props: ['StorageImages', 'ImagesActive', 'ImagesThumbnail', 'option'],
     components: {
         draggable
 		//Swiper,
@@ -168,6 +171,7 @@ export default {
 
             SubStorageImages : [],
             SubImagesActive : {},
+            SubImagesThumbnail : undefined,
             
 			//ImageSwipeOption : {},
         }
@@ -241,13 +245,85 @@ export default {
                 this.SubImagesActive.ratio = ratio;
             }
 
+            // 썸네일 설정
+            if(evt.oldIndex == this.SubImagesThumbnail){
+                if(this.SubStorageImages.length > 0){
+                    this.SubStorageImages.forEach((item, index) => {
+                        this.SubStorageImages[index].state.thumbnail = (index == evt.newIndex) ? true : false;
+                    });
+                    this.SubImagesThumbnail = evt.newIndex;
+                }else{
+                    this.SubStorageImages.forEach((item, index) => {
+                        this.SubStorageImages[index].state.thumbnail = false;
+                    });
+                    this.SubImagesThumbnail = undefined;
+                }
+            }
+
+            this.$emit('update-thumbnail', this.SubImagesThumbnail);
             this.$emit('update-image', this.SubStorageImages);
             this.$emit('update-image-active', this.SubImagesActive);
             this.$emit('resize-image', undefined);
         },
 		ImageDrag(evt){
             console.log(evt.draggedContext);
-		},
+        },
+        ImageThumb(index){
+            this.SubStorageImages.forEach((item, index2) => {
+                this.SubStorageImages[index2].state.thumbnail = (index2 == index) ? true : false;
+            });
+            this.SubImagesThumbnail = index;
+            this.$emit('update-thumbnail', this.SubImagesThumbnail);
+        },
+        ImageRemove(index){
+            this.SubStorageImages.splice(index, 1);
+
+            // 엑티브 설정
+            if(index == this.SubImagesActive.index){
+                if(this.SubStorageImages.length > 0){
+                    this.SubStorageImages.forEach((item, index2) => {
+                        this.SubStorageImages[index2].state.active = (index2 == index) ? true : false;
+                    });
+                    this.SubImagesActive.index = index;
+                    this.SubImagesActive.ratio = this.SubStorageImages[index].position.ratio;
+                }else{
+                    this.SubStorageImages.forEach((item, index2) => {
+                        this.SubStorageImages[index2].state.active = false;
+                    });
+                    this.SubImagesActive = {
+                        index : false,
+                        prev : false,
+                        next : false,
+                        ratio : 0
+                    }
+                }
+            }
+
+            // 썸네일 설정
+            if(this.SubStorageImages.length > 0){
+                if(index < this.SubImagesThumbnail){
+                    this.SubStorageImages.forEach((item, index2) => {
+                        this.SubStorageImages[index2].state.thumbnail = (index2 == (this.SubImagesThumbnail - 1)) ? true : false;
+                    });
+                    this.SubImagesThumbnail = (this.SubImagesThumbnail - 1);
+                }else if(index == this.SubImagesThumbnail){
+                    this.SubStorageImages.forEach((item, index2) => {
+                        this.SubStorageImages[index2].state.thumbnail = (index2 == index) ? true : false;
+                    });
+                    this.SubImagesThumbnail = index;
+                }
+            }else{
+                this.SubStorageImages.forEach((item, index) => {
+                    this.SubStorageImages[index].state.thumbnail = false;
+                });
+                this.SubImagesThumbnail = undefined;
+            }
+
+            this.ProgressSet();
+            this.$emit('update-thumbnail', this.SubImagesThumbnail);
+            this.$emit('update-image', this.SubStorageImages);
+            this.$emit('update-image-active', this.SubImagesActive);
+        },
 		EditorActive(index){
 			this.EditorMenu.map(item => {
 				if (item.active == true){
@@ -290,6 +366,14 @@ export default {
             const ProgressMbSize = { width: ProgressMb.clientWidth };
             const Padding = 30;
 
+            this.MinSizeImages = 0;
+            this.SubStorageImages.forEach((item, index) => {
+                this.MinSizeImages += item.size;
+            });
+
+            const CurrentSize = (Number(this.MinSizeImages) / Number(this.MaxSizeImages) * 100).toFixed(4);
+            this.$refs.SizeImages.style.width = `${CurrentSize}%`;
+
             Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
         },
 		BytesToSize(bytes) {
@@ -313,7 +397,7 @@ export default {
 			const Spend = {
 				async UploadImage(type){
 					const files = ref[type].files;
-					const storage = [];
+                    const storage = [];
 
 					files.forEach(item => {
 						switch(item.type){
@@ -325,7 +409,7 @@ export default {
 								break;
 							default:
 						}
-					});
+                    });
 
 					for await (const item of storage){
 						const src = await SET_BOARD.encodeBase64ImageFile(item);
@@ -347,27 +431,33 @@ export default {
 								thumbnail : false,
 							}
 						});
-					}
+                    }
 
-                    _this.MinSizeImages = 0;
-					_this.SubStorageImages.forEach((item, index) => {
-                        _this.MinSizeImages += item.size;
-						_this.SubStorageImages[index].state.active = (index == 0) ? true : false;
-						_this.SubStorageImages[index].state.thumbnail = (index == 0) ? true : false;
+                    _this.SubStorageImages.forEach((item, index) => {
+                        // 업로드 이후 엑티브 초기화
+                        _this.SubStorageImages[index].state.active = (index == 0) ? true : false;
+                        (index == 0) ? _this.SubImagesActive.index = index : false;
+                        (index == 0) ? _this.SubImagesActive.ratio = _this.SubStorageImages[index].position.ratio : 0;
+                        
+                        // 썸네일이 없을경우
+                        if(_this.SubImagesThumbnail == undefined){
+                            _this.SubStorageImages[index].state.thumbnail = (index == 0) ? true : false;
+                            (index == 0) ? _this.SubImagesThumbnail = index : undefined;
+                        }
+                    });
 
-						(index == 0) ? _this.SubImagesActive.index = index : false;
-						(index == 0) ? _this.SubImagesActive.ratio = _this.SubStorageImages[index].position.ratio : 0;
-						(index == 0) ? _this.ImagesThumbnail = index : false;
-					});
-
-                    const CurrentSize = (Number(_this.MinSizeImages) / Number(_this.MaxSizeImages) * 100).toFixed(4);
-                    ref['SizeImages'].style.width = `${CurrentSize}%`;
+                    _this.ProgressSet();
                     
 			        _this.EditorActive(0);
                     _this.FixedDisabled();
 
+                    _this.$emit('update-thumbnail', _this.SubImagesThumbnail);
                     _this.$emit('update-image-active', _this.SubImagesActive);
                     _this.$emit('update-image', _this.SubStorageImages);
+
+                    _this.FixedMove(false);
+
+                    ref['UploadImage'].value = '';
 				},
 			}
 
@@ -384,6 +474,7 @@ export default {
 
         this.SubStorageImages = this.StorageImages;
         this.SubImagesActive = this.ImagesActive;
+        this.SubImagesThumbnail = this.ImagesThumbnail;
     },
     mounted(){
         const _this = this;
@@ -968,6 +1059,7 @@ export default {
                                                 overflow: hidden;
                                                 border: 1px solid #ddd;
                                                 border-radius: 3px;
+                                                @include transition(.2s all);
                                             }
 
                                             &:after {
@@ -1057,10 +1149,43 @@ export default {
                                                 }
                                             }
 
+                                            & > span {
+                                                & {
+                                                    display: block;
+                                                    position: absolute;
+                                                    right: 0; top: 0;
+                                                    background-color: $bg-orange;
+                                                    padding: 3px 10px;
+                                                    font-size: #{$font-size - 4};
+                                                    color: #fff;
+                                                    visibility: hidden;
+                                                    opacity: 0;
+                                                    @include transition(.2s all);
+                                                }
+                                            }
+
                                             &:hover {
                                                 & > ul {
                                                     opacity: 1;
                                                     @include transition(.2s all);
+                                                }
+                                            }
+
+                                        }
+
+                                        &.thumbnail {
+                                            & > div {
+                                                & {
+                                                    border: 1px solid $bg-orange;
+                                                    @include transition(.2s all);
+                                                }
+
+                                                & > span {
+                                                    & {
+                                                        visibility: visible;
+                                                        opacity: 1;
+                                                        @include transition(.2s all);
+                                                    }
                                                 }
                                             }
                                         }

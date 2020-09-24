@@ -25,11 +25,12 @@
 				<div class="list">
 					<div class="title">
 						<div>
-							<div>
-								<span class="no">
+							<div :class="{ active : ImagesThumbnail != undefined }">
+								<span class="no" v-if="ImagesThumbnail == undefined">
 									<i><font-awesome-icon :icon="faImage" /></i>
 									<span>썸네일이 없어요</span>
 								</span>
+								<img :src="StorageImages[ImagesThumbnail].base" v-else>
 							</div>
 						</div>
 					</div>
@@ -88,9 +89,11 @@
 				:option = "{ min : 0, max : 7340032 }"
 				:StorageImages="StorageImages"
 				:ImagesActive="ImagesActive"
+				:ImagesThumbnail="ImagesThumbnail"
 
 				@update-image="UpdateImage"
 				@update-image-active="UpdateImageActive"
+				@update-thumbnail="UpdateThumbnail"
 				@resize-image="ResizeImage"
 
 				ref="fixMenu"
@@ -244,7 +247,7 @@ export default {
 				next : false,
 				ratio : 0
 			},
-			ImagesThumbnail : false,
+			ImagesThumbnail : undefined,
 
 			// Post
 			Post : {
@@ -265,6 +268,9 @@ export default {
 		},
 		UpdateImageActive(option){
 			this.ImagesActive = option;
+		},
+		UpdateThumbnail(option){
+			this.ImagesThumbnail = option;
 		},
 		ResizeImage(){
 			const element = this.$refs.SwiperSlide.$refs.Preview.querySelector('ul');
@@ -547,6 +553,8 @@ export default {
 									border-radius: 3px;
 									position: relative;
 									cursor: pointer;
+									overflow: hidden;
+									@include transition(.2s all);
 								}
 
 								& > span.no {
@@ -574,6 +582,24 @@ export default {
 											font-weight: bold;
 											color: #aaa;
 										}
+									}
+								}
+
+								& > img {
+									& {
+										position: absolute;
+										display: block;
+										width: 100%; height: 100%;
+										left: 50%; top: 50%;
+										object-fit: cover;
+										@include transform(translate(-50%, -50%));
+									}
+								}
+
+								&.active {
+									& {
+										border: 1px solid #ddd;
+										@include transition(.2s all);
 									}
 								}
 							}
