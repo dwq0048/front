@@ -36,13 +36,29 @@
                                         <i><font-awesome-icon :icon="faChevronRight" /></i>
                                     </span>
                                 </button>
-                                <draggable tag="ul" v-model="StorageImages" draggable=".item" :move="ImageDrag" @end="ImageDrop">
-                                    <li class="item" v-for="(item, i) in StorageImages" :key="i">
+                                <draggable tag="ul" v-model="SubStorageImages" draggable=".item" :move="ImageDrag" @end="ImageDrop">
+                                    <li class="item" v-for="(item, i) in SubStorageImages" :key="i">
                                         <div>
                                             <img :src="item.base">
+                                            <ul>
+                                                <li>
+                                                    <button type="button" title="썸네일 설정">
+                                                        <span>
+                                                            <i><font-awesome-icon :icon="faCrown" /></i>
+                                                        </span>
+                                                    </button>
+                                                </li>
+                                                <li>
+                                                    <button type="button" title="이미지 삭제">
+                                                        <span>
+                                                            <i><font-awesome-icon :icon="faTrashAlt" /></i>
+                                                        </span>
+                                                    </button>
+                                                </li>
+                                            </ul>
                                         </div>
                                     </li>
-                                    <li class="btn" v-if="StorageImages.length <= 0">
+                                    <li class="btn" v-if="SubStorageImages.length <= 0">
                                         <button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
                                             <span class="image"><i><font-awesome-icon :icon="faImage" /><span>사진 추가</span></i></span>
                                             <span class="plus"><i><font-awesome-icon :icon="faPlus" /></i></span>
@@ -82,7 +98,7 @@
 import { SET_SCRIPT } from '@/store/helper/index'
 import { SET_BOARD } from '@/store/helper/index'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight, faTrashAlt, faCrown } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 //import { Cropper } from 'vue-advanced-cropper'
@@ -100,7 +116,7 @@ export default {
     data(){
         return {
             // Icon
-            faImage, faVideo, faYoutube, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight,
+            faImage, faVideo, faYoutube, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight, faTrashAlt, faCrown,
 
             // Plugin
             draggable,
@@ -150,7 +166,8 @@ export default {
             MinSizeImages : 0,
             MaxSizeImages : 0,
 
-            SubStorageImages : []
+            SubStorageImages : [],
+            SubImagesActive : {},
             
 			//ImageSwipeOption : {},
         }
@@ -219,7 +236,14 @@ export default {
         },
 
 		ImageDrop(evt){
-            this.$emit('update-image', this.StorageImages);
+            if(evt.newIndex == this.SubImagesActive.index){
+                const ratio = this.SubStorageImages[evt.newIndex].position.ratio;
+                this.SubImagesActive.ratio = ratio;
+            }
+
+            this.$emit('update-image', this.SubStorageImages);
+            this.$emit('update-image-active', this.SubImagesActive);
+            this.$emit('resize-image', undefined);
         },
 		ImageDrag(evt){
             console.log(evt.draggedContext);
@@ -312,7 +336,7 @@ export default {
 							ratio: (options.h / options.w) * 100
 						}
 
-                        _this.$emit('push-image', {
+                        _this.SubStorageImages.push({
 							base : src,
 							type : item.type,
 							size : item.size,
@@ -326,24 +350,24 @@ export default {
 					}
 
                     _this.MinSizeImages = 0;
-					_this.StorageImages.forEach((item, index) => {
+					_this.SubStorageImages.forEach((item, index) => {
                         _this.MinSizeImages += item.size;
-						_this.StorageImages[index].state.active = (index == 0) ? true : false;
-						_this.StorageImages[index].state.thumbnail = (index == 0) ? true : false;
+						_this.SubStorageImages[index].state.active = (index == 0) ? true : false;
+						_this.SubStorageImages[index].state.thumbnail = (index == 0) ? true : false;
 
-						(index == 0) ? _this.ImagesActive.index = index : false;
-						(index == 0) ? _this.ImagesActive.ratio = _this.StorageImages[index].position.ratio : 0;
+						(index == 0) ? _this.SubImagesActive.index = index : false;
+						(index == 0) ? _this.SubImagesActive.ratio = _this.SubStorageImages[index].position.ratio : 0;
 						(index == 0) ? _this.ImagesThumbnail = index : false;
 					});
 
                     const CurrentSize = (Number(_this.MinSizeImages) / Number(_this.MaxSizeImages) * 100).toFixed(4);
                     ref['SizeImages'].style.width = `${CurrentSize}%`;
                     
-                    
 			        _this.EditorActive(0);
                     _this.FixedDisabled();
-                    _this.$emit('update-image-active', _this.ImagesActive);
-                    _this.$emit('update-image', _this.StorageImages);
+
+                    _this.$emit('update-image-active', _this.SubImagesActive);
+                    _this.$emit('update-image', _this.SubStorageImages);
 				},
 			}
 
@@ -357,6 +381,9 @@ export default {
     created(){
         this.MinSizeImages = (this.option.min) ? this.option.min : 0;
         this.MaxSizeImages = (this.option.max) ? this.option.max : 0;
+
+        this.SubStorageImages = this.StorageImages;
+        this.SubImagesActive = this.ImagesActive;
     },
     mounted(){
         const _this = this;
@@ -956,6 +983,84 @@ export default {
                                                     width: 100%; height: 100%;
                                                     left: 0; top: 0;
                                                     object-fit: cover;
+                                                    cursor: move;
+                                                }
+                                            }
+
+                                            & > ul {
+                                                & {
+                                                    position: absolute;
+                                                    width: 100%; height: auto;
+                                                    font-size: 0;
+                                                    list-style: none;
+                                                    left: 0; bottom: 0;
+                                                    text-align: right;
+                                                    cursor: default;
+                                                    background-color: rgba(0,0,0,0.7);
+                                                    opacity: 0;
+                                                    @include transition(.2s all);
+                                                }
+
+                                                & > li {
+                                                    & {
+                                                        display: inline-block;
+                                                        width: auto; height: auto;
+                                                        position: relative;
+                                                        vertical-align: top;
+                                                    }
+
+                                                    & > button {
+                                                        & {
+                                                            display: block; position: relative;
+                                                            width: 30px; height: auto;
+                                                            border: 0; background: none;
+                                                            padding: 0; margin: 0;
+                                                            cursor: pointer; outline: none;
+                                                        }
+
+                                                        &:after {
+                                                            content: " ";
+                                                            display: block;
+                                                            padding-bottom: 100%;
+                                                        }
+
+                                                        & > span {
+                                                            & {
+                                                                display: block;
+                                                                position: absolute;
+                                                                left: 50%; top: 50%;
+                                                                @include transform(translate(-50%, -50%));
+                                                            }
+
+                                                            & > i {
+                                                                & {
+                                                                    font-size: #{$font-size - 2};
+                                                                    color: #ddd;
+                                                                    @include transition(.2s all);
+                                                                }
+                                                            }
+                                                        }
+
+                                                        &:hover {
+                                                            & {
+                                                                & > span {
+                                                                    & > i {
+                                                                        & {
+                                                                            color: #fff;
+                                                                            @include transition(.2s all);
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            &:hover {
+                                                & > ul {
+                                                    opacity: 1;
+                                                    @include transition(.2s all);
                                                 }
                                             }
                                         }

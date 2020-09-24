@@ -47,7 +47,7 @@
 			<!-- Set Tag -->
 			<div class="post-tag">
 				<div class="title">
-					<h1>테그 설정</h1>
+					<h1>태그 설정</h1>
 				</div>
 
 				<hash-area
@@ -78,6 +78,7 @@
 					@slide-data="SlideData"
 
 					v-if="StorageImages.length > 0"
+					ref="SwiperSlide"
 				/>
 			</div>
 			<!-- Set Slide END -->
@@ -88,9 +89,9 @@
 				:StorageImages="StorageImages"
 				:ImagesActive="ImagesActive"
 
-				@push-image="PushImage"
 				@update-image="UpdateImage"
 				@update-image-active="UpdateImageActive"
+				@resize-image="ResizeImage"
 
 				ref="fixMenu"
 			/>
@@ -259,14 +260,16 @@ export default {
 		SlideData(option){
 			this.ImagesActive = option;
 		},
-		PushImage(option){
-			this.StorageImages.push(option);
-		},
 		UpdateImage(option){
 			this.StorageImages = option;
 		},
 		UpdateImageActive(option){
 			this.ImagesActive = option;
+		},
+		ResizeImage(){
+			const element = this.$refs.SwiperSlide.$refs.Preview.querySelector('ul');
+			element.style.paddingbottom = `${this.ImagesActive.ratio}%`;
+			element.style.transition = `.2s all`;
 		},
 		ImageClick(){
 			this.$refs.fixMenu.TriggerInput("UploadImage");
