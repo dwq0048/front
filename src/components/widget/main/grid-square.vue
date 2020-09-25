@@ -198,7 +198,9 @@ export default {
 			};
 
 			throttle("resize", "optimizedResize");
-		})();
+        })();
+        
+        this.ResizeEvent();
 
         window.addEventListener('optimizedResize', () => {
             this.ResizeEvent();

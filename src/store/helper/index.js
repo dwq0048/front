@@ -91,6 +91,31 @@ const SET_BOARD = {
             reader.onload = (event) => { resolve(event.target.result) }
             reader.onerror = (error) => { reject(error) }
         })
+    },
+    BytesToSize(bytes) {
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+        if (bytes == 0) return '0 MB';
+        let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+        if (i == 0) return bytes + ' ' + sizes[i];
+        return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+    },
+    dataURLtoFile(dataurl, fileName) {
+        var arr = dataurl.split(','),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), 
+            n = bstr.length, 
+            u8arr = new Uint8Array(n);
+            
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        
+        return new File([u8arr], fileName, {type:mime});
+    },
+    FileListItems(files) {
+        var b = new ClipboardEvent("").clipboardData || new DataTransfer()
+        for (var i = 0, len = files.length; i<len; i++) b.items.add(files[i])
+        return b.files
     }
 }
 

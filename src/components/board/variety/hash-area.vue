@@ -152,6 +152,9 @@ export default {
             item.forEach((item, index) => {
                 item.innerText = this.SubStorageHashs[index].text;
             });
+        },
+        HashReq(){
+            return this.SubStorageHashs;
         }
     },
     created(){

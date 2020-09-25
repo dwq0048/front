@@ -1,7 +1,7 @@
 <template>
     <div class="post-menu" :class="{ active : MenuFixed.BottomMenu }" ref="BottomMenu">
         <div ref="BottomMenuSub">
-            <button type="button" title="고정하기" :class="{ active : FixedMenu }" @click="Fixed" ref="FixedMenu">
+            <button type="button" :title="(FixedMenu) ? '고정풀기' : '고정하기' " :class="{ active : FixedMenu }" @click="Fixed" ref="FixedMenu">
                 <span>
                     <i><font-awesome-icon :icon="faThumbtack" /></i>
                     <i><font-awesome-icon :icon="faThumbtack" /></i>
@@ -96,15 +96,11 @@
 </template>
 
 <script>
-//import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
-//import Swipe from 'swipejs'
-import { SET_SCRIPT } from '@/store/helper/index'
-import { SET_BOARD } from '@/store/helper/index'
+import { SET_SCRIPT, SET_BOARD } from '@/store/helper/index'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight, faTrashAlt, faCrown } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
-//import { Cropper } from 'vue-advanced-cropper'
 import draggable from 'vuedraggable'
 
 export default {
@@ -112,10 +108,7 @@ export default {
     props: ['StorageImages', 'ImagesActive', 'ImagesThumbnail', 'option'],
     components: {
         draggable
-		//Swiper,
-        //SwiperSlide,
     },
-	//directives: { swiper: directive },
     data(){
         return {
             // Icon
@@ -131,8 +124,9 @@ export default {
 					en : 'Photo',
 					icon : faImage,
 					auth : 1,
-					active : false,
-				},
+					active : true,
+                },
+                /*
 				{
 					ko : '동영상',
 					en : 'Vidio',
@@ -161,10 +155,10 @@ export default {
 					auth : 2,
 					active : false,
 				},
-
+                */
             ],
             MenuFixed : { BottomMenu : false },
-            FixedMenu : false,
+            FixedMenu : true,
             
             MinSizeImages : 0,
             MaxSizeImages : 0,
@@ -172,8 +166,6 @@ export default {
             SubStorageImages : [],
             SubImagesActive : {},
             SubImagesThumbnail : undefined,
-            
-			//ImageSwipeOption : {},
         }
     },
     methods : {
@@ -377,11 +369,7 @@ export default {
             Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
         },
 		BytesToSize(bytes) {
-			const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-			if (bytes == 0) return '0 MB';
-			let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-			if (i == 0) return bytes + ' ' + sizes[i];
-			return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
+            return SET_BOARD.BytesToSize(bytes);
 		},
 		TriggerInput(type){
 			try{
@@ -509,6 +497,8 @@ export default {
         this.$refs.Wrapper.querySelector('ul').addEventListener('scroll', (data) => {
             _this.FixedDisabled();
         });
+
+        _this.EventMenu();
 
 		// SET Scroll
         window.addEventListener('scroll', function() {

@@ -9,7 +9,7 @@
                 <menu-skin />
             </div>
             <div class="board">
-                <widget-skin />
+                <widget-skin :info="info"/>
             </div>
         </div>
     </div>
@@ -23,9 +23,7 @@ import MenuSkin from '@/components/board/menu_skin/sidePack01'
 import WidgetSkin from '@/components/board/main_skin/photoPack01/edit'
 
 const config = {
-    info : {
-        board: 'photo'
-    }
+    board: 'photo'
 }
 
 export default {

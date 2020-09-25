@@ -8,8 +8,48 @@
 					<i><font-awesome-icon :icon="faList" /></i>
 					<span>목록으로</span>
 				</button>
-				<button type="submit" class="submit" @click="Submit()" title="넓게보기">
-					<i><font-awesome-icon :icon="faBell" /></i>
+				<button type="submit" class="setting" @click="Setting()" :class="{ active : SettingPop }" ref="SettingPop" title="설정">
+					<i><font-awesome-icon :icon="faCog" /></i>
+					<div class="menu">
+						<ul>
+							<li>
+								<button type="button">
+									<i>
+										<div>
+											<div>
+												<font-awesome-icon :icon="faEyeSlash" />
+											</div>
+										</div>
+									</i>
+									<span>
+										<div>
+											<div>
+												메뉴 숨기기
+											</div>
+										</div>
+									</span>
+								</button>
+							</li>
+							<li>
+								<button type="button">
+									<i>
+										<div>
+											<div>
+												<font-awesome-icon :icon="faExpandAlt" />
+											</div>
+										</div>
+									</i>
+									<span>
+										<div>
+											<div>
+												넓게보기
+											</div>
+										</div>
+									</span>
+								</button>
+							</li>
+						</ul>
+					</div>
 				</button>
 			</div>
 		</div>
@@ -53,6 +93,8 @@
 
 				<hash-area
 					:StorageHashs="StorageHashs"
+
+					ref="HashArea"
 				/>
 			</div>
 			<!-- Set Tag END -->
@@ -121,34 +163,62 @@
 							<td>
 								<div>
 									<label class="checkbox">
-										<input type="checkbox" checked>
+										<input type="checkbox" v-model="CheckSetting.search">
 										<div>
-											<i><font-awesome-icon :icon="faCheck" /></i>
+											<span></span>
 										</div>
 										<span>검색 허용</span>
 									</label>
 								</div>
 								<div>
 									<label class="checkbox">
-										<input type="checkbox">
+										<input type="checkbox" v-model="CheckSetting.anonymous">
 										<div>
-											<i><font-awesome-icon :icon="faCheck" /></i>
+											<span></span>
 										</div>
 										<span>글쓴이 익명</span>
 									</label>
 								</div>
 								<div>
 									<label class="checkbox">
-										<input type="checkbox">
+										<input type="checkbox" v-model="CheckSetting.private">
 										<div>
-											<i><font-awesome-icon :icon="faCheck" /></i>
+											<span></span>
 										</div>
 										<span>게시글 비공개</span>
 									</label>
 								</div>
 							</td>
 						</tr>
+						<tr class="view">
+							<td>이미지 설정</td>
+							<td>
+								<div v-for="(item, i) in RadioMods" :key="i">
+									<label class="checkbox">
+										<input type="radio" v-model="RadioMod" :value="item.en" :checked="RadioMod == item.en">
+										<div>
+											<span></span>
+										</div>
+										<span>{{ item.ko }}</span>
+									</label>
+								</div>
+							</td>
+						</tr>
 					</table>
+				</div>
+				<div class="post-submit">
+					<button type="button">
+						<i><font-awesome-icon :icon="faQuestionCircle" /></i>
+						<span>저장하기</span>
+						<div class="help">
+							<p>로컬에 저장하고,<br>현재 게시글을 자동으로 불러옵니다</p>
+						</div>
+					</button>
+
+					<button type="button" @click="Submit">
+						<i><font-awesome-icon :icon="faEdit" /></i>
+						<span>글쓰기</span>
+					</button>
 				</div>
 			</div>
 			<!-- Option End -->
@@ -159,6 +229,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { Editor, EditorMenuBar } from 'tiptap'
+import { SET_BOARD } from '@/store/helper/index'
 
 import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
 import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
@@ -177,7 +248,7 @@ import {
 import { Placeholder } from 'tiptap-extensions'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faCheck, faImage, faList, faEdit, faHashtag, faBell } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faImage, faList, faEdit, faHashtag, faCog, faQuestionCircle, faEyeSlash, faExpandAlt } from '@fortawesome/free-solid-svg-icons'
 
 const sanitizeHtml = require('sanitize-html');
 const postStore = 'postStore'
@@ -195,7 +266,7 @@ export default {
 	data() {
 		return {
 			// Icon
-			faCheck, faImage, faList, faEdit, faHashtag, faBell,
+			faCheck, faImage, faList, faEdit, faHashtag, faCog, faQuestionCircle, faEyeSlash, faExpandAlt,
 
 			//Editor
 			editor: new Editor({
@@ -235,6 +306,16 @@ export default {
 					this.Post.content = getHTML();
 				},
 			}),
+
+			// StateVariable
+			CheckSetting : { search : true, anonymous : false, private : false },
+			RadioMod : 'horizontal',
+			RadioMods : [
+				{ en : 'horizontal', ko : '가로 보기' },
+				{ en : 'vertical', ko : '세로 보기' },
+			],
+
+			SettingPop : false,
 
 			// Storage
 			StorageImages : [],
@@ -280,82 +361,53 @@ export default {
 		ImageClick(){
 			this.$refs.fixMenu.TriggerInput("UploadImage");
 		},
-		dataURLtoFile(dataurl, fileName) {
-			var arr = dataurl.split(','),
-				mime = arr[0].match(/:(.*?);/)[1],
-				bstr = atob(arr[1]), 
-				n = bstr.length, 
-				u8arr = new Uint8Array(n);
-				
-			while(n--){
-				u8arr[n] = bstr.charCodeAt(n);
-			}
-			
-			return new File([u8arr], fileName, {type:mime});
-		},
-		SetHtml(content) {
-			return sanitizeHtml(content ,{
-				allowedTags: [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'i', 's', 'a', 'p', 'hr', 'br', 'ul', 'ol', 'li', 'blockquote', 'img', 'iframe' ],
-				allowedAttributes: {
-					'a': [ 'href', 'name', 'target' ],
-					'*': [ 'style' ],
-					'img': [ 'data-index', 'src' ]
-				},
-				allowedStyles: {
-					'*': {
-						'text-align': [/^left$/, /^right$/, /^center$/]
-					}
-				},
-				allowedIframeHostnames: ['www.youtube.com'],
-				transformTags: {
-					'img': function(tagName, attribs) {
-						let imageIndex = attribs['data-index'];
-
-						return {
-							tagName: 'img',
-							attribs: {
-								'data-index': imageIndex
-							}
-						};
-					}
-				}
-			});
+		Setting(){
+			this.SettingPop = (this.SettingPop) ? false : true;
 		},
 		Submit() {
-			const FileListItems = (files) => {
-				var b = new ClipboardEvent("").clipboardData || new DataTransfer()
-				for (var i = 0, len = files.length; i<len; i++) b.items.add(files[i])
-				return b.files
+
+			// 내용 경우
+			if(!this.Post.content || this.Post.content == '' || this.Post.content == undefined || this.Post.content == false){
+				console.log('대충 내용 쓰라는 경고문');
 			}
 
-			const ContentFixed = this.SetHtml(this.Post.content);
+			// 해시 경우
+			try { this.StorageHashs = this.$refs.HashArea.HashReq() }catch(err){ this.StorageHashs = undefined }
+			if(this.StorageHashs == undefined || this.StorageHashs.length <= 0){
+				console.log('대충 해시 쓰라는 경고문');
+			}else{
+				this.StorageHashs = this.StorageHashs.map(item => {
+					return { item : item.text }
+				});
+			}
+
+			let TempCheck = false;
+			for (const item of this.RadioMods){ (item.en == this.RadioMod) ? TempCheck = true : undefined }
+			if(!TempCheck){
+				console.log('대충 모드 선택해라는 경고문');
+			}
 
 			const ImageList = [];
 			const data = {
-				title : this.Post.title,
-				content : ContentFixed,
+				content : this.Post.content,
 				board : this.info.board,
 				meta : {
-					category : 'vrchat',
-					setting : {
-						search : true,
-						anonymous : false,
-						private : false,
-					},
-					tag : {},
+					category : 'default',
+					setting : this.CheckSetting,
+					mod : this.RadioMod,
+					tag : this.StorageHashs,
 				},
 			}
 
 			this.StorageImages.map(item => {
-				const toFile = this.dataURLtoFile(item.base, item.name);
+				const toFile = SET_BOARD.dataURLtoFile(item.base, item.name);
 				ImageList.push(toFile);
 			});
 
-			const ImageRequest = new FileListItems(ImageList);
+			const ImageRequest = new SET_BOARD.FileListItems(ImageList);
 
 			const fs = new FormData();
 			fs.append('board', data.board);
-			fs.append('title', data.title);
 			fs.append('content', data.content);
 			fs.append('meta', data.meta);
 
@@ -363,12 +415,31 @@ export default {
 				fs.append('images', ImageRequest[i]);
 			}
 
+			console.log(data);
+			console.log(ImageList);
+
+			/*
 			this.POST(fs).then((req) => {
 				console.log(req);
 			}).catch((err) => {
 				console.log(err);
 			});
+			*/
 		}
+	},
+	mounted(){
+		const _this = this;
+		window.addEventListener("click", function() {
+			const element = document.activeElement;
+			const SetSetting = _this.$refs.SettingPop;
+
+			
+			if(_this.SettingPop){
+				if(element != SetSetting){
+					_this.SettingPop = false;
+				}
+			}
+		});
 	}
 }
 </script>
@@ -424,7 +495,7 @@ export default {
 						}
 					}
 
-					&.submit {
+					&.setting {
 						& {
 							width: 44px; height: 44px;
 							position: absolute;
@@ -432,9 +503,9 @@ export default {
 							padding: 0 15px;
 							font-weight: bold;
 							color: #999;
-							//border-left: 1px solid #ddd;
+							z-index: 10;
 							@include transition(.2s all);
-							@include transform(translateY(-50%) scale(1));
+							@include transform(translateY(-50%));
 						}
 
 						& > i {
@@ -443,7 +514,7 @@ export default {
 								left: 50%; top: 50%;
 								display: inline-block;
 								vertical-align: middle;
-								font-size: #{$font-size - 2};
+								font-size: #{$font-size};
 								padding-right: 10px;
 								@include transform(translate(-50%, -50%));
 							}
@@ -457,11 +528,120 @@ export default {
 							}
 						}
 
-						&:hover {
+						& > div.menu {
 							& {
-								color: #777;
-								@include transform(translateY(-50%) scale(1.1));
+								display: block;
+								position: absolute;
+								right: 0; top: 100%;
+								background-color: #666;
+								border-radius: 3px;
+								overflow: hidden;
+								opacity: 0;
+								visibility: hidden;
 								@include transition(.2s all);
+							}
+
+							& > ul {
+								& {
+									font-size: 0;
+									list-style: none;
+									white-space: nowrap;
+								}
+
+								& > li {
+									& {
+										display: block;
+									}
+
+									& > button {
+										& {
+											display: block;
+											text-align: left;
+											border: 0; background: none;
+											margin: 0; padding: 0;
+											width: 100%; height: 40px;
+											padding: 0 15px;
+											cursor: pointer; outline: none;
+											background-color: #666;
+											@include transition(.2s all);
+										}
+
+										& > i {
+											& {
+												display: inline-block;
+												vertical-align: middle;
+												height: 40px;
+												font-size: #{$font-size};
+												color: #fff;
+												padding-right: 10px;
+											}
+
+											& > div {
+												& {
+													display: table;
+													height: 100%;
+												}
+
+												& > div {
+													& {
+														display: table-cell;
+														vertical-align: middle;
+													}
+												}
+											}
+										}
+
+										& > span {
+											& {
+												display: inline-block;
+												vertical-align: middle;
+												height: 40px;
+												font-size: #{$font-size};
+												color: #fff;
+											}
+
+											& > div {
+												& {
+													display: table;
+													height: 100%;
+												}
+
+												& > div {
+													& {
+														display: table-cell;
+														vertical-align: middle;
+													}
+												}
+											}
+										}
+
+										&:hover {
+											& {
+												background-color: #777;
+												@include transition(.2s all);
+											}
+										}
+									}
+								}
+							}
+						}
+
+						&:hover {
+							& > i {
+								color: #777;
+								@include transition(.2s all);
+							}
+						}
+
+						&.active {
+							& {
+								& > div.menu {
+									& {
+										visibility: visible;
+										opacity: 1;
+										@include transition(.2s all);
+									}
+								}
 							}
 						}
 					}
@@ -759,7 +939,7 @@ export default {
 							font-size: 0;
 						}
 
-						& > input[type=checkbox] {
+						& > input[type=checkbox], & > input[type=radio] {
 							& {
 								display: none;
 							}
@@ -768,8 +948,8 @@ export default {
 						& > div {
 							& {
 								display: inline-block;
-								width: 15px;
-								height: 15px;
+								width: 16px;
+								height: 16px;
 								border: 1px solid #ccc;
 								background-color: #f9f9f9;
 								position: relative;
@@ -789,6 +969,19 @@ export default {
 									@include transform(translate(-50%, -50%));
 								}
 							}
+
+							& > span {
+								& {
+									position: absolute;
+									display: block;
+									left: 50%; top: 50%;
+									width: 9px; height: 9px;
+									background-color: $bg-blue;
+									opacity: 0;
+									@include transition(.2s all);
+									@include transform(translate(-50%, -50%));
+								}
+							}
 						}
 
 						& > span {
@@ -800,9 +993,25 @@ export default {
 								padding-left: 7px;
 							}
 						}
+						
+						input[type=radio]:checked ~ div{
+							& > span {
+								& {
+									border-radius: 50%;
+									width: 8px; height: 8px;
+								}
+							}
+						}
 
-						& > input[type=checkbox]:checked ~ div {
+						& > input[type=checkbox]:checked ~ div, input[type=radio]:checked ~ div{
 							& > i {
+								& {
+									opacity: 1;
+									@include transition(.2s all);
+								}
+							}
+
+							& > span {
 								& {
 									opacity: 1;
 									@include transition(.2s all);
@@ -884,7 +1093,7 @@ export default {
 								}
 							}
 
-							&.open {
+							&.open, &.view {
 								& > td:nth-child(2) {
 									& > div {
 										& {
@@ -899,6 +1108,104 @@ export default {
 											}
 										}
 									}
+								}
+							}
+
+							&.view {
+								& > td:nth-child(2) {
+									& > div {
+										& > label {
+											& > div {
+												& {
+													border-radius: 50%;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				& > .post-submit {
+					& {
+						width: 100%; height: auto;
+						font-size: 0;
+						text-align: right;
+					}
+
+					& > button {
+						& {
+							display: inline-block;
+							position: relative;
+							border: 0; background: none;
+							padding: 0; margin: 0;
+							padding: 10px 30px;
+							border-radius: 3px;
+							background-color: $bg-blue;
+							cursor: pointer; outline: none;
+							font-size: #{$font-size - 1};
+							color: #fff;
+							@include transition(.2s all);
+						}
+
+						& > i{
+							& {
+								display: inline-block;
+								vertical-align: middle;
+								padding-right: 10px;
+							}
+						}
+
+						& > span {
+							& {
+								display: inline-block;
+								vertical-align: middle;
+							}
+						}
+
+						& > .help {
+							& {
+								display: block;
+								position: absolute;
+								top: 100%; left: 0;
+								padding: 10px;
+								border-radius: 3px;
+								background-color: #555;
+								color: #fff;
+								opacity: 0;
+								white-space: nowrap;
+								text-align: left;
+								visibility: hidden;
+								@include transition(.2s all);
+							}
+						}
+
+						&:hover {
+							& {
+								background-color: $bg-blue-light;
+								@include transition(.2s all);
+							}
+
+							& > .help {
+								& {
+									opacity: 0.9;
+									visibility: visible;
+									@include transition(.2s all);
+								}
+							}
+						}
+
+						&:nth-child(1){
+							& {
+								background-color: #ccc;
+								margin-right: 15px;
+							}
+
+							&:hover {
+								& {
+									background-color: #ddd;
 								}
 							}
 						}
