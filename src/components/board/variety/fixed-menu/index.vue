@@ -8,12 +8,12 @@
                 </span>
             </button>
 
-            <div class="resquest" v-if="editor">
-                <EditorMenuBar :editor="editor" v-slot="{ commands }">
+            <EditorMenuBar :editor="editor" v-slot="{ commands }">
+                <div class="resquest">
                     <input type="file" @change="UpdateFile('UploadImage', commands.image)" multiple="multiple" ref="UploadImage"/>
-                </EditorMenuBar> 
-            </div>
-            <div class="resquest" v-else>
+                </div>
+            </EditorMenuBar> 
+            <div class="resquest">
                 <input type="file" @change="UpdateFile('UploadImage')" multiple="multiple" ref="UploadImage"/>
             </div>
 
@@ -31,7 +31,7 @@
 
                 <div class="list">
                     <ul ref="EditorList">
-                        <li :class="{ active : EditorMenu[1].active }">
+                        <li :class="{ active : EditorMenu[0].active }">
                             <!-- <div class="list" ref="ImageSwiper" v-swiper:ImageSwiper="ImageSwipeOption"> -->
                             <div class="list" ref="Wrapper">
                                 <button type="button" class="move left" @click="FixedMove(false)" ref="FixedLeft">
@@ -105,25 +105,23 @@
 
 <script>
 import { SET_SCRIPT, SET_BOARD } from '@/store/helper/index'
-import { EditorMenuBar } from 'tiptap'
+import { Editor, EditorMenuBar } from 'tiptap'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight, faTrashAlt, faCrown, faBars } from '@fortawesome/free-solid-svg-icons'
-//import { faTimesCircle } from '@fortawesome/free-regular-svg-icons'
+import { faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight, faTrashAlt, faCrown } from '@fortawesome/free-solid-svg-icons'
 import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 import draggable from 'vuedraggable'
 
 export default {
     name: 'FixedMenu',
-    props: ['StorageImages', 'ImagesActive', 'ImagesThumbnail', 'editor', 'Volume', 'Option'],
+    props: ['StorageImages', 'ImagesActive', 'ImagesThumbnail', 'option'],
     components: {
         draggable, EditorMenuBar,
     },
     data(){
         return {
             // Icon
-            faImage, faVideo, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight, faTrashAlt, faCrown,
-            faBars, faYoutube,
+            faImage, faVideo, faYoutube, faSmile, faFileUpload, faThumbtack, faPlus, faChevronLeft, faChevronRight, faTrashAlt, faCrown,
 
             // Plugin
             draggable,
@@ -131,19 +129,13 @@ export default {
             // Editor
 			EditorMenu : [
 				{
-					ko : '닫기',
-					en : 'Colse',
-					icon : faBars,
-					auth : 1,
-					active : true,
-                },
-				{
 					ko : '사진',
 					en : 'Photo',
 					icon : faImage,
 					auth : 1,
-					active : false,
+					active : true,
                 },
+                /*
 				{
 					ko : '동영상',
 					en : 'Vidio',
@@ -172,9 +164,10 @@ export default {
 					auth : 2,
 					active : false,
 				},
+                */
             ],
             MenuFixed : { BottomMenu : false },
-            FixedMenu : false,
+            FixedMenu : true,
             
             MinSizeImages : 0,
             MaxSizeImages : 0,
@@ -394,7 +387,7 @@ export default {
 				console.log('Undefined Element');
 			}
 		},
-		UpdateFile(type, command = undefined){
+		UpdateFile(type){
 			const _this = this;
 			const ref = _this.$refs;
 
@@ -417,8 +410,7 @@ export default {
 
 					for await (const item of storage){
 						const src = await SET_BOARD.encodeBase64ImageFile(item);
-                        const options = await SET_SCRIPT.getImageDimensions(src);
-                        const index = _this.SubStorageImages.length;
+						const options = await SET_SCRIPT.getImageDimensions(src);
 						const position = {
 							width: options.w,
 							height: options.h,
@@ -435,11 +427,7 @@ export default {
 								active : false,
 								thumbnail : false,
 							}
-                        });
-                        
-                        if(command != undefined){
-                            command({ src, index });
-                        }
+						});
                     }
 
                     _this.SubStorageImages.forEach((item, index) => {
@@ -457,7 +445,7 @@ export default {
 
                     _this.ProgressSet();
                     
-			        _this.EditorActive(1);
+			        _this.EditorActive(0);
                     _this.FixedDisabled();
 
                     _this.$emit('update-thumbnail', _this.SubImagesThumbnail);
@@ -478,30 +466,12 @@ export default {
         },
     },
     created(){
-        this.MinSizeImages = (this.Volume.min) ? this.Volume.min : 0;
-        this.MaxSizeImages = (this.Volume.max) ? this.Volume.max : 0;
+        this.MinSizeImages = (this.option.min) ? this.option.min : 0;
+        this.MaxSizeImages = (this.option.max) ? this.option.max : 0;
 
         this.SubStorageImages = this.StorageImages;
         this.SubImagesActive = this.ImagesActive;
         this.SubImagesThumbnail = this.ImagesThumbnail;
-
-        if(typeof this.Option != "undefined"){
-            // 고정할지 말지
-            if(typeof this.Option.FixedMenu != "undefined"){
-                if(this.Option.FixedMenu == true){ this.FixedMenu = true }
-            }
-
-            // 처음 엑티브 메뉴가 뭔지 (기본값은 Close)
-            if(this.Option.EditorMenuActive != "undefined"){
-                this.EditorMenu.map(item => {
-                    if(item.en == this.Option.EditorMenuActive){
-                        item.active = true;
-                    }else{
-                        item.active = false;
-                    }
-                });
-            }
-        }
     },
     mounted(){
         const _this = this;

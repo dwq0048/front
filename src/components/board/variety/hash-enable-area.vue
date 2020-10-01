@@ -40,7 +40,7 @@
             </span>
         </button>				
         <span class="alert" ref="HashAlert">
-            <p>특수문자는 입력에서 제외됩니다.</p>
+            <p>{{ HashAlertText }}</p>
         </span>
     </div>
 </template>
@@ -52,7 +52,7 @@ import { faHashtag, faTrashAlt, faPen } from '@fortawesome/free-solid-svg-icons'
 import draggable from 'vuedraggable'
 
 export default {
-    name: 'HashArea',
+    name: 'HashDisabled',
     props: ['StorageHashs'],
     components: {
         draggable
@@ -67,6 +67,7 @@ export default {
 
             // Use
             SubStorageHashs : [],
+            HashAlertText : ''
         }
     },
     methods: {
@@ -75,18 +76,41 @@ export default {
 			const object = {
 				text : hash.textContent,
 				active : false,
-			};
+            };
 
-            this.SubStorageHashs.unshift(object);
-			hash.innerText = '';
+            let Used = false;
+            
+            this.SubStorageHashs.map(item => {
+                if(item.text == object.text){
+                    Used = true;
+                }
+            });
+
+            if(!Used){
+                this.SubStorageHashs.unshift(object);
+                hash.innerText = '';
+            }else{
+                this.HashAlert('동일한 태그가 포함되어있습니다.');
+            }
 		},
 		EditHashs(event, index){
             const hash = this.$refs.HashList.$el;
             const item = hash.querySelector(`li[data-index='${index}']`);
             const focus = item.querySelector('button > div > span');
 
-            this.SubStorageHashs[index].text = focus.innerText;
-            focus.setAttribute('contenteditable',false);
+            let Used = false;
+            this.SubStorageHashs.map(item => {
+                if(item.text == focus.innerText){
+                    Used = true;
+                }
+            })
+
+            if(!Used){
+                this.SubStorageHashs[index].text = focus.innerText;
+                focus.setAttribute('contenteditable',false);
+            }else{
+                this.HashAlert('동일한 태그가 포함되어있습니다.');
+            }
 		},
 		HashOption(option){
 			this.SubStorageHashs.forEach((item, index) => {
@@ -136,11 +160,15 @@ export default {
 				(event.keyCode >= 123 && event.keyCode <= 126)
 			) {
                 event.preventDefault();
-				this.$refs.HashAlert.classList.add("active");
-				setTimeout(() => {
-					this.$refs.HashAlert.classList.remove("active");
-				},1500);
+                this.HashAlert('특수문자는 입력에서 제외됩니다.');
 			}
+        },
+        HashAlert(text){
+            this.HashAlertText = text;
+            this.$refs.HashAlert.classList.add("active");
+            setTimeout(() => {
+                this.$refs.HashAlert.classList.remove("active");
+            },1500);
         },
         HashDelete(){
             this.SubStorageHashs = [];

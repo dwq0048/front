@@ -8,49 +8,8 @@
 					<i><font-awesome-icon :icon="faList" /></i>
 					<span>목록으로</span>
 				</button>
-				<button type="submit" class="setting" @click="Setting()" :class="{ active : SettingPop }" ref="SettingPop" title="설정">
-					<i><font-awesome-icon :icon="faCog" /></i>
-					<div class="menu">
-						<ul>
-							<li>
-								<button type="button">
-									<i>
-										<div>
-											<div>
-												<font-awesome-icon :icon="faEyeSlash" />
-											</div>
-										</div>
-									</i>
-									<span>
-										<div>
-											<div>
-												메뉴 숨기기
-											</div>
-										</div>
-									</span>
-								</button>
-							</li>
-							<li>
-								<button type="button">
-									<i>
-										<div>
-											<div>
-												<font-awesome-icon :icon="faExpandAlt" />
-											</div>
-										</div>
-									</i>
-									<span>
-										<div>
-											<div>
-												넓게보기
-											</div>
-										</div>
-									</span>
-								</button>
-							</li>
-						</ul>
-					</div>
-				</button>
+				
+				<setting-pop />
 			</div>
 		</div>
 		<!-- Title End -->
@@ -102,7 +61,16 @@
 			<!-- Set Slide -->
 			<div class="post-preview">
 				<div class="title">
-					<h1>미리보기</h1>
+					<div>
+						<h1>미리보기</h1>
+						<div class="btn">
+							<button type="button" :class="{ active : RadioMod == 'vertical' }" @click="RadioModClick">
+								<i><font-awesome-icon :icon="faScroll" /></i>
+								<span class="horizontal">가로보기</span>
+								<span class="vertical">세로보기</span>
+							</button>
+						</div>
+					</div>
 				</div>
 
 				<div class="preview-none" v-if="StorageImages.length <= 0 || !StorageImages">
@@ -115,12 +83,21 @@
 					</div>
 				</div>
 
-				<swipe-slide 
+				<horizontal-slide 
 					:StorageImages="StorageImages"
 					:ImagesActive="ImagesActive"
 					@slide-data="SlideData"
 
-					v-if="StorageImages.length > 0"
+					v-if="StorageImages.length > 0 && RadioMod == 'horizontal'"
+					ref="SwiperSlide"
+				/>
+
+				<vertical-slide
+					:StorageImages="StorageImages"
+					:ImagesActive="ImagesActive"
+					@slide-data="SlideData"
+
+					v-if="StorageImages.length > 0 && RadioMod == 'vertical'"
 					ref="SwiperSlide"
 				/>
 			</div>
@@ -128,7 +105,8 @@
 
 			<!-- Fixed Menu -->
 			<fixed-menu
-				:option = "{ min : 0, max : 7340032 }"
+				:Volume = "{ min : 0, max : 7340032 }"
+				:Option = "{ FixedMenu : true, EditorMenuActive : 'Photo' }"
 				:StorageImages="StorageImages"
 				:ImagesActive="ImagesActive"
 				:ImagesThumbnail="ImagesThumbnail"
@@ -233,9 +211,11 @@ import { SET_BOARD } from '@/store/helper/index'
 
 import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
 import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
-import SwipeSlide from '@/components/widget/slide/swipe-slide'
+import HorizontalSlide from '@/components/widget/slide/horizontal-slide'
+import VerticalSlide from '@/components/widget/slide/vertical-slide'
+import SettingPop from '@/components/board/variety/setting-edit'
 import FixedMenu from '@/components/board/variety/fixed-menu'
-import HashArea from '@/components/board/variety/hash-area'
+import HashArea from '@/components/board/variety/hash-enable-area'
 
 import { 
 	Heading, Bold, Italic, Strike, Underline, Link,
@@ -248,7 +228,7 @@ import {
 import { Placeholder } from 'tiptap-extensions'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faCheck, faImage, faList, faEdit, faHashtag, faCog, faQuestionCircle, faEyeSlash, faExpandAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faImage, faList, faEdit, faHashtag, faQuestionCircle, faScroll } from '@fortawesome/free-solid-svg-icons'
 
 const sanitizeHtml = require('sanitize-html');
 const postStore = 'postStore'
@@ -256,8 +236,10 @@ const postStore = 'postStore'
 export default {
     name: 'DefaultPost',
     components: {
-		'swipe-slide' : SwipeSlide,
+		'horizontal-slide' : HorizontalSlide,
+		'vertical-slide' : VerticalSlide,
 		'fixed-menu' : FixedMenu,
+		'setting-pop' : SettingPop,
 		'hash-area' : HashArea,
 		'tip-tap-menu' : tipTapMenu,
 		'tip-tap-editor' : tipTapEditor,
@@ -266,7 +248,7 @@ export default {
 	data() {
 		return {
 			// Icon
-			faCheck, faImage, faList, faEdit, faHashtag, faCog, faQuestionCircle, faEyeSlash, faExpandAlt,
+			faCheck, faImage, faList, faEdit, faHashtag, faQuestionCircle, faScroll,
 
 			//Editor
 			editor: new Editor({
@@ -315,8 +297,6 @@ export default {
 				{ en : 'vertical', ko : '세로 보기' },
 			],
 
-			SettingPop : false,
-
 			// Storage
 			StorageImages : [],
 			StorageHashs : [],
@@ -341,6 +321,9 @@ export default {
 		...mapActions(postStore, [
 			'POST'
 		]),
+		RadioModClick(){
+			this.RadioMod = (this.RadioMod == 'horizontal') ? 'vertical' : 'horizontal';
+		},
 		SlideData(option){
 			this.ImagesActive = option;
 		},
@@ -361,20 +344,19 @@ export default {
 		ImageClick(){
 			this.$refs.fixMenu.TriggerInput("UploadImage");
 		},
-		Setting(){
-			this.SettingPop = (this.SettingPop) ? false : true;
-		},
 		Submit() {
 
 			// 내용 경우
 			if(!this.Post.content || this.Post.content == '' || this.Post.content == undefined || this.Post.content == false){
 				console.log('대충 내용 쓰라는 경고문');
+				return false;
 			}
 
 			// 해시 경우
 			try { this.StorageHashs = this.$refs.HashArea.HashReq() }catch(err){ this.StorageHashs = undefined }
 			if(this.StorageHashs == undefined || this.StorageHashs.length <= 0){
 				console.log('대충 해시 쓰라는 경고문');
+				return false;
 			}else{
 				this.StorageHashs = this.StorageHashs.map(item => {
 					return { item : item.text }
@@ -385,6 +367,7 @@ export default {
 			for (const item of this.RadioMods){ (item.en == this.RadioMod) ? TempCheck = true : undefined }
 			if(!TempCheck){
 				console.log('대충 모드 선택해라는 경고문');
+				return false;
 			}
 
 			const ImageList = [];
@@ -426,20 +409,6 @@ export default {
 			});
 			*/
 		}
-	},
-	mounted(){
-		const _this = this;
-		window.addEventListener("click", function() {
-			const element = document.activeElement;
-			const SetSetting = _this.$refs.SettingPop;
-
-			
-			if(_this.SettingPop){
-				if(element != SetSetting){
-					_this.SettingPop = false;
-				}
-			}
-		});
 	}
 }
 </script>
@@ -492,157 +461,6 @@ export default {
 							display: inline-block;
 							vertical-align: middle;
 							font-size: #{$font-size - 2};
-						}
-					}
-
-					&.setting {
-						& {
-							width: 44px; height: 44px;
-							position: absolute;
-							right: 0; top: 50%;
-							padding: 0 15px;
-							font-weight: bold;
-							color: #999;
-							z-index: 10;
-							@include transition(.2s all);
-							@include transform(translateY(-50%));
-						}
-
-						& > i {
-							& {
-								position: absolute;
-								left: 50%; top: 50%;
-								display: inline-block;
-								vertical-align: middle;
-								font-size: #{$font-size};
-								padding-right: 10px;
-								@include transform(translate(-50%, -50%));
-							}
-						}
-
-						& > span {
-							& {
-								display: inline-block;
-								vertical-align: middle;
-								font-size: #{$font-size - 2};
-							}
-						}
-
-						& > div.menu {
-							& {
-								display: block;
-								position: absolute;
-								right: 0; top: 100%;
-								background-color: #666;
-								border-radius: 3px;
-								overflow: hidden;
-								opacity: 0;
-								visibility: hidden;
-								@include transition(.2s all);
-							}
-
-							& > ul {
-								& {
-									font-size: 0;
-									list-style: none;
-									white-space: nowrap;
-								}
-
-								& > li {
-									& {
-										display: block;
-									}
-
-									& > button {
-										& {
-											display: block;
-											text-align: left;
-											border: 0; background: none;
-											margin: 0; padding: 0;
-											width: 100%; height: 40px;
-											padding: 0 15px;
-											cursor: pointer; outline: none;
-											background-color: #666;
-											@include transition(.2s all);
-										}
-
-										& > i {
-											& {
-												display: inline-block;
-												vertical-align: middle;
-												height: 40px;
-												font-size: #{$font-size};
-												color: #fff;
-												padding-right: 10px;
-											}
-
-											& > div {
-												& {
-													display: table;
-													height: 100%;
-												}
-
-												& > div {
-													& {
-														display: table-cell;
-														vertical-align: middle;
-													}
-												}
-											}
-										}
-
-										& > span {
-											& {
-												display: inline-block;
-												vertical-align: middle;
-												height: 40px;
-												font-size: #{$font-size};
-												color: #fff;
-											}
-
-											& > div {
-												& {
-													display: table;
-													height: 100%;
-												}
-
-												& > div {
-													& {
-														display: table-cell;
-														vertical-align: middle;
-													}
-												}
-											}
-										}
-
-										&:hover {
-											& {
-												background-color: #777;
-												@include transition(.2s all);
-											}
-										}
-									}
-								}
-							}
-						}
-
-						&:hover {
-							& > i {
-								color: #777;
-								@include transition(.2s all);
-							}
-						}
-
-						&.active {
-							& {
-								& > div.menu {
-									& {
-										visibility: visible;
-										opacity: 1;
-										@include transition(.2s all);
-									}
-								}
-							}
 						}
 					}
 
@@ -854,12 +672,100 @@ export default {
 				}
 
 				& > .title {
-					& > h1 {
+					& {
+						width: 100%; height: auto;
+						padding: 0 35px 10px 35px;
+					}
+
+					& > div {
 						& {
-							font-size: #{$font-size + 2};
-							color: $font-color;
-							padding-left: 35px;
-							padding-bottom: 10px;
+							width: 100%; height: auto;
+							position: relative;
+						}
+						
+						& > h1 {
+							& {
+								font-size: #{$font-size + 2};
+								color: $font-color;
+							}
+						}
+
+						& > .btn {
+							& {
+								position: absolute;
+								right: 0; top: 50%;
+								font-size: 0;
+								@include transform(translateY(-50%));
+							}
+
+							& > button {
+								& {
+									display: inline-block;
+									border: 0; background: none;
+									padding: 0; margin: 0;
+									cursor: pointer; outline: none;
+									font-size: #{$font-size};
+									color: #aaa;
+									@include transition(.2s all);
+								}
+
+								& > i {
+									& {
+										display: inline-block;
+										@include transition(.2s all);
+										@include transform(rotate(-90deg));
+									}
+								}
+
+								& > span {
+									& {
+										display: inline-block;
+										padding-left: 5px;
+									}
+
+									&.horizontal {
+										& {
+											display: inline-block;
+										}
+									}
+
+									&.vertical {
+										& {
+											display: none;
+										}
+									}
+								}
+
+								&:hover {
+									& {
+										color: #777;
+										@include transition(.2s all);
+									}
+								}
+
+								&.active {
+									& > i {
+										& {
+											@include transition(.2s all);
+											@include transform(rotate(0deg));
+										}
+									}
+
+									& > span {
+										&.horizontal {
+											& {
+												display: none;
+											}
+										}
+
+										&.vertical {
+											& {
+												display: inline-block;
+											}
+										}
+									}
+								}
+							}
 						}
 					}
 				}

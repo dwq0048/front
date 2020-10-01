@@ -1,21 +1,11 @@
 <template>
     <div class="list" ref="Preview">
-        <ul v-if="StorageImages.length > 0" :style="`padding-bottom:${ImagesActive.ratio}%`">
+        <ul>
             <li v-for="(item, i) in StorageImages" :key="i" :class="{ active : i ==  ImagesActive.index, prev : i == ImagesActive.prev, next : i == ImagesActive.next }">
                 <div class="image">
                     <img :src="item.base">
                 </div>
             </li>
-            <button type="button" class="move left" @click="SlideBtn(false)">
-                <span>
-                    <i><font-awesome-icon :icon="faChevronLeft" /></i>
-                </span>
-            </button>
-            <button type="button" class="move right" @click="SlideBtn(true)">
-                <span>
-                    <i><font-awesome-icon :icon="faChevronRight" /></i>
-                </span>
-            </button>
             <div class="isDown" ref="isDown">
                 <div>
                     <div></div>
@@ -32,20 +22,6 @@
                 </div>
             </div>
         </ul>
-
-        <!--
-        <div class="pre-list">
-            <div>
-                <ul v-if="StorageImages.length > 0">
-                    <li v-for="(item, i) in StorageImages" :key="i" :class="{ active : i ==  ImagesActive.index }">
-                        <div class="image">
-                            <img :src="item.base">
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        -->
     </div>
 </template>
 
@@ -54,7 +30,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 
 export default {
-    name: 'SwipeSlide',
+    name: 'HorizontalSlide',
     props: ['StorageImages', 'ImagesActive'],
     data(){
         return {
@@ -84,71 +60,7 @@ export default {
 			],
         }
     },
-    methods : {
-		SlideBtn(btn){
-            this.$emit('btn-click', true);
-			switch(btn){
-				case true:
-					this.SlideOption(btn);
-					break;
-				case false:
-					this.SlideOption(btn);
-					break;
-			}
-		},
-		SlideOption(move){
-			const Images = this.StorageImages;
-			const Size = Images.length - 1;
-			const Current = this.ImagesActive.index;
-			const Pin = (move) ? 1 : -1;
-
-			let Next = (Current + Pin < 0) ? Size : Current + Pin;
-			Next = (Next > Size) ? 0 : Next;
-
-			const option = {
-				move : move,
-				next : {
-					index : Next,
-					ratio : this.StorageImages[Next].position.ratio
-				}
-			}
-
-			this.SlideAnimate(option);
-		},
-		SlideAnimate(option){
-			const refs = this.$refs.Preview;
-			const Element = refs.querySelector('ul');
-            const nodes = Array.prototype.slice.call( Element.children );
-            const lists = [];
-            nodes.map((item, index) => {
-                if(item.localName == 'li'){
-                    lists.push(item);
-                }
-            });
-
-            let max = lists.length - 1;
-            let PrevNext = {
-                prev : (option.next.index - 1),
-                next : (option.next.index + 1),
-                index : option.next.index,
-                ratio : option.next.ratio
-            }
-
-            PrevNext.prev = (PrevNext.prev < 0) ? max : PrevNext.prev;
-            PrevNext.next = (PrevNext.next > max) ? 0 : PrevNext.next;
-
-			Element.style.paddingBottom = `${option.next.ratio}%`;
-            Element.style.transition = `.2s all`;
-
-            let move = (!option.move) ? 'right' : 'left';
-            Element.querySelector('li.active').classList.add(move);
-            Element.querySelector(`li:nth-child(${option.next.index + 1})`).classList.add(move);
-            
-            setTimeout(() => {
-                this.$emit('slide-data', PrevNext);
-            }, 200);
-		},
-    },
+    methods : {},
     mounted(){
         let isDown = false;
 		let isAble = false;
@@ -307,9 +219,6 @@ export default {
                 display: block; position: relative;
                 font-size: 0;
                 list-style: none;
-                white-space: nowrap;
-                border-radius: 3px;
-                overflow: hidden;
                 @include no-drag();
             }
 
@@ -559,13 +468,8 @@ export default {
             & > li {
                 & {
                     display: block;
-                    position: absolute;
-                    width: 100%; height: 100%;
-                    left: 100%; top: 0;
-                    overflow: hidden;
-                    border-radius: 5px;
+                    width: 100%; height: auto;
                     @include no-drag();
-                    @include box-shadow(5px 5px 5px rgba(0,0,0,0.1));
                 }
                 
                 & > div.image {
@@ -579,12 +483,7 @@ export default {
                     & > img {
                         & {
                             width: 100%; height: 100%;
-                            left: 50%; top: 50%;
-                            position: absolute;
-                            object-fit: cover;
-                            -webkit-user-drag: none;
                             @include no-drag();
-                            @include transform(translate(-50%, -50%));
                         }
                     }
                 }

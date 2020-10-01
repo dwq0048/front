@@ -8,10 +8,8 @@
 					<i><font-awesome-icon :icon="faList" /></i>
 					<span>목록으로</span>
 				</button>
-				<button type="submit" class="submit" @click="Submit()">
-					<i><font-awesome-icon :icon="faEdit" /></i>
-					<span>글쓰기</span>
-				</button>
+
+				<setting-pop />
 			</div>
 		</div>
 		<!-- Title End -->
@@ -32,70 +30,20 @@
 			<!-- Editor End -->
 
 			<!-- 작은 메뉴 Start -->
-			<div class="post-menu" :class="{ active : MenuFixed.BottomMenu }" ref="BottomMenu">
-				<div ref="BottomMenuSub">
-					<button type="button" title="크게보기">
-						<i><font-awesome-icon :icon="faPlus" /></i>
-					</button>
+			<fixed-menu
+				:Volume = "{ min : 0, max : 7340032 }"
+				:StorageImages="StorageImages"
+				:ImagesActive="ImagesActive"
+				:ImagesThumbnail="ImagesThumbnail"
 
-					<EditorMenuBar :editor="editor" v-slot="{ commands }">
-						<div>
-							<div class="title" ref="TitleMenu">
-								<ul>
-									<li v-for="(item, i) in EditorMenu" :key="i" :data-index="i" :class="{ 'is-active' : EditorMenu[i].active }" @click="EditorActive(i)" ref="EditorHover">
-										<button type="button" :title="item.ko">
-											<i><font-awesome-icon :icon="item.icon" /></i>
-										</button>
-									</li>
-									<div class="active" ref="EditorActive"></div>
-								</ul>
-							</div>
+				:editor="editor"
 
-							<div class="list">
-								<ul ref="EditorList">
-									<li :class="{ active : EditorMenu[0].active }">
-										<input type="file" @change="UpdateFile('UploadImage', commands.image)" multiple="multiple" ref="UploadImage"/>
-										<div class="list" ref="ImageSwiper" v-swiper:ImageSwiper="ImageSwipeOption">
-											<ul class="swiper-wrapper">
-												<li class="btn">
-													<button type="button" class="none" title="사진추가" @click="TriggerInput('UploadImage')">
-														<span class="image">
-															<i>
-																<font-awesome-icon :icon="faImage" />
-																<span>사진 추가</span>
-															</i>
-														</span>
-														<span class="plus">
-															<i>
-																<font-awesome-icon :icon="faPlus" />
-															</i>
-														</span>
-													</button>
-												</li>
-												<li class="swiper-slide" v-for="(item, i) in StorageImages" :key="i">
-													<div>
-														<img :src="item.base">
-													</div>
-												</li>
-											</ul>
-										</div>
-										<div class="progress" ref="Progress">
-											<div class="bar">
-												<div class="bar" ref="SizeImages"></div>
-											</div>
-											<div class="info" ref="ProgressMb">
-												<div>
-													<span>{{ BytesToSize(MinSizeImages) }}</span> / <span>{{ BytesToSize(MaxSizeImages) }}</span>
-												</div>
-											</div>
-										</div>
-									</li>
-								</ul>
-							</div>
-						</div>
-					</EditorMenuBar>
-				</div>
-			</div>
+				@update-image="UpdateImage"
+				@update-image-active="UpdateImageActive"
+				@update-thumbnail="UpdateThumbnail"
+
+				ref="fixMenu"
+			/>
 			<!-- 작은 메뉴 End -->
 
 			<!-- Option Start -->
@@ -119,57 +67,79 @@
 							<td>
 								<div>
 									<label class="checkbox">
-										<input type="checkbox">
+										<input type="checkbox" v-model="CheckSetting.search">
 										<div>
-											<i><font-awesome-icon :icon="faCheck" /></i>
+											<span></span>
 										</div>
 										<span>검색 허용</span>
 									</label>
 								</div>
-
 								<div>
 									<label class="checkbox">
-										<input type="checkbox">
+										<input type="checkbox" v-model="CheckSetting.anonymous">
 										<div>
-											<i><font-awesome-icon :icon="faCheck" /></i>
+											<span></span>
 										</div>
 										<span>글쓴이 익명</span>
 									</label>
-								</div
-								>
+								</div>
 								<div>
 									<label class="checkbox">
-										<input type="checkbox">
+										<input type="checkbox" v-model="CheckSetting.private">
 										<div>
-											<i><font-awesome-icon :icon="faCheck" /></i>
+											<span></span>
 										</div>
 										<span>게시글 비공개</span>
 									</label>
 								</div>
 							</td>
 						</tr>
-						<tr class="tag">
-							<td>테그 설정</td>
-							<td><input type="text"></td>
+						<tr>
+							<td>태그 설정</td>
+							<td>
+								<div>
+									<hash-area />
+								</div>
+							</td>
 						</tr>
 					</table>
 				</div>
+				<div class="post-submit">
+					<button type="button">
+						<i><font-awesome-icon :icon="faQuestionCircle" /></i>
+						<span>저장하기</span>
+						<div class="help">
+							<p>로컬에 저장하고,<br>현재 게시글을 자동으로 불러옵니다</p>
+						</div>
+					</button>
+
+					<button type="button" @click="Submit">
+						<i><font-awesome-icon :icon="faEdit" /></i>
+						<span>글쓰기</span>
+					</button>
+				</div>
 			</div>
-			<!-- Option End -->
 		</div>
     </div>
 </template>
 
 <script>
+import { SET_SCRIPT, SET_BOARD } from '@/store/helper/index'
 import { mapActions, mapGetters } from 'vuex'
-import { Editor, EditorMenuBar } from 'tiptap'
+
 import tipTapEditor from '@/components/plugin/textarea/tiptap-board/index'
+import HashArea from '@/components/board/variety/hash-disabled-area'
 import tipTapMenu from '@/components/plugin/textarea/tiptap-board/menu'
+import SettingPop from '@/components/board/variety/setting-edit'
+import FixedMenu from '@/components/board/variety/fixed-menu'
+
+import { Editor } from 'tiptap'
+import { Placeholder } from 'tiptap-extensions'
 import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
 
-import { SET_SCRIPT } from '@/store/helper/index'
-//import Swipe from 'swipejs'
-
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faPlus, faFileUpload, faFile, faChevronLeft, faCheck, faImage, faSmile, faVideo, faList, faEdit, faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
+import { faYoutube } from '@fortawesome/free-brands-svg-icons'
 
 import { 
 	Heading, Bold, Italic, Strike, Underline, Link,
@@ -180,13 +150,6 @@ import {
 	HardBreak, Search,
 } from '@/components/plugin/textarea/script'
 
-
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPlus, faFileUpload, faFile, faChevronLeft, faCheck, faImage, faSmile, faVideo, faList, faEdit } from '@fortawesome/free-solid-svg-icons'
-import { faYoutube } from '@fortawesome/free-brands-svg-icons'
-
-import { SET_BOARD } from '@/store/helper/index'
-
 const sanitizeHtml = require('sanitize-html');
 const postStore = 'postStore'
 
@@ -195,9 +158,11 @@ export default {
     components: {
 		Swiper,
 		SwiperSlide,
-		EditorMenuBar,
+		'hash-area' : HashArea,
+		'setting-pop' : SettingPop,
 		'tip-tap-menu' : tipTapMenu,
 		'tip-tap-editor' : tipTapEditor,
+		'fixed-menu' : FixedMenu,
 	},
 	props: ['info'],
 	directives: {
@@ -230,8 +195,15 @@ export default {
 
 					new HardBreak(),
 					new Search(),
+					new Placeholder({
+						emptyEditorClass: 'is-editor-empty',
+						emptyNodeClass: 'is-empty',
+						emptyNodeText: '내용을 입력해주세요...',
+						showOnlyWhenEditable: true,
+						showOnlyCurrent: true,
+					}),
         		],
-				content: `<h1>타이틀 1</h1><h2>타이틀2</h2><p><strong><s>여러가지 스타일</s></strong></p><p></p><p></p><p style="text-align:center"></p><p>중간</p><p></p><p></p><p style="text-align:right"></p><p>오른쪽</p><p></p><p></p><p></p><ul><li><p>리스트 1</p></li><li><p>리스트 2</p></li></ul><ol><li><p>숫자 1</p></li><li><p>숫자 2</p></li></ol><p></p><blockquote><p>인용<strong>띠용</strong></p></blockquote><p></p><p>밑에 줄</p><hr /><p></p><h3>링크</h3><p></p><p><a href="http://naver.com" target="_blank">http://naver.com</a></p><p><a href="http://youtube.com" target="_blank">이것도 링크 유투브</a></p><p></p><p></p>`,
+				content: ``,
 				onUpdate: ({ getHTML }) => {
 					this.Post.content = getHTML();
 				},
@@ -284,7 +256,7 @@ export default {
 			// Icon
 			faPlus, faFileUpload, faFile, faChevronLeft,
 			faCheck, faImage, faSmile, faList, faEdit, faVideo,
-			faYoutube,
+			faYoutube, faQuestionCircle,
 
 			MenuFixed : {
                 BottomMenu : false
@@ -292,8 +264,17 @@ export default {
 
 			// Storage
 			StorageImages : [],
-			MaxSizeImages : 7340032,
-			MinSizeImages : 0,
+
+			// State
+			ImagesActive : {
+				index : false,
+				prev : false,
+				next : false,
+				ratio : 0
+			},
+			ImagesThumbnail : undefined,
+			
+			CheckSetting : { search : true, anonymous : false, private : false },
 
 			// Post
 			Post : {
@@ -306,92 +287,14 @@ export default {
 		...mapActions(postStore, [
 			'POST'
 		]),
-		TriggerInput(type){
-			try{
-				this.$refs[type].click();
-			} catch(err) {
-				console.log('Undefined Element');
-			}
+		UpdateImage(option){
+			this.StorageImages = option;
 		},
-		UpdateFile(type, command){
-			const _this = this;
-			const ref = _this.$refs;
-
-			const Spend = {
-				async UploadImage(type){
-					const files = ref[type].files;
-					const storage = [];
-
-					files.forEach(item => {
-						switch(item.type){
-							case 'image/jpeg':
-								storage.push(item);
-								break;
-							case 'image/png':
-								storage.push(item);
-								break;
-							default:
-						}
-					});
-
-					for await (const item of storage){
-						const src = await SET_BOARD.encodeBase64ImageFile(item);
-						const index = _this.StorageImages.length;
-
-						_this.StorageImages.push({
-							base : src,
-							type : item.type,
-							size : item.size,
-							name : item.name,
-						});
-
-						command({ src, index });
-					}
-
-					_this.MinSizeImages = 0;
-					_this.StorageImages.forEach(item => {
-						_this.MinSizeImages += item.size
-					});
-
-					const CurrentSize = (Number(_this.MinSizeImages) / Number(_this.MaxSizeImages) * 100).toFixed(4);
-					ref['SizeImages'].style.width = `${CurrentSize}%`;
-				},
-			}
-
-			try{
-				Spend[type](type);
-			} catch(err) {
-				console.log(err);
-			}
+		UpdateImageActive(option){
+			this.ImagesActive = option;
 		},
-		EditorActive(index){
-			this.EditorMenu.map(item => {
-				if (item.active == true){
-					item.active = false;
-				}
-			})
-
-			this.EditorMenu[index].active = true;
-		},
-		BytesToSize(bytes) {
-			const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-			if (bytes == 0) return '0 MB';
-			let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
-			if (i == 0) return bytes + ' ' + sizes[i];
-			return (bytes / Math.pow(1024, i)).toFixed(1) + ' ' + sizes[i];
-		},
-		dataURLtoFile(dataurl, fileName) {
-			var arr = dataurl.split(','),
-				mime = arr[0].match(/:(.*?);/)[1],
-				bstr = atob(arr[1]), 
-				n = bstr.length, 
-				u8arr = new Uint8Array(n);
-				
-			while(n--){
-				u8arr[n] = bstr.charCodeAt(n);
-			}
-			
-			return new File([u8arr], fileName, {type:mime});
+		UpdateThumbnail(option){
+			this.ImagesThumbnail = option;
 		},
 		SetHtml(content) {
 			return sanitizeHtml(content ,{
@@ -436,18 +339,14 @@ export default {
 				content : ContentFixed,
 				board : this.info.board,
 				meta : {
-					category : 'vrchat',
-					setting : {
-						search : true,
-						anonymous : false,
-						private : false,
-					},
-					tag : {},
+					category : 'default',
+					openSetting : this.CheckSetting,
+					hash : {},
 				},
 			}
 
 			this.StorageImages.map(item => {
-				const toFile = this.dataURLtoFile(item.base, item.name);
+				const toFile = SET_BOARD.dataURLtoFile(item.base, item.name);
 				ImageList.push(toFile);
 			});
 
@@ -457,7 +356,7 @@ export default {
 			fs.append('board', data.board);
 			fs.append('title', data.title);
 			fs.append('content', data.content);
-			fs.append('meta', data.meta);
+			fs.append('meta', JSON.stringify(data.meta));
 
 			for(let i=0;i<ImageRequest.length;i++){
 				fs.append('images', ImageRequest[i]);
@@ -470,80 +369,6 @@ export default {
 			});
 		}
 	},
-	mounted(){
-		SET_SCRIPT.optimizedResize();
-
-		let EditorStyle = '';
-		this.EditorMenu.forEach((item, index) => {
-			const element = document.querySelector(`.post > .write > .post-menu > div > div > .title > ul > li:nth-child(${index + 1})`);
-			const width = element.clientWidth;
-			const left = element.offsetLeft;
-
-			EditorStyle += `
-				.post > .write > .post-menu > div > div > .title > ul > li.is-active:nth-child(${index + 1}) ~ .active {
-					left: ${left}px;
-					width: ${width}px;
-					transition: .2s all;
-					-webkit-transition: .2s all;
-					-moz-transition: .2s all;
-					-ms-transition: .2s all;
-					-o-transition: .2s all;
-				}
-			`;
-		});
-		this.styleTag = document.createElement('style');
-		this.styleTag.appendChild(document.createTextNode(EditorStyle));
-		document.head.appendChild(this.styleTag);
-
-        const BottomMenu = this.$refs.BottomMenu;
-		const BottomMenuSub = this.$refs.BottomMenuSub;
-		const WinHeight = window.innerHeight;
-
-		const Progress = this.$refs.Progress;
-		const ProgressMb = this.$refs.ProgressMb;
-
-		const EventMenu = () => {
-            const BottomElement = BottomMenu.getBoundingClientRect();
-            const BottomPosition = {
-                bottom: WinHeight - BottomElement.bottom,
-                left: BottomElement.left
-			}
-
-
-			if(BottomPosition.bottom <= 0){
-                this.MenuFixed.BottomMenu = true;
-                BottomMenuSub.style.left = `${BottomPosition.left}px`;
-                BottomMenu.style.paddingTop = `${BottomMenuSub.offsetHeight}px`;
-            }else{
-				this.MenuFixed.BottomMenu = false;
-                BottomMenuSub.style.left = ``;
-                BottomMenu.style.paddingTop = ``;
-			}
-		}
-
-		const ProgressSet = () => {
-			const ProgressMbSize = { width: ProgressMb.clientWidth };
-			const Padding = 30;
-
-			Progress.style.paddingRight = `${ProgressMbSize.width + Padding}px`;
-		}
-
-        window.addEventListener('scroll', (data) => {
-			EventMenu();
-			ProgressSet();
-		});
-
-		window.addEventListener("optimizedResize", function() {
-			EventMenu();
-			ProgressSet();
-		});
-
-		this.$refs.TitleMenu.addEventListener("click", function() {
-			EventMenu();
-			ProgressSet();
-		});
-
-	}
 }
 </script>
 
@@ -595,44 +420,6 @@ export default {
 							display: inline-block;
 							vertical-align: middle;
 							font-size: #{$font-size - 2};
-						}
-					}
-
-					&.submit {
-						& {
-							height: 100%;
-							position: absolute;
-							right: 0; top: 50%;
-							padding: 0 30px;
-							font-weight: bold;
-							color: $bg-blue;
-							@include transition(.2s all);
-							@include transform(translateY(-50%) scale(1));
-						}
-
-						& > i {
-							& {
-								display: inline-block;
-								vertical-align: middle;
-								font-size: #{$font-size - 2};
-								padding-right: 10px;
-							}
-						}
-
-						& > span {
-							& {
-								display: inline-block;
-								vertical-align: middle;
-								font-size: #{$font-size - 2};
-							}
-						}
-
-						&:hover {
-							& {
-								color: $bg-blue-bold;
-								@include transform(translateY(-50%) scale(1.1));
-								@include transition(.2s all);
-							}
 						}
 					}
 
@@ -703,405 +490,6 @@ export default {
 				}
 			}
 
-			& > .post-menu {
-				& {
-					width: 100%; height: auto;
-					position: relative;
-					z-index: 10;
-				}
-
-				& > div {
-					& {
-						border: 1px solid #ddd;
-						border-left: 0;
-						border-right: 0;
-						position: relative;
-						background-color: #fff;
-					}
-
-					& > button {
-						& {
-							position: absolute;
-							right: 0; top: 0;
-							width: auto; height: auto;
-							border: 0;
-							background: none;
-							outline: none;
-							color: #999;
-							$font-size: #{$font-size + 8};
-							padding: 15px 30px;
-							cursor: pointer;
-							@include transition(.2s all);
-						}
-
-						&:hover {
-							& {
-								color: $bg-blue;
-								@include transition(.2s all);
-							}
-						}
-					}
-
-					& > div {
-						& {
-							width: 100%; height: auto;
-							overflow:hidden;
-						}
-
-						& > .title {
-							& {
-								width: 100%;
-								height: auto;
-								padding: 0 15px;
-								z-index: 1;
-							}
-
-							& > ul {
-								& {
-									width: auto; height: auto;
-									list-style: none;
-									font-size: 0;
-									position: relative;
-									overflow: hidden;
-								}
-
-								& > .active {
-									& {
-										position: absolute;
-										width: 52px; height: 3px;
-										background-color: $bg-blue;
-										left: -100px; bottom: 0;
-										@include transition(.2s all);
-									}
-								}
-							}
-						}
-
-						& > .list {
-							& {
-								width: 100%; height: auto;
-								border-top: 1px solid #ddd;
-							}
-
-							& > ul {
-								& {
-									width: 100%; height: auto;
-									font-size: 0;
-									list-style: none;
-								}
-
-								& > li.btn {
-									& {
-										display: inline-block;
-									}
-
-									& > button {
-										& {
-											display: block;
-											margin: 0; padding: 0;
-											border: 0; background: none;
-											font-size: #{$font-size + 8};
-											padding: 10px 15px;
-											color: #999;
-											outline: none;
-											cursor: pointer;
-											@include transition(.2s all);
-										}
-
-										&:hover {
-											& {
-												color: $bg-blue;
-												@include transition(.2s all);
-											}
-										}
-									}
-
-									&.is-active {
-										& > button {
-											& {
-												color: $bg-blue;
-												@include transition(.2s all);
-											}
-										}
-									}
-								}
-
-								& > li {
-									& {
-										width: 100%; height: auto;
-										display: none;
-										position: relative;
-										background-color: #fff;	
-										font-size: 0;
-										white-space: nowrap;
-										overflow: hidden;
-										padding: 15px;
-									}
-
-									&.active {
-										& {
-											display: block;
-										}
-									}
-
-									& > .progress {
-										& {
-											width: 100%; height: auto;
-											position: relative;
-											padding-right: 100px;
-											margin-top: 10px;
-										}
-
-										& > .info {
-											& {
-												position: absolute;
-												right: 0; top: 50%;
-												@include transform(translateY(-50%));
-												text-align: right;
-											}
-
-											& > div {
-												& {
-													font-size: #{$font-size - 1};
-													font-weight: bold;
-													color: #999;
-													margin-top: -3px;
-												}
-
-												& > span {
-													&:nth-child(1){
-														& {
-															color: $bg-orange;
-														}
-													}
-
-													&:nth-child(2){
-														& {
-															color: #555;
-														}
-													}
-												}
-											}
-										}
-
-										& > .bar {
-											& {
-												width: 100%; height: 16px;
-												background-color: #ddd;
-												border-radius: 15px;
-												position: relative;
-												padding: 4px 5px;
-											}
-
-											& > .bar {
-												& {
-													width: 0px; height: 100%;
-													background-color: $bg-orange;
-													position: relative;
-													border-radius: 15px;
-												}
-											}
-										}
-									}
-
-									& > ul.upload {
-										& {
-											width: 15%;
-											font-size: 0;
-											list-style: none;
-											display: inline-block;
-											position: relative;
-											background-color: #fff;
-											z-index: 10;
-											vertical-align: top;
-										}
-
-										&:after {
-											content: " ";
-											display: block;
-											padding-bottom: 100%;
-										}
-
-										& > li {
-											& {
-												display: block;
-												position: absolute;
-												width: 100%; height: 100%;
-												left: 50%; top: 50%;
-												@include transform(translate(-50%, -50%));
-												padding: 5px;
-											}
-
-											& > input {
-												& {
-													display: none;
-												}
-											}
-
-											& > button {
-												& {
-													
-													display: block;
-													width: 100%; height: 100%;
-													border: 0; background: none;
-													margin: 0; padding: 0;
-													position: relative;
-													border: 2px dashed #ddd;
-													background-color: #f1f1f1;
-													border-radius: 3px;
-													overflow: hidden;
-													outline: none;
-													cursor: pointer;
-												}
-
-												& > span {
-													& {
-														display: block;
-														position: absolute;
-														left: 50%; top: 50%;
-														@include transform(translate(-50%, -50%));
-													}
-
-													&.image {
-														& {
-															opacity: 1;
-															@include transition(.2s all);
-															text-align: center;
-														}
-
-														& > i {
-															& {
-																font-size: #{$font-size + 4};
-																color: #999;
-															}
-
-															& > span {
-																& {
-																	display: block;
-																	font-size: #{$font-size - 2};
-																	font-style: normal;
-																	font-weight: bold;
-																}
-															}
-														}
-													}
-
-													&.plus {
-														& {
-															opacity: 0;
-															@include transition(.2s all);
-														}
-
-														& > i {
-															& {
-																font-size: #{$font-size + 4};
-																color: $bg-orange;
-															}
-														}
-													} 
-												}
-
-												&:hover {
-													& {
-														border: 2px dashed $bg-orange;
-														@include transition(.2s all);
-													}
-
-													& > span {
-														&.image {
-															& {
-																opacity: 0;
-																@include transition(.2s all);
-															}
-														}
-
-														&.plus {
-															& {
-																opacity: 1;
-																@include transition(.2s all);
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-
-									& > .list {
-										& {
-											display: inline-block;
-											width: 100%; height: auto;
-											font-size: 0;
-											list-style: none;
-											position: relative;
-											vertical-align: top;
-										}
-
-										& > ul {
-											& {
-												display: inline-block;
-												width: 100%; height: auto;
-												font-size: 0;
-												list-style: none;
-												position: relative;
-												vertical-align: top;
-											}
-
-											& > li {
-												& {
-													display: inline-block;
-													width: 15%!important; height: auto;
-													padding: 5px;
-												}
-
-												& > div {
-													& {
-														display: block;
-														width: 100%; height: auto;
-														position: relative;
-														background-color: #ddd;
-														overflow: hidden;
-														border: 1px solid #ddd;
-														border-radius: 3px;
-													}
-
-													&:after {
-														content: " ";
-														display: block;
-														padding-bottom: 100%;
-													}
-
-													& > img {
-														& {
-															display: block;
-															position: absolute;
-															width: 100%; height: 100%;
-															left: 0; top: 0;
-															object-fit: cover;
-														}
-													}
-												}
-											}
-
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-
-				&.active {
-					& > div {
-						& {
-							position: fixed;
-							left: 0; bottom: 0;
-							width: 100%; max-width: 838px;
-						}
-					}
-				}
-			}
-
 			& > .post-option {
 				& {
 					width: 100%; height: auto;
@@ -1121,7 +509,7 @@ export default {
 							font-size: 0;
 						}
 
-						& > input[type=checkbox] {
+						& > input[type=checkbox], & > input[type=radio] {
 							& {
 								display: none;
 							}
@@ -1130,8 +518,8 @@ export default {
 						& > div {
 							& {
 								display: inline-block;
-								width: 15px;
-								height: 15px;
+								width: 16px;
+								height: 16px;
 								border: 1px solid #ccc;
 								background-color: #f9f9f9;
 								position: relative;
@@ -1151,6 +539,19 @@ export default {
 									@include transform(translate(-50%, -50%));
 								}
 							}
+
+							& > span {
+								& {
+									position: absolute;
+									display: block;
+									left: 50%; top: 50%;
+									width: 9px; height: 9px;
+									background-color: $bg-blue;
+									opacity: 0;
+									@include transition(.2s all);
+									@include transform(translate(-50%, -50%));
+								}
+							}
 						}
 
 						& > span {
@@ -1162,9 +563,25 @@ export default {
 								padding-left: 7px;
 							}
 						}
+						
+						input[type=radio]:checked ~ div{
+							& > span {
+								& {
+									border-radius: 50%;
+									width: 8px; height: 8px;
+								}
+							}
+						}
 
-						& > input[type=checkbox]:checked ~ div {
+						& > input[type=checkbox]:checked ~ div, input[type=radio]:checked ~ div{
 							& > i {
+								& {
+									opacity: 1;
+									@include transition(.2s all);
+								}
+							}
+
+							& > span {
 								& {
 									opacity: 1;
 									@include transition(.2s all);
@@ -1246,7 +663,7 @@ export default {
 								}
 							}
 
-							&.open {
+							&.open, &.view {
 								& > td:nth-child(2) {
 									& > div {
 										& {
@@ -1263,10 +680,118 @@ export default {
 									}
 								}
 							}
+
+							&.view {
+								& > td:nth-child(2) {
+									& > div {
+										& > label {
+											& > div {
+												& {
+													border-radius: 50%;
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				& > .post-submit {
+					& {
+						width: 100%; height: auto;
+						font-size: 0;
+						text-align: right;
+					}
+
+					& > button {
+						& {
+							display: inline-block;
+							position: relative;
+							border: 0; background: none;
+							padding: 0; margin: 0;
+							padding: 10px 30px;
+							border-radius: 3px;
+							background-color: $bg-blue;
+							cursor: pointer; outline: none;
+							font-size: #{$font-size - 1};
+							color: #fff;
+							@include transition(.2s all);
+						}
+
+						& > i{
+							& {
+								display: inline-block;
+								vertical-align: middle;
+								padding-right: 10px;
+							}
+						}
+
+						& > span {
+							& {
+								display: inline-block;
+								vertical-align: middle;
+							}
+						}
+
+						& > .help {
+							& {
+								display: block;
+								position: absolute;
+								top: 100%; left: 0;
+								padding: 10px;
+								border-radius: 3px;
+								background-color: #555;
+								color: #fff;
+								opacity: 0;
+								white-space: nowrap;
+								text-align: left;
+								visibility: hidden;
+								@include transition(.2s all);
+							}
+						}
+
+						&:hover {
+							& {
+								background-color: $bg-blue-light;
+								@include transition(.2s all);
+							}
+
+							& > .help {
+								& {
+									opacity: 0.9;
+									visibility: visible;
+									@include transition(.2s all);
+								}
+							}
+						}
+
+						&:nth-child(1){
+							& {
+								background-color: #ccc;
+								margin-right: 15px;
+							}
+
+							&:hover {
+								& {
+									background-color: #ddd;
+								}
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+</style>
+
+<style lang="scss">
+	p.is-editor-empty:first-child::before {
+		content: attr(data-empty-text);
+		float: left;
+		color: #aaa;
+		pointer-events: none;
+		height: 0;
 	}
 </style>
