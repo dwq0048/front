@@ -336,6 +336,7 @@ export default {
 			}
 
 			const ContentFixed = this.SetHtml(this.Post.content);
+			this.StorageHashs = this.$refs.HashArea.SubStorageHashs;
 
 			const ImageList = [];
 			const data = {
@@ -345,7 +346,7 @@ export default {
 				meta : {
 					category : 'default',
 					openSetting : this.CheckSetting,
-					hash : {},
+					hash : this.StorageHashs,
 				},
 			}
 
@@ -365,6 +366,8 @@ export default {
 			for(let i=0;i<ImageRequest.length;i++){
 				fs.append('images', ImageRequest[i]);
 			}
+
+			console.log(data);
 
 			this.POST(fs).then((req) => {
 				console.log(req);

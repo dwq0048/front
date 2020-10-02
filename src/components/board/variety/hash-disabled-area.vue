@@ -3,13 +3,14 @@
         <div ref="Hash">
             <i v-for="(item, i) in SubStorageHashs" :key="i" :data-index="i" class="disabled" contenteditable="false" :class="{ active : HashActive == i }">
                 <i><font-awesome-icon :icon="faHashtag" /></i>
-                <span class="text" @keypress="PostPress($event, (HashActive == i) ? 'edit' : false )">{{ item.hash }}</span>
+                <span class="text" @keypress="PostPress($event, (HashActive == i) ? i : undefined )">{{ item.hash }}</span>
                 <button type="button" :title="( HashActive == i ) ? '삭제' : '수정'" @click="HashChange(i)">
                     <i><font-awesome-icon :icon="faPen" /></i>
                     <i><font-awesome-icon :icon="faTimes" /></i>
                 </button>
             </i>
-            <span contenteditable @keypress="PostPress($event, true)" class="enable" placeholder="태그를 입력해주세요"></span>
+            <span contenteditable @keypress="PostPress($event)" class="enable" placeholder="태그를 입력해주세요"></span>
+            <div class="alert" :class="{ active : AlertMessage.use }">{{ AlertMessage.message }}</div>
         </div>
     </div>
 </template>
@@ -30,25 +31,42 @@ export default {
 
             // Variable
             HashActive : undefined,
+            AlertMessage : {
+                use : false,
+                message : ''
+            }
         }
     },
     methods: {
-        PostPress(event, able){
-            if(able){
+        PostPress(event, able='Enter'){
+            if(able != undefined){
                 this.EnterChars(event, able);
                 this.SpecialChars(event, able);
             }
         },
-        EnterChars(event){
+        EnterChars(event, able){
             // enter, spacebar
 			if (event.keyCode === 13 || event.keyCode === 32) {
                 event.preventDefault();
-                const Node = this.$refs.Hash;
-                const Span = Node.querySelector('.enable');
 
-                this.SubStorageHashs.push({ hash : Span.innerText });
-                Span.innerText = '';
-                Span.focus();
+                if(able != 'Enter'){
+                    const Node = this.$refs.Hash;
+                    const ital = Node.querySelector(`.disabled[data-index='${able}'] > span`);
+
+                    const object = { hash : ital.innerText };
+                    if(this.Duplicate(object.hash)){
+                        this.SubStorageHashs.splice(able, 1, object);
+                        this.SpanReset();
+                    }
+                }else{
+                    const Node = this.$refs.Hash;
+                    const Span = Node.querySelector('.enable');
+
+                    if(this.Duplicate(Span.innerText)){
+                        this.SubStorageHashs.push({ hash : Span.innerText });
+                        this.SpanReset();
+                    }
+                }
             }
         },
         SpecialChars(event){
@@ -61,16 +79,71 @@ export default {
 				(event.keyCode >= 123 && event.keyCode <= 126)
 			) {
                 event.preventDefault();
-                console.log('특수문자는 입력에서 제외됩니다.');
+                this.TextAlert('특수문자는 입력에서 제외됩니다.');
 			}
         },
-        HashChange(index){
-            const Node = document.querySelector(`.disabled[data-index='${index}']`);
-            const Span = Node.querySelector('.text');
-            this.HashActive = index;
+        Duplicate(text){
+            let duplicate = false;
+            if(text == '' || text == undefined || !text){
+                this.TextAlert('태그를 입력해 주세요');
+                return false;
+            }
 
-            Span.setAttribute('contenteditable', 'true');
+            this.SubStorageHashs.map(item => {
+                if(item.hash == text){
+                    duplicate = true;
+                }
+            });
+
+            if(duplicate){
+                this.TextAlert('중복된 태그가 있습니다.');
+                return false;
+            }else {
+                return true;
+            }
+
+            this.TextAlert('ㅁ.. 뭔가 잘못됨');
+            return false;
+        },
+        TextAlert(alt){
+            this.AlertMessage.use = true;
+            this.AlertMessage.message = alt;
+            setTimeout(() => {
+                this.AlertMessage.use = false;
+            }, 1000);
+        },
+        SpanReset(){
+            const Node = this.$refs.Hash;
+            const ital = Node.querySelectorAll(`.disabled > span`);
+            const Span = Node.querySelector('.enable');
+
+            ital.forEach((item, index) => {
+                item.innerText = this.SubStorageHashs[index].hash;
+                item.setAttribute('contenteditable', 'false');
+            });
+
+            this.HashActive = undefined;
+            Span.innerText = '';
             Span.focus();
+
+        },
+        HashChange(index){
+            if(this.HashActive != index){            
+                const Node = document.querySelector(`.disabled[data-index='${index}']`);
+                const btn = this.$refs.Hash.querySelectorAll('i.disabled > span');
+                const Span = Node.querySelector('.text');
+                this.HashActive = index;
+
+                btn.forEach((item, index) => {
+                    item.setAttribute('contenteditable', 'false');
+                });
+
+                Span.setAttribute('contenteditable', 'true');
+                Span.focus();
+            }else{
+                this.SubStorageHashs.splice(index, 1);
+                this.SpanReset();
+            }
         }
     },
     mounted(){
@@ -85,7 +158,9 @@ export default {
             const btn = this.$refs.Hash.querySelectorAll('i.disabled > span');
 
             try{
-                btn.forEach((item, index) => { if(item == element){ use++ } });
+                btn.forEach((item, index) => {
+                    if(item == element){ use++ }
+                });
                 if(use <= 0){ Span.focus() };
             } catch(err){
                 Span.focus();
@@ -93,15 +168,21 @@ export default {
         });
 
         window.addEventListener('click', (event) => {
-            let use = 0;
-			const element = document.activeElement;
-            const btn = this.$refs.Hash.querySelectorAll('i.disabled > span');
-
-            try{
-                btn.forEach((item, index) => { if(item == element){ use++ } });
-                if(use <= 0){ this.HashActive = undefined };
-            } catch(err){
-                this.HashActive = undefined;          
+            if(this.HashActive != undefined){
+                let use = 0;
+                const element = document.activeElement;
+                const btn = this.$refs.Hash.querySelectorAll('i.disabled > span');
+                try{
+                    btn.forEach((item, index) => {
+                        item.innerText = this.SubStorageHashs[index].hash;
+                        if(item == element){
+                            use++
+                        }
+                    });
+                    if(use <= 0){ this.HashActive = undefined };
+                } catch(err){
+                    this.HashActive = undefined;          
+                }
             }
         });
 
@@ -145,6 +226,29 @@ export default {
                 cursor: text; outline: none;
                 font-size: #{$font-size - 1};
                 color: #555;
+                position: relative;
+            }
+
+            & > .alert {
+                & {
+                    position: absolute;
+                    left: 0; top: 100%;
+                    display: block;
+                    font-size: #{$font-size};
+                    font-weight: bold;
+                    color: red;
+                    padding-top: 10px;
+                    letter-spacing: 1px;
+                    opacity: 0;
+                    @include transition(.2s all);
+                }
+
+                &.active {
+                    & {
+                        opacity: 1;
+                        @include transition(.2s all);
+                    }
+                }
             }
 
             & > .disabled {
@@ -178,6 +282,7 @@ export default {
                         vertical-align: middle;
                         padding-right: 5px;
                         line-height: 25px;
+                        outline: none;
                     }
                 }
 
@@ -227,7 +332,7 @@ export default {
 
                     & > button {
                         & {
-                            color: #ddd;
+                            color: #fff;
                             @include transition(.2s all);
                         }
 
@@ -242,6 +347,12 @@ export default {
                                 & {
                                     display: block;
                                 }
+                            }
+                        }
+
+                        & > span {
+                            & {
+                                cursor: text;
                             }
                         }
                     }
