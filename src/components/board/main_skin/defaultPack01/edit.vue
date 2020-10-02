@@ -94,11 +94,14 @@
 								</div>
 							</td>
 						</tr>
-						<tr>
+						<tr class="set-tag">
 							<td>태그 설정</td>
 							<td>
 								<div>
-									<hash-area />
+									<hash-area
+										:StorageHashs="StorageHashs"
+										ref="HashArea"
+									/>
 								</div>
 							</td>
 						</tr>
@@ -264,6 +267,7 @@ export default {
 
 			// Storage
 			StorageImages : [],
+			StorageHashs : [],
 
 			// State
 			ImagesActive : {
@@ -656,10 +660,14 @@ export default {
 								}
 
 								&:nth-child(1){
-									width: 100px;
+									width: 15%;
 									vertical-align: top;
 									font-size: #{$font-size + 1};
 									font-weight: bold;
+								}
+
+								&:nth-child(2){
+									width: 85%;
 								}
 							}
 
@@ -680,6 +688,18 @@ export default {
 									}
 								}
 							}
+
+							/*
+							&.set-tag {
+								& > td:nth-child(2){
+									& > div {
+										& {
+											overflow-x: scroll;
+										}
+									}
+								}
+							}
+							*/
 
 							&.view {
 								& > td:nth-child(2) {

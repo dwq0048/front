@@ -228,7 +228,7 @@ export default {
 
         & > div {
             & {
-                width: 100%; height: 35px;
+                width: 100%; height: auto;
                 padding-right: 35px;
                 background-color: #f9f9f9;
                 border: 1px solid #ddd;
