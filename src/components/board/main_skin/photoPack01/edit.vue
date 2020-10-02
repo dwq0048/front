@@ -376,9 +376,9 @@ export default {
 				board : this.info.board,
 				meta : {
 					category : 'default',
-					setting : this.CheckSetting,
+					openSetting : this.CheckSetting,
 					mod : this.RadioMod,
-					tag : this.StorageHashs,
+					hash : this.StorageHashs,
 				},
 			}
 
@@ -392,22 +392,17 @@ export default {
 			const fs = new FormData();
 			fs.append('board', data.board);
 			fs.append('content', data.content);
-			fs.append('meta', data.meta);
+			fs.append('meta', JSON.stringify(data.meta));
 
 			for(let i=0;i<ImageRequest.length;i++){
 				fs.append('images', ImageRequest[i]);
 			}
 
-			console.log(data);
-			console.log(ImageList);
-
-			/*
 			this.POST(fs).then((req) => {
 				console.log(req);
 			}).catch((err) => {
 				console.log(err);
 			});
-			*/
 		}
 	}
 }

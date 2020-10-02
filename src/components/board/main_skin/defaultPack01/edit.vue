@@ -367,8 +367,6 @@ export default {
 				fs.append('images', ImageRequest[i]);
 			}
 
-			console.log(data);
-
 			this.POST(fs).then((req) => {
 				console.log(req);
 			}).catch((err) => {
