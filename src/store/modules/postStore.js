@@ -41,8 +41,34 @@ const Post = {
                     const index = [];
                     let list = req.data.payload;
                     list.map(item => {
+                        // 시간 설정
                         item.state.displayDate = SET_TIME(item.state.date_fix);
+
+                        // 유저 설정
+                        if(typeof item.users[0] == 'object'){
+                            item.users = item.users[0];
+                        }else{
+                            item.users = {
+                                nickname : '익명'
+                            }
+                        }
+
+                        // 썸네일 설정
+                        if(typeof item.meta == 'object'){
+                            if(typeof item.meta.thumbnail != 'object'){
+                                if(typeof item.ImageMeta[0] == 'object'){
+                                    item.meta.thumbnail = 0;
+                                }else{
+                                    item.meta.thumbnail = undefined;
+                                }
+                            }
+                        }else{
+                            item.meta = {
+                                thumbnail : undefined
+                            }
+                        }
                     });
+
 
                     resolve(list);
                 }).catch((err) => {

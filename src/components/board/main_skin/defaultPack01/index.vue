@@ -107,6 +107,8 @@ export default {
 
         this.POST_LIST(data).then((req) => {
             this.list = req;
+            
+            console.log(this.list);
         }).catch((err) => {
             console.log(err);
         })

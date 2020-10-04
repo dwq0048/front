@@ -8,13 +8,19 @@
                 </p>
             </div>
             <div class="title">
-                <p><router-link :to="'/'+info.board+'/post/'+item._id">{{ item.title }}</router-link></p>
+                <router-link :to="'/'+info.board+'/post/'+item._id">
+                    <h1>{{ item.title }}</h1>
+                    <i v-if="(item.meta.thumbnail != undefined) ? true : false">
+                        <font-awesome-icon :icon="faImage" />
+                    </i>
+                    <span>[0]</span>
+                </router-link>
             </div>
             <div class="date">
                 <p>{{ item.state.displayDate }}</p>
             </div>
             <div class="user">
-                <p>{{ item.user.name }}</p>
+                <p>{{ item.users.nickname }}</p>
             </div>
         </li>
     </ul>
@@ -22,6 +28,7 @@
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faImage } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
 
 export default {
@@ -29,7 +36,7 @@ export default {
     props: ['list', 'info', 'page'],
     data(){
         return {
-            faHeartR
+            faHeartR, faImage
         }
     }
 }
@@ -59,7 +66,7 @@ export default {
 
             & > .num {
                 & {
-                    width: 7%;
+                    width: 8%;
                     height: auto;
                     display: table-cell;
                 }
@@ -69,6 +76,7 @@ export default {
                         vertical-align: middle;
                         text-align: center;
                         padding-right: 10px;
+                        color: #999;
                     }
 
                     & > i {
@@ -91,18 +99,48 @@ export default {
 
             & > .title {
                 & {
-                    width: 63%;
+                    width: 62%;
                     height: auto;
                     display: table-cell;   
                 }
 
-                & > p {
-                    & > a {
+                & > a {
+                    & {
                         text-decoration: none;
                         color: $font-color;
-                        font-size: #{$font-size + 2};
+                        font-size: #{$font-size + 1};
                         font-weight: bold;
                         display: block;
+                        line-height: 1;
+                    }
+
+                    & > h1 {
+                        & {
+                            display: inline-block;
+                            vertical-align: middle;
+                            color: #555;
+                            font-size: #{$font-size + 1};
+                            margin: 0; padding: 0;
+                        }
+                    }
+
+                    & > span {
+                        & {
+                            display: inline-block;
+                            vertical-align: middle;
+                            color: $bg-blue;
+                            padding-left: 5px;
+                        }
+                    }
+
+                    & > i {
+                        & {
+                            display: inline-block;
+                            vertical-align: middle;
+                            color: $bg-blue;
+                            padding-left: 5px;
+                            font-size: #{$font-size};
+                        }
                     }
                 }
             }
@@ -111,22 +149,16 @@ export default {
                 width: 10%;
                 height: auto;
                 display: table-cell;
+                color: #999;
+                font-size: #{$font-size};
             }
 
             & > .user {
                 width: 20%;
                 height: auto;
                 display: table-cell;
-            }
-
-            &:hover {
-                & > .title {
-                    & > p {
-                        & > a {
-                            text-decoration: underline;
-                        }
-                    }
-                }
+                color: #999;
+                font-size: #{$font-size};
             }
         }
     }

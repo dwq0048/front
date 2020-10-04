@@ -57,10 +57,7 @@
                     <div>
                         <div class="photo">
                             <router-link :to="'/photo/post/'+item._id">
-                                <img
-                                    :src="`http://127.0.0.1:3000/images/${item.images[item.meta.thumbnail]}?resize=480`"
-                                    v-if="(item.images[item.meta.thumbnail] || item.images[item.meta.thumbnail] != undefined) ? true : false"
-                                />
+                                <img :src="'http://127.0.0.1:3000/images/'+item.images[item.meta.thumbnail.num]+'/thumbnail'">
                             </router-link>
                         </div>
                         <div class="info">
