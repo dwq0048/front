@@ -12,9 +12,37 @@ const routes = [
 		beforeEnter: before()
 	},
 	{
+		path: '/auth',
+		name: 'Auth',
+		component: () => import('@/views/auth/user.vue'),
+		beforeEnter: before(),
+		children: [
+			{
+				name: 'AuthSetting',
+				path: 'setting',
+				component: () => import('@/views/auth/user/setting')
+			}
+		]
+	},
+	{
 		path: '/auth/:id',
 		name: 'Auth',
 		component: () => import('@/views/auth/index.vue'),
+		beforeEnter: before(),
+		watch: {
+			'$route' (to, from) {
+				const toDepth = to.path.split('/').length;
+				const fromDepth = from.path.split('/').length;
+				this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left';
+			}
+		}
+	},
+
+	// 공지사항 게시판
+	{
+		path: '/notice',
+		name: 'Notice',
+		component: () => import('@/views/Notice'),
 		beforeEnter: before(),
 		watch: {
 			'$route' (to, from) {
@@ -25,20 +53,6 @@ const routes = [
 				console.log('asdjsalkdjklsajdlksajdlkj');
 			}
 		}
-	},
-	{
-		path: '/user',
-		name: 'Mypage',
-		component: () => import('@/views/user/mypage.vue'),
-		beforeEnter: before()
-	},
-
-	// 공지사항 게시판
-	{
-		path: '/notice',
-		name: 'Notice',
-		component: () => import('@/views/Notice'),
-		beforeEnter: before()
 	},
 	{
 		path: '/notice/edit',
@@ -78,7 +92,14 @@ const routes = [
 		path: '/photo',
 		name: 'Photo',
 		component: () => import('@/views/photo/index.vue'),
-		beforeEnter: before()
+		beforeEnter: before(),
+		watch: {
+			'$route' (to, from) {
+				const toDepth = to.path.split('/').length;
+				const fromDepth = from.path.split('/').length;
+				this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left';
+			}
+		}
 	},
 	{
 		path: '/photo/edit',

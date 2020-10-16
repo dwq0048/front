@@ -42,5 +42,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    @import './style.scss';
+    @import '../Notice/style.scss';
 </style>

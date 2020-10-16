@@ -1,22 +1,30 @@
 <template>
     <div class="comment">
         <div class="submit" v-if="GET_LOGIN">
-            <div class="plus">
-                <button type="button">
-                    <div>
-                        <i><font-awesome-icon :icon="faPlus" /></i>
-                    </div>
-                </button>
+            <div class="select">
+                <select>
+                    <option value="asc">최신 순서</option>
+                    <option value="desc">오래된 순서</option>
+                </select>
             </div>
-            <div class="form-input">
-                <textarea v-model="reply"></textarea>
-            </div>
-            <div class="upload">
-                <button type="submit" v-on:click="Comment()">
-                    <div>
-                        <i><font-awesome-icon :icon="faCloudUploadAlt" /></i>
+            <div class="chat">
+                <div>
+                    <div class="plus">
+                        <button type="text">
+                            <i><font-awesome-icon :icon="faPlus" /></i>
+                        </button>
                     </div>
-                </button>
+                    <div class="text">
+                        <div>
+                            <textarea v-model="reply"></textarea>
+                        </div>
+                    </div>
+                    <div class="submit" @click="Comment">
+                        <button type="button">
+                            <i><font-awesome-icon :icon="faArrowUp" /></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="contents">
@@ -34,11 +42,13 @@
                             </div>
                             <div class="content">
                                 <div class="title">
-                                    <p class="name">{{ item.user.nickname }}</p>
+                                    <p class="name">이름</p>
                                     <p class="date">{{ item.state.date_fix }}</p>
                                 </div>
                                 <div class="post">
-                                    {{ item.post }}
+                                    <div class="text">
+                                        {{ item.post }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -54,7 +64,7 @@ import io from 'socket.io-client';
 
 import { mapActions, mapGetters } from 'vuex'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPlus, faCloudUploadAlt } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faArrowUp, faSortUp } from '@fortawesome/free-solid-svg-icons'
 
 const socket = io('http://localhost:3000')
 const userStore = 'userStore'
@@ -65,7 +75,7 @@ export default {
     props: ['info'],
     data() {
         return {
-            faPlus, faCloudUploadAlt,
+            faPlus, faArrowUp, faSortUp,
             reply: '',
             page: 0,
             index: false,
@@ -99,6 +109,7 @@ export default {
     created() {
         this.index = this.$route.params.id;
 
+        // 댓글 불러오기
         this.COMMENT_LIST({
             board: this.info.board,
             index: this.index,
@@ -113,6 +124,7 @@ export default {
         }).catch((err) => {
             console.log(err);
         });
+
     }
 }
 </script>
@@ -127,105 +139,140 @@ export default {
 
         & > .submit {
             & {
-                width: 100%;
-                padding: 15px 30px;
                 display: table;
+                width: 100%; height: auto;
+                padding: 10px 15px;
             }
 
-            & > .plus {
+            & > .select {
                 & {
-                    width: 80px;
                     display: table-cell;
-                    vertical-align: bottom;
-                }
-
-                & > button {
-                    & {
-                        border: none;
-                        background: none;
-                        padding: 0;
-                        margin: 0;
-                        font-size: #{$font-size - 2};
-                        color: #999;
-                        line-height: 35px;
-                        cursor: pointer;
-                    }
-
-                    & > div {
-                        & {
-                            width: 35px;
-                            height: 35px;
-                            border: 2px solid #999;
-                            border-radius: 5px;
-                        }
-                    }
-                }
-            }
-
-            & > .upload {
-                & {
-                    width: 100px;
-                    display: table-cell;
-                    vertical-align: bottom;
-                }
-
-                &:after {
-                    content: " ";
-                    display: block;
-                    clear: both;
-                }
-
-                & > button {
-                    & {
-                        border: none;
-                        background: none;
-                        padding: 0;
-                        margin: 0;
-                        font-size: #{$font-size + 2};
-                        line-height: 35px;
-                        cursor: pointer;
-                        float: right;
-                    }
-
-                    & > div {
-                        & {
-                            display: inline-block;
-                            width: 70px;
-                            height: 35px;
-                            border: 2px solid #999;
-                            color: #999;
-                            border-radius: 5px;
-                        }
-                    }
-                }
-            }
-
-            & > .form-input {
-                & {
-                    width: 700px;
-                    height: auto;
-                    display: table-cell;
-                    vertical-align: top;
-                    border: 1px solid #999;
-                    border-radius: 10px;
-                    font-size: 0;
-                }
-
-                & > textarea {
-                    border: none;
-                    background: none;
-                    width: 100%;
-                    height: 35px;
-                    line-height: 25px;
-                    outline: none;
-                    border: none;
-                    padding: 0;
-                    margin: 0;
-                    padding: 5px 10px;
-                    font-size: #{$font-size};
-                    resize: none;
-                    overflow: auto;
+                    width: 150px; height: auto;
                     vertical-align: middle;
+                    padding-right: 15px;
+                }
+
+                & > select {
+                    & {
+                        width: 100%; height: 40px;
+                        font-family: $notoKR-L;
+                        padding: 0 5px;
+                        border: 0; background-color: #f9f9f9;
+                        border: 1px solid #ddd;
+                        border-radius: 3px;
+                        font-size: #{$font-size};
+                        font-weight: bold;
+                        color: #888;
+                        cursor: pointer; outline: none;
+                    }
+                }
+            }
+
+            & > .chat {
+                & {
+                    display: table-cell;
+                    vertical-align: middle;
+                    border: 1px solid #ddd;
+                    border-radius: 7px;
+                    overflow: hidden;
+                }
+
+                & > div {
+                    & {
+                        width: 100%; height: auto;
+                        display: table;
+                    }
+
+                    & > .plus {
+                        & {
+                            display: table-cell;
+                            width: 40px; height: 40px;
+                        }
+
+                        & > button {
+                            & {
+                                display: block;
+                                width: 100%; height: 100%;
+                                border: 0; background: none;
+                                margin: 0; padding: 0;
+                                outline: none; cursor: pointer;
+                                position: relative;
+                            }
+
+                            & > i {
+                                & {
+                                    position: absolute;
+                                    left: 50%; top: 50%;
+                                    color: #888;
+                                    font-size: #{$font-size};
+                                    @include transform(translate(-50%, -50%));
+                                }
+                            }
+                        }
+                    }
+
+                    & > .text {
+                        & {
+                            display: table-cell;
+                            vertical-align: middle;
+                            font-size: #{$font-size}
+                        }
+
+                        & > div {
+                            & {
+                                font-size: #{$font-size};
+                            }
+
+                            & > textarea {
+                                & {
+                                    display: block;
+                                    font-family: $notoKR-L;
+                                    padding: 10px 5px 0px 0px;
+                                    width: 100%; height: 40px;
+                                    border: 0; background: none;
+                                    cursor: text; outline: none;
+                                    resize: none;
+                                    color: #555;
+                                    font-weight: bold;
+                                    letter-spacing: 1.3px;
+                                }
+                                
+                                &::-webkit-scrollbar { display: none; }
+                            }
+                        }
+                    }
+
+                    & > .submit {
+                        & {
+                            display: table-cell;
+                            width: 40px; height: 40px;
+                            vertical-align: middle;
+                        }
+
+                        & > button {
+                            & {
+                                display: block;
+                                position: relative;
+                                width: 100%; height: 100%;
+                                border: 0; background: none;
+                                margin: 0; padding: 0;
+                                outline: none; cursor: pointer;
+                                background-color: $bg-blue;
+                                border-radius: 1px;
+                            }
+
+                            & > i {
+                                & {
+                                    position: absolute;
+                                    left: 50%; top: 50%;
+                                    font-size: #{$font-size};
+                                    color: #fff;
+                                    @include transform(translate(-50%, -50%));
+                                }
+                            }
+                        }
+                    }
+                    
                 }
             }
         }
@@ -234,7 +281,7 @@ export default {
             & {
                 width: 100%;
                 min-height: 100px;
-                background-color: #f1f1f1;   
+                background-color: #f9f9f9;   
             }
 
             & > .no-reply {
@@ -262,16 +309,15 @@ export default {
                         & > div {
                             & > div.profile {
                                 & {
-                                    width: 10%;
+                                    width: 8%;
                                     display: inline-block;
-                                    padding: 20px;
+                                    padding: 15px;
                                 }
 
                                 & > div {
                                     & {
                                         width: 100%;
                                         height: auto;
-                                        border: 2px solid $bg-orange;
                                         border-radius: 50%;
                                         background-color: #333;
                                     }
@@ -286,7 +332,7 @@ export default {
 
                             & > div.content {
                                 & {
-                                    width: 90%;
+                                    width: 92%;
                                     display: inline-block;
                                     vertical-align: top;
                                     padding: 15px 0px;
@@ -298,7 +344,7 @@ export default {
                                     }
 
                                     & > .name {
-                                        font-size: #{$font-size + 2};
+                                        font-size: #{$font-size};
                                         color: #333;
                                         font-weight: bold;
                                     }
@@ -313,8 +359,13 @@ export default {
 
                                 & > .post {
                                     & {
-                                        font-size: #{$font-size + 2};
-                                        padding-top: 10px;
+                                        position: relative;
+                                        display: inline-block;
+                                        font-size: #{$font-size};
+                                        background-color: rgb(202, 234, 247);
+                                        margin-top: 10px;
+                                        border-radius: 10px;
+                                        padding: 5px 15px;
                                     }
                                 }
                             }

@@ -3,12 +3,20 @@ import Store from '../../store'
 const Before = (object) => (to, from, next) => {
 	Store.dispatch('ON_NAVIGATION', false, { root : true });
 	Store.dispatch('userStore/USER_TOKEN').then((req) => {
-		next();
+		console.log(from);
+		next(vm => {
+			console.log(from);
+			vm.prevRoute = from
+		});
 	}).catch((err) => {
-		next();
+		next(vm => {
+			vm.prevRoute = from
+		});
 	});
 
-	next();
+	next(vm => {
+		vm.prevRoute = from
+	});
 }
 
 export default Before

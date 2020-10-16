@@ -118,6 +118,7 @@ const Post = {
                     });
 
                     post.post = Element.outerHTML;
+                    post.count = req.data.count;
                     resolve(post)
                 }).catch((err) => {
                     reject(err)
@@ -159,6 +160,7 @@ const Post = {
 					data: SEND,
 					withCredentials : true
 				}).then((req) => {
+                    console.log(req);
                     const payload = req.data.result;
                     payload.map(item => {
                         item.state.date_fix = SET_TIME(item.state.date_fix);
@@ -169,6 +171,9 @@ const Post = {
 					reject(err)
 				})
 			});
+        },
+        COMMENT_COUNT({commit}, payload){
+
         }
     }
 }

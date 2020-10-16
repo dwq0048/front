@@ -27,7 +27,7 @@
                     <div>
                         <span>{{ post.board.name }}</span>
                         <span>{{ post.state.displayDate }}</span>
-                        <span>조회수 : 0</span>
+                        <span>조회수 : {{ post.count }}</span>
                     </div>
                 </div>
             </div>
@@ -105,9 +105,7 @@ export default {
         'comment' : Comment
     },
     methods : {
-        ...mapActions(postStore, [
-            'POST_VIEW'
-        ]),
+        ...mapActions(postStore, [ 'POST_VIEW' ]),
     },
     created(){
         const data = {
@@ -115,13 +113,12 @@ export default {
             board: this.board
         }
 
+        // 포스트 불러오기
         this.POST_VIEW(data).then((req) => {
             this.post = req;
-
-            console.log(this.post);
         }).catch((err) => {
             console.log(err)
-        })
+        });
     }
 }
 </script>

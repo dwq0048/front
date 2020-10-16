@@ -11,10 +11,10 @@
                             <router-link to="/community">커뮤니티</router-link>
                         </li>
                         <li>
-                            <router-link to="/library">라이브러리</router-link>
+                            <router-link to="/auth">라이브러리</router-link>
                         </li>
                         <li>
-                            <router-link to="/libray/vrchat">VRCHAT API</router-link>
+                            <router-link to="/auth/vrchat">VRCHAT API</router-link>
                         </li>
                     </ul>
                 </div>

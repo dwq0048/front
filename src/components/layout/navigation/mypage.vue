@@ -62,7 +62,7 @@ export default {
             this.USER_LOGOUT();
         },
         Mypage() {
-            this.$router.push({ path : '/user' });
+            this.$router.push({ path : '/auth' });
         }
     }
 

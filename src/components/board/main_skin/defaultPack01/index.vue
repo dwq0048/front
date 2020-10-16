@@ -104,11 +104,9 @@ export default {
             page: this.page,
             view: 15
         }
-
+        
         this.POST_LIST(data).then((req) => {
             this.list = req;
-            
-            console.log(this.list);
         }).catch((err) => {
             console.log(err);
         })

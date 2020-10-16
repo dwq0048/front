@@ -4,12 +4,12 @@
         <layout-header />
 
         <div class="title"></div>
-        <div class="contents">
-            <div class="nav">
-                <menu-skin />
-            </div>
+        <div class="contents" :class="{ hidden : HIDDEN }">
             <div class="board">
                 <widget-skin :info="info" />
+            </div>
+            <div class="nav">
+                <menu-skin />
             </div>
         </div>
     </div>
@@ -25,19 +25,21 @@ import WidgetSkin from '@/components/board/main_skin/defaultPack01'
 import { config } from './config'
 
 export default {
-        name: 'BoardNotice',
-        props: ['option'],
-        components: {
-            'layout-header': Header,
-            'layout-navigation': Navigation,
-            'menu-skin' : MenuSkin,
-            'widget-skin' : WidgetSkin
-        },
-        data(){
-            return {
-                info: config
-            }
+    name: 'BoardNotice',
+    props: ['option'],
+    components: {
+        'layout-header': Header,
+        'layout-navigation': Navigation,
+        'menu-skin' : MenuSkin,
+        'widget-skin' : WidgetSkin
+    },
+    data(){
+        return {
+            info: config,
+
+            HIDDEN : false
         }
+    }
 }
 </script>
 

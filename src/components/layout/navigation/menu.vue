@@ -21,7 +21,7 @@
                                 </div>
                                 <ul>
                                     <li>
-                                        <router-link to="/home">커뮤니티 메인</router-link>
+                                        <router-link to="/community">커뮤니티 홈</router-link>
                                         <router-link to="/notice">공지사항</router-link>
                                     </li>
                                 </ul>

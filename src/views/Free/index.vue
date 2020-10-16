@@ -4,12 +4,12 @@
         <layout-header />
 
         <div class="title"></div>
-        <div class="contents">
-            <div class="nav">
-                <menu-skin />
-            </div>
+        <div class="contents" :class="{ hidden : HIDDEN }">
             <div class="board">
                 <widget-skin :info="info" />
+            </div>
+            <div class="nav">
+                <menu-skin />
             </div>
         </div>
     </div>
@@ -35,12 +35,14 @@ export default {
         },
         data(){
             return {
-                info: config
+                info: config,
+                
+                HIDDEN : false
             }
         }
 }
 </script>
 
 <style lang="scss" scoped>
-    @import './style.scss';
+    @import '../Notice/style.scss';
 </style>

@@ -3,6 +3,9 @@
         <div class="nav" :class="{ active: ACTIVE.wild  }">
             <div class="title">
                 <h1>{{ title }}</h1>
+                <router-link :to="`/${info.board}/edit`" class="write" title="글쓰기">
+                    <i><font-awesome-icon :icon="faEdit" /></i>
+                </router-link>
             </div>
             <div class="menu">
                 <ul>
@@ -28,28 +31,6 @@
                 </ul>
             </div>
         </div>
-        
-        <!--
-        <div class="tag">
-            <ul>
-                <li>
-                    <button type="button">
-                        <span>게임</span>
-                    </button>
-                </li>
-                <li>
-                    <button type="button">
-                        <span>Vrchat</span>
-                    </button>
-                </li>
-                <li>
-                    <button type="button">
-                        <span>오큘러스</span>
-                    </button>
-                </li>
-            </ul>
-        </div>
-        -->
 
         <div class="post">
             <ul class="grid" :class="{ active: ACTIVE.grid, hidden : HIDDEN }">
@@ -66,7 +47,7 @@
                         <div class="info">
                             <div>
                                 <div class="comment">
-                                    <router-link :to="'/photo/post'+item._id" v-html="item.post"></router-link>
+                                    <router-link :to="'/photo/post'+item._id" v-html="item.title"></router-link>
                                 </div>
                                 <div class="profile">
                                     <div class="image">
@@ -75,7 +56,7 @@
                                         </div>
                                     </div>
                                     <div class="name">
-                                        <p>{{ item.users[0].nickname }}</p>
+                                        <p>{{ item.users.nickname }}</p>
                                     </div>
                                 </div>
                                 <div class="status">
@@ -96,7 +77,7 @@ import { mapActions, mapGetters } from 'vuex'
 
 import { SET_BOARD, SET_TIME } from '@/store/helper/'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faThLarge, faThList, faTable, faTh, faCaretSquareDown } from '@fortawesome/free-solid-svg-icons'
+import { faThLarge, faThList, faTable, faTh, faCaretSquareDown, faEdit } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as faHeartR, faCommentAlt } from '@fortawesome/free-regular-svg-icons'
 
 const postStore = 'postStore'
@@ -115,13 +96,15 @@ export default {
             },
             HIDDEN: true,
 
+            // Icon
             faTable,
             faTh,
             faThLarge,
             faThList,
             faHeartR,
             faCommentAlt,
-            faCaretSquareDown
+            faCaretSquareDown,
+            faEdit,
         }
     },
     methods : {
@@ -183,10 +166,41 @@ export default {
             & > .title {
                 & {
                     padding: 15px 30px;
+                    position: relative;
                 }
 
                 & > h1 {
                     font-size: #{$font-size + 6};
+                }
+
+                & > .write {
+                    & {
+                        display: inline-block;
+                        border: none;
+                        background: none;
+                        margin: 0; padding: 0;
+                        outline: none;
+                        cursor: pointer;
+                        position: absolute;
+                        right: 0; top: 50%;
+                        padding: 5px 30px;
+                        @include transition(.2s all);
+                        @include transform(scale(1) translate(0, -50%));
+                    }
+
+                    & > i {
+                        & {
+                            font-size: #{$font-size + 4};
+                            color: $bg-blue;
+                        }
+                    }
+
+                    &:hover {
+                        & {
+                            @include transition(.2s all);
+                            @include transform(scale(1.05) translate(0, -50%));
+                        }
+                    }
                 }
             }
 
@@ -428,10 +442,13 @@ export default {
                                             font-weight: bold;
                                             color: #555;
                                             overflow: hidden;
+                                            height: 25px;
                                             text-overflow:ellipsis;
-                                            white-space:nowrap;
+                                            white-space: nowrap;
                                             display: block;
                                             text-decoration: none;
+                                            -webkit-box-orient:vertical;
+                                            -webkit-line-clamp:3
                                         }
                                     }
                                 }
