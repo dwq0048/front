@@ -18,6 +18,16 @@ const routes = [
 		beforeEnter: before(),
 		children: [
 			{
+				name: 'AuthHome',
+				path: 'home',
+				component: () => import ('@/views/auth/user/home')
+			},
+			{
+				name: 'AuthPost',
+				path: 'post',
+				component: () => import ('@/views/auth/user/post')
+			},
+			{
 				name: 'AuthSetting',
 				path: 'setting',
 				component: () => import('@/views/auth/user/setting')

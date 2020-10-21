@@ -18,14 +18,14 @@
                                     <i><font-awesome-icon :icon="faHeart" /></i>
                                     <span>좋아요</span>
                                 </span>
-                                <span class="cog" title="설정">
+                                <span class="cog" title="설정" @click="goRouter('/auth/setting')">
                                     <i><font-awesome-icon :icon="faCog" /></i>
                                     <span>설정</span>
                                 </span>
                             </p>
                         </div>
                         <div class="button">
-                            <button type="button" class="page" v-on:click="Mypage">라이브러리 / Vrchat API</button>
+                            <button type="button" class="page" @click="goRouter('/auth')">라이브러리 / Vrchat API</button>
 
                             <button type="button" v-on:click="LOGOUT">로그아웃</button>
                         </div>
@@ -61,8 +61,8 @@ export default {
         LOGOUT() {
             this.USER_LOGOUT();
         },
-        Mypage() {
-            this.$router.push({ path : '/auth' });
+        goRouter(path) {
+            this.$router.push({ path : path });
         }
     }
 
