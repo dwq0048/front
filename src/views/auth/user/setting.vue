@@ -6,8 +6,8 @@
         <div class="wrap">
             <div class="title">
                 <h1>
-                    <span>프로필 수정</span>
                     <i><font-awesome-icon :icon="faAddressCard" /></i>
+                    <span>프로필 수정</span>
                 </h1>
             </div>
 
@@ -80,12 +80,12 @@ import { faPen, faFeatherAlt, faPalette, faChartBar, } from '@fortawesome/free-s
 import { faAddressCard } from '@fortawesome/free-regular-svg-icons'
 
 import Introduce from '@/views/auth/user/setting/introduce'
+import IntroduceEdit from '@/views/auth/user/setting/introduce.edit'
 import Open from '@/views/auth/user/setting/open'
 import Notice from '@/views/auth/user/setting/notice'
 import Secret from '@/views/auth/user/setting/secret'
 
 import Side from '@/components/widget/auth/user/nav/side'
-import IntroduceEdit from '@/components/widget/auth/user/setting/introduce.edit'
 
 export default {
     name: 'AuthSetting',
@@ -181,7 +181,7 @@ export default {
                         & {
                             display: inline-block;
                             font-size: #{$font-size + 4};
-                            padding-left: 10px;
+                            padding-right: 10px;
                         }
                     }
                 }

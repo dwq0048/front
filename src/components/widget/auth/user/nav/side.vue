@@ -51,7 +51,7 @@ export default {
     .menu {
         & {
             display: table-cell;
-            width: 250px; height: auto;
+            width: 300px; height: auto;
             vertical-align: top;
             padding: 5px 10px;
         }

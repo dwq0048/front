@@ -33,7 +33,105 @@
             </div>
         </div>
         <div class="wrap">
+            <div class="navigation">
+                <div>
+                    <div class="options">
+                        <div class="last_date">
+                            <h1>마지막 로그인</h1>
+                            <span>하루 전</span>
+                        </div>
+                    </div>
+                    <div class="menu">
+                        <ul>
+                            <li>
+                                <router-link to="#">
+                                    <div>
+                                        <h1>게시글</h1>
+                                        <span>[0]</span>
+                                    </div>
+                                </router-link>
+                            </li>
+                            <li>
+                                <router-link to="#">
+                                    <div>
+                                        <h1>이미지</h1>
+                                        <span>[0]</span>
+                                    </div>
+                                </router-link>
+                            </li>
+                            <li>
+                                <router-link to="#">
+                                    <div>
+                                        <h1>댓글</h1>
+                                        <span>[0]</span>
+                                    </div>
+                                </router-link>
+                            </li>
+                            <li class="line"></li>
+                            <li>
+                                <router-link to="#">
+                                    <div>
+                                        <h1>해시 태그</h1>
+                                        <span>[0]</span>
+                                    </div>
+                                </router-link>
+                            </li>
+                            <li>
+                                <router-link to="#">
+                                    <div>
+                                        <h1>방명록</h1>
+                                        <span>[0]</span>
+                                    </div>
+                                </router-link>
+                            </li>
+                            <li class="line"></li>
+                            <li>
+                                <router-link to="#">
+                                    <div>
+                                        <h1>통계</h1>
+                                        <span>[0]</span>
+                                    </div>
+                                </router-link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <div class="post">
+                <div class="hash">
+                    <ul>
+                        <li>
+                            <router-link to="#">
+                                <i><font-awesome-icon :icon="faHashtag" /></i>
+                                <span>이미지</span>
+                            </router-link>
+                        </li>
+                        <li>
+                            <router-link to="#">
+                                <i><font-awesome-icon :icon="faHashtag" /></i>
+                                <span>자유</span>
+                            </router-link>
+                        </li>
+                        <li>
+                            <router-link to="#">
+                                <i><font-awesome-icon :icon="faHashtag" /></i>
+                                <span>게임</span>
+                            </router-link>
+                        </li>
+                        <li>
+                            <router-link to="#">
+                                <i><font-awesome-icon :icon="faHashtag" /></i>
+                                <span>3D</span>
+                            </router-link>
+                        </li>
+                        <li>
+                            <router-link to="#">
+                                <i><font-awesome-icon :icon="faHashtag" /></i>
+                                <span>일기</span>
+                            </router-link>
+                        </li>
+                    </ul>
+                </div>
                 <div class="art">
                     <div class="title">
                         <h1>
@@ -48,7 +146,6 @@
                         </div>
                     </div>
                     <ul>
-                        <li><div></div></li>
                         <li><div></div></li>
                         <li><div></div></li>
                         <li><div></div></li>
@@ -95,7 +192,7 @@
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faLockOpen, faLock, faPlus, faHeart as faHeartS } from '@fortawesome/free-solid-svg-icons'
+import { faLockOpen, faLock, faPlus, faHeart as faHeartS, faHashtag } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as faHeartR, faThumbsUp } from '@fortawesome/free-regular-svg-icons'
 
 export default {
@@ -103,7 +200,7 @@ export default {
     data(){
         return {
             // Icon
-            faLockOpen, faLock, faPlus, faHeartS,
+            faLockOpen, faLock, faPlus, faHeartS, faHashtag, 
             faHeartR, faThumbsUp,
 
             list : [{},{},{},{},{}]
@@ -248,12 +345,138 @@ export default {
                 display: table;
             }
 
+            & > .navigation {
+                & {
+                    display: table-cell;
+                    vertical-align: top;
+                    width: 300px; height: auto;
+                    padding: 15px 15px;
+                }
+
+                & > div {
+                    & {
+                        display: block;
+                        width: 100%; height: auto;
+                        border-radius: 3px;
+                        padding: 15px;
+                        background-color: #f9f9f9;
+                        border: 1px solid #eee;
+                        @include box-shadow(2px 2px 5px rgba(0,0,0,0.1));
+                    }
+
+                    & > .options {
+                        & {
+                            width: 100%; height: auto;
+                        }
+
+                        & > .last_date {
+                            & {
+                                width: 100%; height: auto;
+                                padding: 0 5px 15px 5px;
+                            }
+
+                            & > h1 {
+                                & {
+                                    display: block;
+                                    font-size: #{$font-size + 2};
+                                    color: #555;
+                                    font-weight: bold;
+                                    line-height: 1;
+                                    padding-bottom: 10px;
+                                }
+                            }
+
+                            & > span {
+                                & {
+                                    display: block;
+                                    font-size: #{$font-size};
+                                    color: #aaa;
+                                    line-height: 1;
+                                }
+                            }
+                        }
+                    }
+
+                    & > .menu {
+                        & {
+                            width: 100%; height: auto;
+                        }
+
+                        & > ul {
+                            & {
+                                width: 100%; height: auto;
+                                list-style: none;
+                                font-size: 0;
+                            }
+
+                            & > li {
+                                & {
+                                    display: block;
+                                    width: 100%; height: auto;
+                                }
+
+                                &.line {
+                                    & {
+                                        width: 100%; height: 0;
+                                        border-bottom: 1px solid #ddd;
+                                        margin: 10px 0;
+                                    }
+                                }
+
+                                & > a {
+                                    & {
+                                        display: table;
+                                        width: 100%; height: auto;
+                                        text-decoration: none;
+                                        cursor: pointer;
+                                        color: #555;
+                                    }
+
+                                    & > div {
+                                        & {
+                                            display: table-cell;
+                                            vertical-align: middle;
+                                            width: 100%; height: auto;
+                                            font-size: 0;
+                                            padding: 10px 5px;
+                                            line-height: 1;
+                                        }
+
+                                        & > h1 {
+                                            & {
+                                                display: inline-block;
+                                                vertical-align: middle;
+                                                font-size: #{$font-size + 2};
+                                                font-weight: bold;
+                                                line-height: 1;
+                                            }
+                                        }
+
+                                        & > span {
+                                            & {
+                                                display: inline-block;
+                                                vertical-align: middle;
+                                                font-size: #{$font-size};
+                                                color: $bg-blue;
+                                                line-height: 1;
+                                                padding-left: 10px;
+                                                letter-spacing: 1px;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             & > .post {
                 & {
                     display: table-cell;
                     vertical-align: top;
                     width: auto;; height: auto;
-                    padding: 15px 20px;
+                    padding: 15px 5px;
                     font-size: 0;
                 }
 
@@ -337,6 +560,69 @@ export default {
                     }
                 }
 
+                & > .hash {
+                    & {
+                        width: 100%; height: auto;
+                        padding: 0 15px;
+                    }
+
+                    & > ul {
+                        & {
+                            display: block;
+                            list-style: none;
+                            font-size: 0;
+                            white-space: nowrap;
+                            overflow: hidden;
+                        }
+
+                        & > li {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                padding-right: 10px;
+                            }
+
+                            & > a {
+                                & {
+                                    display: block;
+                                    text-decoration: none;
+                                    font-size: #{$font-size + 2};
+                                    color: $bg-blue;
+                                }
+
+                                & > i {
+                                    & {
+                                        display: inline-block;
+                                        vertical-align: middle;
+                                        font-size: #{$font-size};
+                                        padding-right: 5px;
+                                    }
+                                }
+
+                                & > span {
+                                    & {
+                                        display: inline-block;
+                                        vertical-align: middle;
+                                        font-weight: bold;
+                                    }
+                                }
+
+                                &:hover {
+                                    & {
+                                        text-decoration: underline;
+                                    }
+
+                                    & > span {
+                                        & {
+                                            text-decoration: underline;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 & > .art {
                     & > ul {
                         & {
@@ -350,8 +636,8 @@ export default {
                         & > li {
                             & {
                                 display: inline-block;
-                                width: calc(100% / 7); height: auto;
-                                padding: 10px;
+                                width: calc(100% / 6); height: auto;
+                                padding: 5px;
                             }
 
                             & > div {

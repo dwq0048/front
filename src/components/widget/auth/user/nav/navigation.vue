@@ -21,22 +21,22 @@
             </router-link>
         </li>
         <li>
-            <router-link to="/auth" title="위시 리스트">
-                <div class="icon">
-                    <i><font-awesome-icon :icon="faHeart" /></i>
-                </div>
-                <div class="description">
-                    <span>위시 리스트</span>
-                </div>
-            </router-link>
-        </li>
-        <li>
             <router-link to="/auth" title="알림">
                 <div class="icon">
                     <i><font-awesome-icon :icon="faBell" /></i>
                 </div>
                 <div class="description">
                     <span>알림</span>
+                </div>
+            </router-link>
+        </li>
+        <li>
+            <router-link to="/auth" title="좋아요">
+                <div class="icon">
+                    <i><font-awesome-icon :icon="faHeart" /></i>
+                </div>
+                <div class="description">
+                    <span>좋아요</span>
                 </div>
             </router-link>
         </li>

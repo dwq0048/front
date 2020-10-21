@@ -6,8 +6,8 @@
 
             <div class="title">
                 <h1>
-                    <span>내 게시글</span>
                     <i><font-awesome-icon :icon="faUserEdit" /></i>
+                    <span>내 게시글</span>
                 </h1>
             </div>
 
@@ -151,7 +151,7 @@ export default {
                         & {
                             display: inline-block;
                             font-size: #{$font-size + 4};
-                            padding-left: 10px;
+                            padding-right: 10px;
                         }
                     }
                 }

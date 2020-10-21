@@ -40,7 +40,7 @@ export default {
                     display: inline-block;
                     vertical-align: top;
                     width: 20%; height: auto;
-                    padding: 10px;
+                    padding: 5px;
                 }
 
                 & > div {
