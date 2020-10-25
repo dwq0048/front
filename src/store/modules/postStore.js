@@ -87,10 +87,10 @@ const Post = {
                     let post = req.data.payload;
                     post.state.displayDate = SET_TIME(post.state.date_fix);
                     post.board = { original: post.board, name: SET_BOARD.category(post.board) }
-        
+                    
+                    // 이미지 골라내기 시작
                     const Element = document.createElement('div');
                     Element.innerHTML = post.post;
-
                     const DataElement = Element.querySelectorAll(`[data-index]`);
                     DataElement.forEach(item => {
                         const index = item.getAttribute("data-index");
@@ -116,8 +116,22 @@ const Post = {
                         item.setAttribute("src", `http://127.0.0.1:3000/images/${post.ImageMeta[index]._id + result}`);
                         item.setAttribute("style", `max-width: ${post.ImageMeta[index].meta.width}px`);
                     });
-
                     post.post = Element.outerHTML;
+                    // 이미지 골라내기 끝
+                    
+                    // 유저 정보
+                    if(typeof post.users == 'object'){
+                        try {
+                            post.users = post.users[0];
+                        }catch(e){
+                            post.users = {
+                                nickname : '익명',
+                                type : undefined
+                            }
+                        }
+                    }
+                    // 유저 정보
+
                     post.count = req.data.count;
                     resolve(post)
                 }).catch((err) => {

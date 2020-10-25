@@ -8,14 +8,12 @@
                         <i><font-awesome-icon :icon="faList" /></i>
                         <span>목록으로</span>
                     </button>
-                    <div class="arrow">
-                        <button type="button" class="prev" title="이전 글">
-                            <i><font-awesome-icon :icon="faCaretLeft" /></i>
-                        </button>
-                        <button type="button" class="next" title="다음 글">
-                            <i><font-awesome-icon :icon="faCaretRight" /></i>
-                        </button>
-                    </div> 
+
+                    <div class="title">
+                        <h1 v-if="post">{{ post.title }}</h1>
+                    </div>
+
+                    <setting-pop />
                 </div>
             </div>
             <!-- Title End -->
@@ -24,43 +22,29 @@
                     <h1>{{ post.title }}</h1>
                 </div>
                 <div class="display" v-if="post">
-                    <div>
+                    <div class="left">
                         <span>{{ post.board.name }}</span>
                         <span>{{ post.state.displayDate }}</span>
+                        <span>{{ post.users.nickname }}</span>
+                        <!--
+                        -->
+                    </div>
+                    <div class="right">
                         <span>조회수 : {{ post.count }}</span>
+                        <span>댓글수 : {{ 0 }}</span>
+                        <span>좋아요 : {{ 0 }}</span>
                     </div>
                 </div>
+                <div class="line"><span></span></div>
             </div>
             <div class="post" v-if="post">
                 <div v-html="post.post" class="editor-post"></div>
             </div>
 
-            <div class="card">
-                <div>
-                    <div class="profile">
-                        <div class="image">
-                            <div></div>
-                        </div>
-                        <div class="intro">
-                            <div class="name">
-                                이름
-                            </div>
-                            <div class="decoration">
-                                프로필 설명이 없습니다.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="sim">
-                        <button type="button" title="좋아요">
-                            <i><font-awesome-icon :icon="faHeartR" /></i>
-                            <span>
-                                <i><font-awesome-icon :icon="faPlus" /></i>
-                                <span>0</span>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <!-- Card -->
+            <fixed-card />
+            <!-- Card End -->
+
             <div class="setting">
                 <div class="default_btn">
                     <button type="button">공유하기</button>
@@ -79,13 +63,14 @@
 import { mapActions, mapGetters } from 'vuex'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
-import { faHeart as faHeartS, faList, faCaretLeft, faCaretRight, faShareSquare, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faList, faCaretLeft, faCaretRight, faShareSquare, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import { SET_TIME } from '@/store/helper'
 import { SET_BOARD } from '@/store/helper'
 
+import SettingPop from '@/components/board/variety/setting-edit'
 import Comment from '@/components/board/comment_skin/chatPack01'
+import FixedCard from './type/fix_card'
 
 const postStore = 'postStore'
 
@@ -98,11 +83,13 @@ export default {
             board: this.info.board,
             post: false,
 
-            faHeartR, faHeartS, faList, faCaretLeft,  faCaretRight, faShareSquare, faPlus
+            faList, faCaretLeft, faCaretRight, faShareSquare, faPlus,
         }
     },
     components: {
-        'comment' : Comment
+        'comment' : Comment,
+        'setting-pop' : SettingPop,
+        'fixed-card' : FixedCard,
     },
     methods : {
         ...mapActions(postStore, [ 'POST_VIEW' ]),
@@ -146,20 +133,42 @@ export default {
 
                 & > div {
                     & {
-                        width: 100%;
-                        height: 100%;
                         position: relative;
+                        width: 100%; height: 100%;
+                    }
+
+                    & > .title {
+                        & {
+                            position: absolute;
+                            display: table;
+                            width: 100%; height: 100%;
+                            left: 0; top: 0;
+                            z-index: 1;
+                        }
+
+                        & > h1 {
+                            & {
+                                display: table-cell;
+                                vertical-align: middle;
+                                text-align: center;
+                                font-size: #{$font-size - 2};
+                                letter-spacing: 1.5px;
+                                line-height: 1;
+                                color: #555;
+                            }
+                        }
                     }
 
                     & > button {
                         & {
-                            border: 0;
-                            background: none;
-                            outline: none;
-                            font-size: #{$font-size};
+                            display: inline-block;
+                            vertical-align: middle;
+                            border: 0; background: none;
                             padding:0; margin: 0;
+                            outline: none; cursor: pointer;
+                            font-size: #{$font-size};
                             color: #fff;
-                            cursor: pointer;
+                            z-index: 10;
                         }
 
                         & > i {
@@ -208,41 +217,6 @@ export default {
                         }
                     }
 
-                    & > .arrow {
-                        & {
-                            position: absolute;
-                            right: 0; top: 0;
-                        }
-
-                        & > button {
-                            & {
-                                display: inline-block;
-                                width: 45px; height: auto;
-                                border: 0; background: none;
-                                margin: 0; padding: 0;
-                                outline: none; cursor: pointer;
-                                font-size: #{$font-size + 2};
-                                color: #aaa;
-                                position: relative;
-                                border-left: 1px solid #ddd;
-                            }
-
-                            &:after {
-                                content: " ";
-                                display: block;
-                                padding-bottom: 100%;
-                            }
-
-                            & > i {
-                                & {
-                                    display: block;
-                                    position: absolute;
-                                    left: 50%; top: 50%;
-                                    @include transform(translate(-50%, -50%));
-                                }
-                            }
-                        }
-                    }
                 }
             }
             
@@ -259,14 +233,18 @@ export default {
 
                 & > .display {
                     & {
-                        display: inline-block;
-                        text-align: left;
+                        display: table;
+                        width: 100%; height: auto;
                         padding: 0px 45px 15px 45px;
+                        text-align: right;
                     }
 
-                    & > div {
+                    & > .left {
                         & {
+                            display: table-cell;
+                            vertical-align: middle;
                             font-size: 0;
+                            text-align: left;
                         }
 
                         & > span {
@@ -284,6 +262,45 @@ export default {
                             }
                         }
                     }
+
+                    & > .right {
+                        & {
+                            display: table-cell;
+                            vertical-align: middle;
+                            font-size: 0;
+                            text-align: right;
+                        }
+
+                        & > span {
+                            & {
+                                display: inline-block;
+                                font-size: #{$font-size - 2};
+                                color: #aaa;
+                                padding-left: 30px;
+                            }
+
+                            &:nth-child(1){
+                                & {
+                                    padding-left: 0;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                & > .line {
+                    & {
+                        width: 100%; height: 0;
+                        padding: 10px 15px;
+                    }
+
+                    & > span {
+                        & {
+                            display: block;
+                            width: 100%; height: 100%;
+                            border-bottom: 1px solid #eee;
+                        }
+                    }
                 }
             }
 
@@ -291,133 +308,6 @@ export default {
                 & {
                     padding: 15px 45px;
                     min-height: 425px;
-                }
-            }
-
-            & > .card {
-                & {
-                    width: 100%; height: auto;
-                    position: relative;
-                    padding: 30px;
-                    border: 1px solid #f1f1f1;
-                }
-
-                & > div {
-                    & > .profile {
-                        & {
-                            width: 70%; height: auto;
-                            font-size: 0;
-                            display: inline-block;
-                            vertical-align: middle;
-                        }
-
-                        & > .image {
-                            & {
-                                width: 50px; height: auto;
-                                display: table-cell;
-                                vertical-align: middle;
-                            }
-
-                            & > div {
-                                & {
-                                    width: 100%; height: auto;
-                                    border-radius: 50%;
-                                    background-color: #ccc;
-                                    overflow: hidden;
-                                }
-
-                                &:after {
-                                    content: " ";
-                                    display: block;
-                                    padding-bottom: 100%;
-                                }
-                            }
-                        }
-
-                        & > .intro {
-                            & {
-                                display: table-cell;
-                                vertical-align: middle;
-                                padding-left: 15px;
-                            }
-
-                            & > div {
-                                & {
-                                    font-size: #{$font-size};
-                                    color: #aaa;
-                                }
-
-                                &.name {
-                                    & {
-                                        font-weight: bold;
-                                        display: block;
-                                    }
-                                }
-
-                                &.decoration {
-                                    & {
-                                        display: block;
-                                        padding-top: 3px;
-                                        font-size: #{$font-size - 2};
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    & > .sim {
-                        & {
-                            width: 30%; height: auto;
-                            display: inline-block;
-                            text-align: right;
-                            vertical-align: middle;
-                        }
-
-                        & > button{
-                            & {
-                                position: relative;
-                                display: inline-block;
-                                width: auto; height: auto;
-                                border: 0; background: none;
-                                margin: 0; padding: 0;
-                                outline: none; cursor: pointer;
-                                padding: 0 15px;
-                            }
-
-                            & > i {
-                                & {
-                                    left: 50%; top: 50%;
-                                    font-size: #{$font-size + 12};
-                                    color: #bbb;
-                                    display: inline-block;
-                                    vertical-align: middle;
-                                }
-                            }
-
-                            & > span {
-                                & {
-                                    display: inline-block;
-                                    vertical-align: middle;
-                                }
-                                & > i {
-                                    & {
-                                        font-size: #{$font-size - 2};
-                                        color: #bbb;
-                                        padding: 0 5px;
-                                        vertical-align: middle;
-                                    }
-                                }
-                                & > span {
-                                    & {
-                                        font-size: #{$font-size + 4};
-                                        color: #bbb;
-                                        font-weight: bold;
-                                        vertical-align: middle;
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             }
 

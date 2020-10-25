@@ -25,19 +25,19 @@ import WidgetSkin from '@/components/board/main_skin/defaultPack01/post'
 import { config } from './config'
 
 export default {
-        name: 'boardNoticePost',
-        props: ['option'],
-        components: {
-            'layout-header': Header,
-            'layout-navigation': Navigation,
-            'menu-skin' : MenuSkin,
-            'widget-skin' : WidgetSkin
-        },
-        data(){
-            return {
-                info: config
-            }
+    name: 'boardNoticePost',
+    props: ['option'],
+    components: {
+        'layout-header': Header,
+        'layout-navigation': Navigation,
+        'menu-skin' : MenuSkin,
+        'widget-skin' : WidgetSkin
+    },
+    data(){
+        return {
+            info: config
         }
+    }
 }
 </script>
 

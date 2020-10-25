@@ -10,7 +10,6 @@
         max-width: $wrap;
         height: auto;
         margin: -100px auto;
-        white-space: nowrap;
         text-align: center;
         @include transition(.2s all);
     }

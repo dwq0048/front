@@ -21,11 +21,11 @@
 
         <div class="title"></div>
         <div class="contents">
-            <div class="nav">
-                <menu-skin />
-            </div>
             <div class="board">
                 <widget-skin :info="info" />
+            </div>
+            <div class="nav">
+                <menu-skin />
             </div>
         </div>
     </div>
