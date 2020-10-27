@@ -15,35 +15,39 @@
                 </div>
             </div>
             <div class="sim">
-                <button type="button" title="댓글" class="comment">
-                    <div>
-                        <i><font-awesome-icon :icon="faCommentDots" /></i>
-                    </div>
-                </button>
-                <button type="button" class="love" title="좋아요" @click="LOVE_ME">
-                    <div :class="{ active : Love }">
-                        <i class="fill"><font-awesome-icon :icon="faHeartS" /></i>
-                        <i class="empty"><font-awesome-icon :icon="faHeartR" /></i>
-                        <div class="fly">
-                            <i><font-awesome-icon :icon="faHeartS" /></i>
-                            <i><font-awesome-icon :icon="faHeartS" /></i>
-                            <i><font-awesome-icon :icon="faHeartS" /></i>
+                <div>
+                    <button type="button" class="love" title="좋아요" @click="LOVE_ME">
+                        <div :class="{ active : Love }">
+                            <i class="fill"><font-awesome-icon :icon="faHeartS" /></i>
+                            <i class="empty"><font-awesome-icon :icon="faHeartR" /></i>
+                            <div class="fly">
+                                <i><font-awesome-icon :icon="faHeartS" /></i>
+                                <i><font-awesome-icon :icon="faHeartS" /></i>
+                                <i><font-awesome-icon :icon="faHeartS" /></i>
+                            </div>
                         </div>
-                    </div>
-                    <span>
-                        <i><font-awesome-icon :icon="faPlus" /></i>
-                        <span :class="{ active : Love }">
-                            <span class="current">{{ LoveCount }}</span>
-                            <span class="fake">{{ LoveFake }}</span>
+                        <span>
+                            <i><font-awesome-icon :icon="faPlus" /></i>
+                            <span :class="{ active : Love }">
+                                <span class="current">{{ LoveCount }}</span>
+                                <span class="fake">{{ LoveFake }}</span>
+                            </span>
                         </span>
-                    </span>
-                </button>
+                    </button>
+                    <button type="button" title="댓글" class="comment">
+                        <div>
+                            <i><font-awesome-icon :icon="faCommentDots" /></i>
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
     </div>    
 </template>
 
 <script>
+import { SET_SCRIPT } from '@/store/helper/index'
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faHeart as faHeartS, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as faHeartR, faCommentDots } from '@fortawesome/free-regular-svg-icons'
@@ -72,6 +76,8 @@ export default {
         this.LoveFake = Number( this.LoveCount + 1 );
     },
     mounted(){
+        SET_SCRIPT.optimizedResize();
+
         const Padding = () => {
             const _this = this;
             const BottomMenu = _this.$refs.BottomMenu;
@@ -106,9 +112,15 @@ export default {
         }
 
         Padding();
+        EventMenu();
+        
         window.addEventListener('scroll', (data) => {
             EventMenu();
         });
+
+        window.addEventListener("optimizedResize", function() {
+			EventMenu();
+		});
     }
 }
 </script>
@@ -145,6 +157,7 @@ export default {
                         width: 50px; height: auto;
                         display: table-cell;
                         vertical-align: middle;
+                        @include transition(.2s all);
                     }
 
                     & > div {
@@ -202,145 +215,135 @@ export default {
                     vertical-align: middle;
                 }
 
-                & > .love {
+                & > div {
                     & {
-                        position: relative;
-                        display: inline-block;
-                        width: auto; height: auto;
-                        border: 0; background: none;
-                        margin: 0; padding: 0;
-                        outline: none; cursor: pointer;
-                        padding: 0 15px;
+                        display: table;
+                        width: 100%; height: auto;
                     }
 
-
-                    & > div {
+                    & > .love {
                         & {
-                            display: inline-block;
                             position: relative;
+                            display: table-cell;
+                            vertical-align: middle;
+                            width: auto; height: auto;
+                            border: 0; background: none;
+                            outline: none; cursor: pointer;
+                            margin: 0; padding: 0;
+                            padding: 0 15px;
                         }
 
-                        & > i {
-                            & {
-                                font-size: #{$font-size + 12};
-                                color: #bbb;
-                                display: inline-block;
-                                vertical-align: middle;
-                                @include transition(.2s all);
-                            }
-
-                            &.empty {
-                                & {
-                                    opacity: 1;
-                                }
-                            }
-
-                            &.fill {
-                                & {
-                                    opacity: 0;
-                                    color: red;
-                                    position: absolute;
-                                    left: 50%; top: 50%;
-                                    @include transform(translate(-50%, -50%));
-                                }
-                            }
-                        }
 
                         & > div {
-                            & > i{
-                                & {
-                                    visibility: hidden;
-                                    position: absolute;
-                                    color: red;
-                                    @include transform(scale(1));
-                                }
-
-                                &:nth-child(1) {
-                                    & {
-                                        left: 5px; top: 0;
-                                        font-size: #{$font-size};
-                                    }
-                                }
-
-                                &:nth-child(2) {
-                                    & {
-                                        left: 5px; top: 5px;
-                                        font-size: #{$font-size + 12};
-                                    }
-                                }
-
-                                &:nth-child(3) {
-                                    & {
-                                        left: 0px; top: 0px;
-                                        font-size: #{$font-size + 8};
-                                    }
-                                }
-                            }
-                        }
-
-                        &.active {
                             & {
-                                @include transition(.2s all);
-                            }
-                        
-                            & > .empty {
-                                & {
-                                    opacity: 0;
-                                }
+                                display: inline-block;
+                                position: relative;
                             }
 
-                            & > .fill {
+                            & > i {
                                 & {
-                                    opacity: 1;
+                                    font-size: #{$font-size + 12};
+                                    color: #bbb;
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    @include transition(.2s all);
+                                }
+
+                                &.empty {
+                                    & {
+                                        opacity: 1;
+                                    }
+                                }
+
+                                &.fill {
+                                    & {
+                                        opacity: 0;
+                                        color: red;
+                                        position: absolute;
+                                        left: 50%; top: 50%;
+                                        @include transform(translate(-50%, -50%));
+                                    }
                                 }
                             }
 
                             & > div {
-                                & > i {
+                                & > i{
                                     & {
-                                        visibility: visible;
-                                        @include transform(scale(0));
+                                        visibility: hidden;
+                                        position: absolute;
+                                        color: red;
+                                        @include transform(scale(1));
                                     }
 
                                     &:nth-child(1) {
                                         & {
-                                            left: -10px; top: -30px;
-                                            @include transition(.7s all);
+                                            left: 5px; top: 0;
+                                            font-size: #{$font-size};
                                         }
                                     }
 
-                                    &:nth-child(2){
+                                    &:nth-child(2) {
                                         & {
-                                            left: -10px; top: -25px;
-                                            @include transition(1s all);
+                                            left: 5px; top: 5px;
+                                            font-size: #{$font-size + 12};
                                         }
                                     }
 
-                                    &:nth-child(3){
+                                    &:nth-child(3) {
                                         & {
-                                            left: -5px; top: -40px;
-                                            @include transition(.8s all);
+                                            left: 0px; top: 0px;
+                                            font-size: #{$font-size + 8};
                                         }
                                     }
                                 }
                             }
-                        }
-                    }
 
-                    & > span {
-                        & {
-                            display: inline-block;
-                            vertical-align: middle;
-                            font-size: #{$font-size + 4};
-                        }
+                            &.active {
+                                & {
+                                    @include transition(.2s all);
+                                }
+                            
+                                & > .empty {
+                                    & {
+                                        opacity: 0;
+                                    }
+                                }
 
-                        & > i {
-                            & {
-                                display: inline-block;
-                                vertical-align: middle;
-                                font-size: #{$font-size - 2};
-                                color: #bbb;
-                                padding: 0 5px;
+                                & > .fill {
+                                    & {
+                                        opacity: 1;
+                                    }
+                                }
+
+                                & > div {
+                                    & > i {
+                                        & {
+                                            visibility: visible;
+                                            @include transform(scale(0));
+                                        }
+
+                                        &:nth-child(1) {
+                                            & {
+                                                left: -10px; top: -30px;
+                                                @include transition(.7s all);
+                                            }
+                                        }
+
+                                        &:nth-child(2){
+                                            & {
+                                                left: -10px; top: -25px;
+                                                @include transition(1s all);
+                                            }
+                                        }
+
+                                        &:nth-child(3){
+                                            & {
+                                                left: -5px; top: -40px;
+                                                @include transition(.8s all);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
 
@@ -348,74 +351,95 @@ export default {
                             & {
                                 display: inline-block;
                                 vertical-align: middle;
-                                height: 1.5em;
-                                color: #bbb;
-                                font-weight: bold;
-                                overflow-y: hidden;
-                                line-height: 1.5em;
                                 font-size: #{$font-size + 4};
+                            }
+
+                            & > i {
+                                & {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    font-size: #{$font-size - 2};
+                                    color: #bbb;
+                                    padding: 0 5px;
+                                }
                             }
 
                             & > span {
                                 & {
-                                    display: block;
-                                    @include transition(.2s all);
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    height: 1.5em;
+                                    color: #bbb;
+                                    font-weight: bold;
+                                    overflow-y: hidden;
+                                    line-height: 1.5em;
+                                    font-size: #{$font-size + 4};
                                 }
-                            }
 
-                            &.active {
                                 & > span {
                                     & {
+                                        display: block;
                                         @include transition(.2s all);
                                     }
+                                }
 
-                                    &.current {
-                                        margin-top: -1.5em;
-                                    }
+                                &.active {
+                                    & > span {
+                                        & {
+                                            @include transition(.2s all);
+                                        }
 
-                                    &.fake {
-                                        margin-top: 0em;
+                                        &.current {
+                                            margin-top: -1.5em;
+                                        }
+
+                                        &.fake {
+                                            margin-top: 0em;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                & > .comment {
-                    & {
-                        display: inline-block;
-                        border: 0; background: none;
-                        padding: 0; margin: 0;
-                        outline: none; cursor: pointer;
-                        padding-right: 15px;
-                    }
-
-                    & > div {
+                    & > .comment {
                         & {
-                            display: block;
-                            position: relative;
-                            width: 38px; height: auto;
+                            display: table-cell;
+                            vertical-align: middle;
+                            border: 0; background: none;
+                            outline: none; cursor: pointer;
+                            padding: 0; margin: 0;
                         }
 
-                        & > i {
+                        & > div {
                             & {
                                 display: block;
-                                position: absolute;
-                                left: 50%; top: 50%;
-                                font-size: #{$font-size + 12};
-                                color: #bbb;
-                                line-height: 1.2;
-                                @include transform(transition(.2s all));
+                                position: relative;
+                                width: 0px; height: auto;
+                                overflow: hidden;
+                                @include transition(.2s width);
+                            }
+
+                            & > i {
+                                & {
+                                    display: block;
+                                    position: absolute;
+                                    left: 50%; top: 50%;
+                                    font-size: #{$font-size + 12};
+                                    color: #bbb;
+                                    line-height: 1.2;
+                                    @include transform(translate(-50%, -50%));
+                                }
+                            }
+
+                            &:after {
+                                content: " ";
+                                display: block;
+                                padding-bottom: 100%;
                             }
                         }
-
-                        &:after {
-                            content: " ";
-                            display: block;
-                            padding-bottom: 100%;
-                        }
                     }
+
                 }
             }
         }
@@ -433,6 +457,7 @@ export default {
                     & > .image {
                         & {
                             width: 35px;
+                            @include transition(.2s all);
                         }
                     }
 
@@ -446,54 +471,52 @@ export default {
                 }
 
                 & > .sim {
-                    & > .love {
-                        & > div {
-                            & > i {
-                                & {
-                                    font-size: #{$font-size + 6};
-                                }
-                            }
-                        }
-
-                        & > span {
-                            & > i{
-                                & {
-                                    font-size: #{$font-size - 4};
+                    & > div {
+                        & > .love {
+                            & > div {
+                                & > i {
+                                    & {
+                                        font-size: #{$font-size + 6};
+                                    }
                                 }
                             }
 
                             & > span {
-                                & {
-                                    font-size: #{$font-size};
+                                & > i{
+                                    & {
+                                        font-size: #{$font-size - 4};
+                                    }
                                 }
 
                                 & > span {
                                     & {
                                         font-size: #{$font-size};
                                     }
+
+                                    & > span {
+                                        & {
+                                            font-size: #{$font-size};
+                                        }
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    & > .comment {
-                        & > div {
-                            & {
-                                width: auto;
-                            }
-
-                            &:after {
-                                padding-bottom: 0;
-                            }
-
-                            & > i {
+                        & > .comment {
+                            & > div{
                                 & {
-                                    position: inherit;
-                                    font-size: #{$font-size + 6};
-                                    line-height: 1.5;
+                                    width: 32px;
+                                    @include transition(.2s width);
+                                }
+
+                                & > i {
+                                    & {
+                                        font-size: #{$font-size + 6};
+                                    }
                                 }
                             }
                         }
+
                     }
                 }
             }

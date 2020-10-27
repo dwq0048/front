@@ -6,7 +6,7 @@
                     <div></div>
                 </div>
                 <div class="user">
-                    <p>{{ post.users[0].nickname }}</p>
+                    <p v-if="post.users.nickname">{{ post.users.nickname }}</p>
                 </div>
             </div>
             <div class="submit">

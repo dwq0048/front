@@ -46,8 +46,6 @@ export default {
             }
         },
         created(){
-            console.log(this.$route.prevRoute);
-            
             if(!this.HIDDEN){
                 setTimeout(() => {
                     this.HIDDEN = true;
