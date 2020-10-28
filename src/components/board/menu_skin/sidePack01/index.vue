@@ -313,7 +313,16 @@ export default {
                                         font-weight: bold;
                                         padding: 12px 20px;
                                         letter-spacing: 1px;
+                                        background-color: #f9f9f9;
                                         color: #777;
+                                        @include transition(.2s all);
+                                    }
+
+                                    &:hover {
+                                        & {
+                                            background-color: #f5f5f5;
+                                            @include transition(.2s all);
+                                        }
                                     }
                                 }
                             }
@@ -365,7 +374,7 @@ export default {
                             display: inline-block;
                             vertical-align: middle;
                             padding-right: 10px;
-                            font-size: #{$font-size - 2};
+                            font-size: #{$font-size};
                         }
                     }
 
@@ -412,6 +421,7 @@ export default {
                                         vertical-align: middle;
                                         width: 16px; height: auto;
                                         background-color: $bg-orange;
+                                        font-size: #{$font-size};
                                         border-radius: 2px;
                                     }
 

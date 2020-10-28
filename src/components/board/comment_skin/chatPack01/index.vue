@@ -1,5 +1,18 @@
 <template>
     <div class="comment">
+        <div class="menu">
+            <ul>
+                <li v-for="(item, i) in Menu.children" :key="i" :class="{ active : item.Active }">
+                    <button type="button" :title="item.en" @click="MenuActive(i)">
+                        <span>{{ item.ko }}</span>
+                        <div v-if="item.option">
+                            <i v-if="item.option.count"><font-awesome-icon :icon="faPlus" /></i>
+                            <span v-if="item.option.count">{{ item.option.count }}</span>
+                        </div>
+                    </button>
+                </li>
+            </ul>
+        </div>
         <div class="submit" v-if="GET_LOGIN">
             <div class="select">
                 <select>
@@ -72,7 +85,7 @@ const postStore = 'postStore'
 
 export default {
     name: 'comment_chat',
-    props: ['info'],
+    props: ['info', 'count'],
     data() {
         return {
             faPlus, faArrowUp, faSortUp,
@@ -81,6 +94,14 @@ export default {
             index: false,
             list: false,
             socket: "",
+
+            Menu : {
+                options : {},
+                children : [
+                    { ko : '댓글', en : 'Comment', Active : true, option : { count : (this.count)?this.count:0 } },
+                    { ko : '목록', en : 'List', Active : false }
+                ]
+            }
         }
     },
     computed: {
@@ -92,6 +113,10 @@ export default {
         ...mapActions(postStore, [
             'COMMENT_LIST', 'COMMENT_POST'
         ]),
+        MenuActive(option){
+            this.Menu.children.map(item => { item.Active = false });
+            this.Menu.children[option].Active = true;
+        },
         Comment(){
             this.COMMENT_POST({
                 board: this.info.board,
@@ -134,7 +159,107 @@ export default {
         & {
             background-color: #fff;
             margin-top: 25px;
+            border-radius: 3px;
+            overflow: hidden;
             @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
+        }
+
+        & > .menu {
+            & {
+                width: 100%; height: auto;
+            }
+
+            & > ul {
+                & {
+                    display: block;
+                    width: 100%; height: auto;
+                    list-style: none;
+                    font-size: 0;
+                    background-color: #aaa;
+                }
+
+                & > li {
+                    & {
+                        position: relative;
+                        display: inline-block;
+                        z-index: 1;
+                        @include box-shadow(0px 0px 0px rgba(0,0,0,0.1));
+                        @include transition(.2s all);
+                    }
+
+                    & > button {
+                        & {
+                            display: block;
+                            outline: none; cursor: pointer;
+                            border: 0; background: none;
+                            margin: 0; padding: 0;
+                            padding: 10px 30px;
+                            font-size: #{$font-size - 2};
+                            letter-spacing: 1px;
+                            font-weight: bold;
+                            color: #fff;
+                            @include transition(.2s all);
+                        }
+
+                        & > span {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                            }
+                        }
+
+                        & > div {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                color: #999;
+                            }
+
+                            & > i {
+                                & {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    font-size: #{$font-size - 4};
+                                    padding: 0 5px;
+                                }
+                            }
+
+                            & > span {
+                                & {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    font-weight: bold;
+                                    font-size: #{$font-size};
+                                }
+                            }
+                        }
+                    }
+
+                    &.active {
+                        & {
+                            background-color: #fff;
+                            z-index: 2;
+                            @include box-shadow(2px 1px 2px rgba(0,0,0,0.1));
+                            @include transition(.2s all);
+                        }
+
+                        & > button {
+                            & {
+                                color: #555;
+                                @include transition(.2s all);
+                            }
+                        }
+                    }
+
+                    &:hover {
+                        & {
+                            z-index: 3;
+                            @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
+                            @include transition(.2s all);
+                        }
+                    }
+                }
+            }
         }
 
         & > .submit {

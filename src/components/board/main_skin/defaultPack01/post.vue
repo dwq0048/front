@@ -31,7 +31,7 @@
                     </div>
                     <div class="right">
                         <span>조회수 : {{ post.count }}</span>
-                        <span>댓글수 : {{ 0 }}</span>
+                        <span>댓글수 : {{ post.comment }}</span>
                         <span>좋아요 : {{ 0 }}</span>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
             </div>
 
             <!-- Card -->
-            <fixed-card />
+            <fixed-card :count="post.comment" />
             <!-- Card End -->
 
             <div class="setting">
@@ -53,8 +53,8 @@
             </div>
         </div>
 
-        <div class="comment">
-            <comment :info="info"/>
+        <div class="comment" v-if="post">
+            <comment :info="info" :count="post.comment" />
         </div>
     </div>
 </template>

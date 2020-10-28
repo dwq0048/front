@@ -38,6 +38,11 @@
                         <div>
                             <i><font-awesome-icon :icon="faCommentDots" /></i>
                         </div>
+                        <span>
+                            <i><font-awesome-icon :icon="faPlus" /></i>
+                            <span v-if="count">{{ count }}</span>
+                            <span v-else>0</span>
+                        </span>
                     </button>
                 </div>
             </div>
@@ -54,6 +59,7 @@ import { faHeart as faHeartR, faCommentDots } from '@fortawesome/free-regular-sv
 
 export default {
     name : 'FixCard',
+    props : [ 'count' ],
     data(){
         return {
             // Icon
@@ -409,33 +415,50 @@ export default {
                             border: 0; background: none;
                             outline: none; cursor: pointer;
                             padding: 0; margin: 0;
+                            width: 0px;
+                            white-space: nowrap;
+                            overflow: hidden;
                         }
 
                         & > div {
                             & {
-                                display: block;
+                                display: inline-block;
+                                vertical-align: middle;
                                 position: relative;
-                                width: 0px; height: auto;
-                                overflow: hidden;
-                                @include transition(.2s width);
                             }
 
                             & > i {
                                 & {
                                     display: block;
-                                    position: absolute;
-                                    left: 50%; top: 50%;
                                     font-size: #{$font-size + 12};
                                     color: #bbb;
-                                    line-height: 1.2;
-                                    @include transform(translate(-50%, -50%));
+                                }
+                            }
+                        }
+
+                        & > span {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                color: #bbb;
+                            }
+
+                            & > i {
+                                & {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    font-size: #{$font-size - 4};
+                                    padding: 0 10px;
                                 }
                             }
 
-                            &:after {
-                                content: " ";
-                                display: block;
-                                padding-bottom: 100%;
+                            & > span {
+                                & {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    font-size: #{$font-size};
+                                    font-weight: bold;
+                                }
                             }
                         }
                     }
@@ -503,12 +526,11 @@ export default {
                         }
 
                         & > .comment {
-                            & > div{
-                                & {
-                                    width: 32px;
-                                    @include transition(.2s width);
-                                }
+                            & {
+                                width: auto;
+                            }
 
+                            & > div{
                                 & > i {
                                     & {
                                         font-size: #{$font-size + 6};

@@ -131,7 +131,8 @@ const Post = {
                         }
                     }
                     // 유저 정보
-
+                    
+                    post.comment = req.data.comment;
                     post.count = req.data.count;
                     resolve(post)
                 }).catch((err) => {
@@ -174,7 +175,6 @@ const Post = {
 					data: SEND,
 					withCredentials : true
 				}).then((req) => {
-                    console.log(req);
                     const payload = req.data.result;
                     payload.map(item => {
                         item.state.date_fix = SET_TIME(item.state.date_fix);
