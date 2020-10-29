@@ -3,17 +3,84 @@
         <div class="contents">
             <!-- Title Start -->
             <div class="nav">
-                <div>
-                    <button type="button" class="prev" title="목록으로">
-                        <i><font-awesome-icon :icon="faList" /></i>
-                        <span>목록으로</span>
-                    </button>
-
-                    <div class="title">
-                        <h1 v-if="post">{{ post.title }}</h1>
+                <div class="select">
+                    <div>
+                        <ul>
+                            <li class="active">
+                                <div class="list">
+                                    <button type="button">
+                                        <span>제목 1</span>
+                                    </button>
+                                    <button type="button">
+                                        <i><font-awesome-icon :icon="faTimes" /></i>
+                                    </button>
+                                </div>
+                                <div class="option">
+                                    <div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                    <div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="list">
+                                    <button type="button">
+                                        <span>제목 2</span>
+                                    </button>
+                                    <button type="button">
+                                        <i><font-awesome-icon :icon="faTimes" /></i>
+                                    </button>
+                                </div>
+                                <div class="option">
+                                    <div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                    <div>
+                                        <div></div>
+                                        <div></div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-
-                    <setting-pop />
+                </div>
+                <div class="option">
+                    <div class="left">
+                        <ul>
+                            <li>
+                                <button type="button" title="다음 글">
+                                    <i><font-awesome-icon :icon="faArrowLeft" /></i>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" title="이전 글">
+                                    <i><font-awesome-icon :icon="faArrowRight" /></i>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" title="목록">
+                                    <i><font-awesome-icon :icon="faList" /></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bar">
+                        <div>5f942ced4f54ae0ad006a7c4</div>
+                    </div>
+                    <div class="right">
+                        <ul>
+                            <li>
+                                <button type="button" title="메뉴">
+                                    <i><font-awesome-icon :icon="faEllipsisH" /></i>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <!-- Title End -->
@@ -63,7 +130,7 @@
 import { mapActions, mapGetters } from 'vuex'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faList, faCaretLeft, faCaretRight, faShareSquare, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faList, faCaretLeft, faCaretRight, faShareSquare, faPlus, faArrowLeft, faArrowRight, faEllipsisH, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 import { SET_TIME } from '@/store/helper'
 import { SET_BOARD } from '@/store/helper'
@@ -83,7 +150,7 @@ export default {
             board: this.info.board,
             post: false,
 
-            faList, faCaretLeft, faCaretRight, faShareSquare, faPlus,
+            faList, faCaretLeft, faCaretRight, faShareSquare, faPlus, faArrowLeft, faArrowRight, faEllipsisH, faTimes,
         }
     },
     components: {
@@ -120,103 +187,291 @@ export default {
         & > .contents {
             & {
                 background-color: #fff;
+                border-radius: 5px;
+                overflow: hidden;
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
 
             & > .nav {
                 & {
-                    width: 100%;
-                    height: 45px;
+                    width: 100%; height: auto;
                     background-color: #fff;
                     border-bottom: 1px solid #ddd;
                 }
 
-                & > div {
+                & > .select {
                     & {
+                        width: 100%; height: auto;
+                    }
+
+                    & > div {
+                        & {
+                            width: 100%; height: auto;
+                            background-color: #f1f1f1;
+                        }
+
+                        & > ul {
+                            & {
+                                display: block;
+                                width: 100%; height: auto;
+                                list-style: none;
+                                font-size: 0;
+                                padding: 0 14px;
+                                padding-top: 7px;
+                            }
+
+                            & > li {
+                                & {
+                                    position: relative;
+                                    display: inline-block;
+                                    width: auto; height: auto;
+                                    background-color: #f1f1f1;
+                                    border-radius: 7px 7px 0px 0px;
+                                }
+
+                                &:after {
+                                    content: " ";
+                                    display: block;
+                                    position: absolute;
+                                    border-right: 1px solid #ddd;
+                                    width: 0px; height: 100%;
+                                    right: 0; top: 0;
+                                }
+
+                                & > .list {
+                                    & {
+                                        display: table;
+                                        width: 100%; height: auto;
+                                        white-space: nowrap;
+                                    }
+
+                                    & > button {
+                                        & {
+                                            display: table-cell;
+                                            vertical-align: middle;
+                                            outline: none; cursor: pointer;
+                                            border: 0; background: none;
+                                            margin: 0; padding: 0;
+                                            text-align: left;
+                                            padding: 7px 15px;
+                                        }
+
+                                        &:nth-child(1){
+                                            & {
+                                                width: 120px;
+                                            }
+
+                                            & > span {
+                                                & {
+                                                    display: block;
+                                                    letter-spacing: 1px;
+                                                    font-size: #{$font-size - 2};
+                                                    width: 100%;
+                                                }
+                                            }
+                                        }
+
+                                        &:nth-child(2){
+                                            & {
+                                                width: auto;
+                                                color: #aaa;
+                                                font-size: #{$font-size - 4};
+                                                padding: 0 15px;
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                                & > .option {
+                                    & {
+                                        display: none;
+                                    }
+
+                                    & > div {
+                                        &:nth-child(1){
+                                            & > div {
+                                                right: 100%;
+                                            }
+                                        }
+
+                                        &:nth-child(2){
+                                            & > div {
+                                                left: 100%;
+                                            }
+                                        }
+
+                                        & > div {
+                                            & {
+                                                position: absolute;
+                                                width: 14px; height: 100%;
+                                            }
+
+                                            &:nth-child(1){
+                                                & {
+                                                    top: 0; z-index: 9;
+                                                    background-color: #f1f1f1;
+                                                    border-radius: 7px;
+                                                }
+                                            }
+
+                                            &:nth-child(2){
+                                                & {
+                                                    bottom: 0; z-index: 8;
+                                                    width: 3px; height: 50%;
+                                                    background-color: #fff;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                &.active {
+                                    & {
+                                        background-color: #fff;
+                                        border-right: 0;
+                                        z-index: 10;
+                                    }
+
+                                    &:after {
+                                        border-right: 0;
+                                    }
+
+                                    & > .list {
+                                        & > button {
+                                            &:nth-child(1){
+                                                & > div {
+                                                    & > span {
+                                                        & {
+                                                            font-weight: bold;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    & > .option {
+                                        & {
+                                            display: block;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                & > .option {
+                    & {
+                        display: table;
                         position: relative;
-                        width: 100%; height: 100%;
+                        width: 100%; height: auto;
                     }
 
-                    & > .title {
+                    & > .left {
                         & {
-                            position: absolute;
-                            display: table;
-                            width: 100%; height: 100%;
-                            left: 0; top: 0;
-                            z-index: 1;
-                        }
-
-                        & > h1 {
-                            & {
-                                display: table-cell;
-                                vertical-align: middle;
-                                text-align: center;
-                                font-size: #{$font-size - 2};
-                                letter-spacing: 1.5px;
-                                line-height: 1;
-                                color: #555;
-                            }
-                        }
-                    }
-
-                    & > button {
-                        & {
-                            display: inline-block;
+                            display: table-cell;
                             vertical-align: middle;
-                            border: 0; background: none;
-                            padding:0; margin: 0;
-                            outline: none; cursor: pointer;
-                            font-size: #{$font-size};
-                            color: #fff;
-                            z-index: 10;
                         }
 
-                        & > i {
+                        & > ul {
                             & {
-                                display: inline-block;
-                                font-size: #{$font-size - 2};
-                                padding-left: 7px;
-                            }
-                        }
-
-                        & > span {
-                            & {
-                                display: inline-block;
-                                vertical-align: middle;
-                                font-size: #{$font-size - 2};
-                            }
-                        }
-
-                        &.prev {
-                            & {
-                                width: auto; height: 100%;
-                                border-right: 1px solid #ddd;
-                                background-color: #fff;
-                                padding: 0 15px;
+                                display: block;
+                                white-space: nowrap;
+                                list-style: none;
+                                font-size: 0;
                             }
 
-                            & > i {
+                            & > li {
                                 & {
-                                    font-size: #{font-size + 2};
-                                    color: #555;
-                                    padding-left: 0;
                                     display: inline-block;
                                     vertical-align: middle;
                                 }
-                            }
 
-                            & > span {
-                                & {
-                                    padding-left: 15px;
-                                    color: #555;
-                                    display: inline-block;
-                                    font-size: #{$font-size - 2};
-                                    vertical-align: middle;
+                                & > button {
+                                    & {
+                                        display: block;
+                                        position: relative;
+                                        outline: none; cursor: pointer;
+                                        border: 0; background: none;
+                                        padding: 0; margin: 0;
+                                        padding: 12px;
+                                    }
+
+                                    & > i {
+                                        & {
+                                            display: block;
+                                            line-height: 1;
+                                            color: #aaa;
+                                            font-size: #{$font-size - 2};
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
 
+                    & > .bar {
+                        & {
+                            display: table-cell;
+                            vertical-align: middle;
+                            width: 100%;
+                        }
+
+                        & > div {
+                            & {
+                                display: block;
+                                padding: 4px 15px;
+                                font-size: #{$font-size - 2};
+                                font-weight: bold;
+                                text-align: left;
+                                background-color: #f1f1f1;
+                                border-radius: 15px;
+                            }
+                        }
+                    }
+
+                    & > .right {
+                        & {
+                            display: table-cell;
+                            vertical-align: middle;
+                        }
+
+                        & > ul {
+                            & {
+                                display: block;
+                                white-space: nowrap;
+                                font-size: 0;
+                                list-style: none;
+                            }
+
+                            & > li {
+                                & {
+                                    display: inline-block;
+                                    font-size: #{$font-size};
+                                    color: #aaa;
+                                }
+
+                                & > button {
+                                    & {
+                                        display: block;
+                                        border: 0; background: none;
+                                        padding:0; margin: 0;
+                                        cursor: pointer; outline: none;
+                                        padding: 10px;
+                                    }
+
+                                    & > i {
+                                        & {
+                                            font-size: #{$font-size};
+                                            color: #aaa;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             
@@ -306,7 +561,7 @@ export default {
 
             & > .post {
                 & {
-                    padding: 15px 45px;
+                    padding: 15px 45px 50px 45px;
                     min-height: 425px;
                 }
             }

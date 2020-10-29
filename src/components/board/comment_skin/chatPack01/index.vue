@@ -24,7 +24,7 @@
                 <div>
                     <div class="plus">
                         <button type="text">
-                            <i><font-awesome-icon :icon="faPlus" /></i>
+                            <i><font-awesome-icon :icon="faSmile" /></i>
                         </button>
                     </div>
                     <div class="text">
@@ -78,6 +78,7 @@ import io from 'socket.io-client';
 import { mapActions, mapGetters } from 'vuex'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPlus, faArrowUp, faSortUp } from '@fortawesome/free-solid-svg-icons'
+import { faSmile } from '@fortawesome/free-regular-svg-icons'
 
 const socket = io('http://localhost:3000')
 const userStore = 'userStore'
@@ -88,7 +89,7 @@ export default {
     props: ['info', 'count'],
     data() {
         return {
-            faPlus, faArrowUp, faSortUp,
+            faPlus, faArrowUp, faSortUp, faSmile,
             reply: '',
             page: 0,
             index: false,
@@ -212,7 +213,8 @@ export default {
                             & {
                                 display: inline-block;
                                 vertical-align: middle;
-                                color: #999;
+                                color: #f1f1f1;
+                                @include transition(.2s all);
                             }
 
                             & > i {
@@ -247,6 +249,13 @@ export default {
                             & {
                                 color: #555;
                                 @include transition(.2s all);
+                            }
+
+                            & > div {
+                                & {
+                                    color: #aaa;
+                                    @include transition(.2s all);
+                                }
                             }
                         }
                     }
@@ -352,7 +361,7 @@ export default {
                                 & {
                                     display: block;
                                     font-family: $notoKR-L;
-                                    padding: 10px 5px 0px 0px;
+                                    padding: 10px 10px 10px 0;
                                     width: 100%; height: 40px;
                                     border: 0; background: none;
                                     cursor: text; outline: none;

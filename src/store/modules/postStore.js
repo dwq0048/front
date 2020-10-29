@@ -67,9 +67,25 @@ const Post = {
                                 thumbnail : undefined
                             }
                         }
+                        
+                        if(typeof item.comment == 'object'){
+                            if(item.comment.length > 0){
+                                if(typeof item.comment[0] == 'object'){
+                                    if(typeof item.comment[0].count == 'number'){
+                                        item.comment = item.comment[0].count;
+                                    }else {
+                                        item.comment = 0;
+                                    }
+                                }else{
+                                    item.comment = 0;
+                                }
+                            }else {
+                                item.comment = 0;
+                            }
+                        }else{
+                            item.comment = 0;
+                        }
                     });
-
-
                     resolve(list);
                 }).catch((err) => {
                     reject(err);

@@ -8,27 +8,47 @@
                 </router-link>
             </div>
             <div class="menu">
-                <ul>
-                    <li>
-                        <button type="button">최신</button>
-                    </li>
-                    <li>
-                        <button type="button">인기</button>
-                    </li>
-                </ul>
-                <ul class="right">
-                    <li>
-                        <button type="button" title="리스트" v-on:click="boardStyle('list')" :class="{ active: Active.list }">
-                            <i><font-awesome-icon :icon="faThList" /></i>
+                <div class="left">
+                    <div class="select">
+                        <select>
+                            <option value="" checked>최신 순</option>
+                            <option value="">주간</option>
+                            <option value="">월간</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input">
+                    <div>
+                        <button type="button" class="filter" title="필터">
+                            <i><font-awesome-icon :icon="faFilter" /></i>
                         </button>
-                        <button type="button" title="그리드" v-on:click="boardStyle('grid')" :class="{ active: Active.grid }" >
-                            <i><font-awesome-icon :icon="faThLarge" /></i>
+                        <div class="input">
+                            <input type="text" placeholder="게시판 검색...">
+                        </div>
+                        <button type="button" class="search" title="검색">
+                            <i><font-awesome-icon :icon="faSearch" /></i>
                         </button>
-                    </li>
-                </ul>
+                    </div>
+                </div>
+                <div class="right">
+                    <ul>
+                        <li>
+                            <button type="button" title="리스트" v-on:click="boardStyle('list')" :class="{ active: Active.list }">
+                                <i><font-awesome-icon :icon="faThList" /></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button type="button" title="그리드" v-on:click="boardStyle('grid')" :class="{ active: Active.grid }" >
+                                <i><font-awesome-icon :icon="faThLarge" /></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="list">
+            <board-list :info="info" :list="Notice" :page="page" :option="{ style : 'notice' }" />
+
             <board-list v-if="Active.list" :list="list" :info="info" :page="page"/>
             <board-grid v-if="Active.grid" :list="list" :info="info" />
         </div>
@@ -40,7 +60,7 @@ import { mapActions, mapGetters } from 'vuex'
 
 import { SET_BOARD, SET_TIME } from '@/store/helper/'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faThLarge, faThList, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faThLarge, faThList, faEdit, faFilter, faSearch } from '@fortawesome/free-solid-svg-icons'
 
 import BoardList from './type/list'
 import BoardGrid from './type/grid'
@@ -64,9 +84,37 @@ export default {
                 grid: true
             },
 
-            faThLarge,
-            faThList,
-            faEdit
+            Notice : [
+                {
+                    _id : 0,
+                    title : '12.08 게시판 공지사항 입니다.',
+                    meta : {
+                        thumbnail : undefined
+                    },
+                    state : {
+                        displayDate : '하루전'
+                    },
+                    users : {
+                        nickname : '관리자'
+                    }
+                }, 
+                {
+                    _id : 0,
+                    title : '자유 게시판 필독!!',
+                    meta : {
+                        thumbnail : undefined
+                    },
+                    state : {
+                        displayDate : '하루전'
+                    },
+                    users : {
+                        nickname : '관리자'
+                    }
+                }
+            ],
+
+            // Icon
+            faThLarge, faThList, faEdit, faFilter, faSearch,
         }
     },
     methods : {
@@ -125,101 +173,175 @@ export default {
         & > .nav {
             & {
                 background-color: #fff;
+                border-radius: 5px;
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
 
             & > .title {
                 & {
+                    display: table;
+                    width: 100%; height: auto;
                     padding: 15px 30px;
-                    position: relative;
                 }
 
                 & > h1 {
-                    font-size: #{$font-size + 6};
+                    & {
+                        display: table-cell;
+                        vertical-align: middle;
+                        width: 100%; height: auto;
+                        font-size: #{$font-size + 4};
+                        font-weight: bold;
+                        line-height: 1;
+                    }
                 }
 
                 & > .write {
                     & {
-                        display: inline-block;
-                        border: none;
-                        background: none;
-                        margin: 0; padding: 0;
-                        outline: none;
-                        cursor: pointer;
-                        position: absolute;
-                        right: 0; top: 50%;
-                        padding: 5px 30px;
+                        display: table-cell;
+                        vertical-align: middle;
+                        outline: none; cursor: pointer;
+                        border: 0; background: none;
+                        padding: 0; margin: 0;
+                        text-decoration: none;
+                        font-size: #{$font-size + 2};
+                        color: $bg-blue-light;
                         @include transition(.2s all);
-                        @include transform(scale(1) translate(0, -50%));
-                    }
-
-                    & > i {
-                        & {
-                            font-size: #{$font-size + 4};
-                            color: $bg-blue;
-                        }
                     }
 
                     &:hover {
                         & {
+                            color: $bg-blue-bold;
                             @include transition(.2s all);
-                            @include transform(scale(1.05) translate(0, -50%));
                         }
                     }
                 }
             }
 
             & > .menu {
-                &:after {
-                    content: " ";
-                    display: block;
-                    clear: both;
+                & {
+                    display: table;
+                    width: 100%; height: auto;
+                    padding: 10px 0;
                 }
 
-                & > ul {
+                & > .input {
                     & {
-                        font-size: 0;
-                        float: left;
+                        display: table-cell;
+                        vertical-align: middle;
+                        width: 100%; height: auto;
                     }
 
-                    & > li {
+                    & > div {
                         & {
-                            display: inline-block;
-                            list-style: none;
-                            font-size: #{$font-size + 6};
-                            height: 45px;
+                            display: table;
+                            width: 100%; height: auto;
+                            background-color: #f1f1f1;
+                            border: 1px solid #eee;
+                            border-radius: 15px;
+                            padding: 5px;
+                            font-size: #{$font-size - 2};
                         }
 
                         & > button {
                             & {
-                                border: none;
-                                background: none;
-                                outline: none;
-                                padding:0 30px;
-                                height: 100%;
-                                cursor: pointer;
+                                display: table-cell;
+                                vertical-align: middle;
+                                outline: none; cursor: pointer;
+                                background: none; border: 0;
+                                margin: 0; padding: 0;
+                                padding: 0 10px;
+                                color: #999;
+                            }
+                        }
+
+                        & > .input {
+                            & {
+                                display: table-cell;
+                                vertical-align: middle;
+                                width: 100%;
+                            }
+
+                            & > input {
+                                & {
+                                    display: block;
+                                    width: 100%; height: 100%;
+                                    outline: 0; cursor: text;
+                                    border: 0; background: none;
+                                    margin: 0; padding: 0;
+                                    line-height: 1;
+                                    font-size: #{$font-size - 2};
+                                }
                             }
                         }
                     }
+                }
 
-                    &.right {
+                & > .left {
+                    & {
+                        display: table-cell;
+                        vertical-align: middle;
+                    }
+
+                    & > .select {
                         & {
-                            float: right;
-                            padding-right: 15px;
+                            padding: 0 15px;
+                        }
+
+                        & > select {
+                            & {
+                                width: 120px; height: auto;
+                                outline: none; cursor: pointer;
+                                border: 0; background: none;
+                                margin: 0; padding: 0;
+                                border: 1px solid #eee;
+                                border-radius: 2px;
+                                background-color: #f9f9f9;
+                                color: #555;
+                                padding: 5px 10px;
+                                line-height: 1;
+                                font-size: #{$font-size - 2};
+                            }
+                        }
+                    }
+                }
+
+                & > .right {
+                    & {
+                        display: table-cell;
+                        vertical-align: middle;
+                    }
+
+                    & > ul {
+                        & {
+                            display: block;
+                            width: 100%; height: auto;
+                            list-style: none;
+                            font-size: 0;
+                            white-space: nowrap;
+                            padding: 0 10px;
                         }
 
                         & > li {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                            }
+
                             & > button {
                                 & {
-                                    font-size: #{$font-size};
-                                    color: #999;
-                                    padding: 0 15px;
-                                    @include transition(.2s all);
+                                    display: block;
+                                    outline: none; cursor: pointer;
+                                    border: 0; background: none;
+                                    margin: 0; padding: 0;
+                                    padding: 5px 10px;
                                 }
 
-                                &.active {
-                                    color: #555;
-                                    @include transition(.2s all);
+                                & > i {
+                                    & {
+                                        font-size: #{$font-size - 2};
+                                        color: #777;
+                                        line-height: 1;
+                                    }
                                 }
                             }
                         }
@@ -232,6 +354,8 @@ export default {
             & {
                 background-color: #fff;
                 margin-top: 15px;
+                border-radius: 5px;
+                overflow: hidden;
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
             }
         }

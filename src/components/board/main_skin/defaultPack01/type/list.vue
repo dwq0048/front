@@ -1,19 +1,28 @@
 <template>
     <ul>
-        <li v-for="(item, i) in list" :key="i">
+        <li v-for="(item, i) in list" :key="i" :class="{ active : options }">
             <div class="num">
-                <p>
-                    <i><font-awesome-icon :icon="faHeartR" /></i>
-                    <span>{{ ((page * 15)+i)+1 }}</span>
-                </p>
+                <div v-if="!options">
+                    <div>
+                        <i><font-awesome-icon :icon="faHeartR" /></i>
+                        <span>0</span>
+                    </div>
+                </div>
+                <div v-if="options">
+                    <div>
+                        <i><font-awesome-icon :icon="faFlag" /></i>
+                    </div>
+                </div>
             </div>
             <div class="title">
                 <router-link :to="'/'+info.board+'/post/'+item._id">
-                    <h1>{{ item.title }}</h1>
-                    <i v-if="(item.meta.thumbnail != undefined) ? true : false">
-                        <font-awesome-icon :icon="faImage" />
-                    </i>
-                    <span>[0]</span>
+                    <div>
+                        <h1>{{ item.title }}</h1>
+                        <i v-if="(item.meta.thumbnail != undefined) ? true : false">
+                            <font-awesome-icon :icon="faImage" />
+                        </i>
+                        <span>[{{ (item.comment)?item.comment:0 }}]</span>
+                    </div>
                 </router-link>
             </div>
             <div class="date">
@@ -28,16 +37,21 @@
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faImage } from '@fortawesome/free-solid-svg-icons'
+import { faImage, faFlag } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
 
 export default {
     name: 'list',
-    props: ['list', 'info', 'page'],
+    props: ['list', 'info', 'page', 'option'],
     data(){
         return {
-            faHeartR, faImage
+            faHeartR, faImage, faFlag,
+
+            options : false
         }
+    },
+    created(){
+        this.options = (this.option)?true:false;
     }
 }
 </script>
@@ -51,48 +65,60 @@ export default {
 
         & > li {
             & {
-                width: 100%;
-                height: 45px;
+                width: 100%; height: auto;
                 display: table;
                 list-style: none;
                 font-size: #{$font-size};
-                border-bottom: 1px solid #f1f1f1;
                 padding: 0 10px;
+                border-bottom: 1px solid #f1f1f1;
             }
 
             & > div {
-                vertical-align: middle;
+                & {
+                    vertical-align: middle;
+                }
             }
 
             & > .num {
                 & {
-                    width: 8%;
-                    height: auto;
+                    width: 8%; height: auto;
                     display: table-cell;
+                    text-align: center;
                 }
 
-                & > p {
+                & > div {
                     & {
-                        vertical-align: middle;
-                        text-align: center;
+                        display: table;
+                        width: 100%; height: auto;
                         padding-right: 10px;
+                        text-align: center;
                         color: #999;
                     }
 
-                    & > i {
+                    & > div {
                         & {
-                            font-size: #{$font-size - 4};
-                            display: inline-block;
+                            display: table-cell;
                             vertical-align: middle;
-                            padding-right: 5px;
                         }
-                    }
 
-                    & > span {
-                        & {
-                            display: inline-block;
-                            vertical-align: middle;
+                        & > i {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                font-size: #{$font-size - 4};
+                                padding-right: 5px;
+                                line-height: 1;
+                            }
                         }
+
+                        & > span {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                line-height: 1;
+                            }
+                        }
+
                     }
                 }
             }
@@ -106,59 +132,131 @@ export default {
 
                 & > a {
                     & {
+                        display: table;
+                        width: 100%; height: auto;
+                        font-size: #{$font-size + 1};
                         text-decoration: none;
                         color: $font-color;
-                        font-size: #{$font-size + 1};
                         font-weight: bold;
-                        display: block;
                         line-height: 1;
+                        padding: 12px 0;
                     }
 
-                    & > h1 {
+                    & > div {
                         & {
-                            display: inline-block;
+                            display: table-cell;
                             vertical-align: middle;
-                            color: #555;
-                            font-size: #{$font-size + 1};
-                            margin: 0; padding: 0;
                         }
-                    }
 
-                    & > span {
-                        & {
-                            display: inline-block;
-                            vertical-align: middle;
-                            color: $bg-blue;
-                            padding-left: 5px;
+                        & > h1 {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                color: #555;
+                                font-size: #{$font-size + 1};
+                                margin: 0; padding: 0;
+                                line-height: 1;
+                            }
                         }
-                    }
 
-                    & > i {
-                        & {
-                            display: inline-block;
-                            vertical-align: middle;
-                            color: $bg-blue;
-                            padding-left: 5px;
-                            font-size: #{$font-size};
+                        & > span {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                color: $bg-blue;
+                                padding-left: 5px;
+                            }
+                        }
+
+                        & > i {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                color: $bg-blue;
+                                padding-left: 5px;
+                                font-size: #{$font-size};
+                            }
                         }
                     }
                 }
             }
 
             & > .date {
-                width: 10%;
-                height: auto;
-                display: table-cell;
-                color: #999;
-                font-size: #{$font-size};
+                & {
+                    display: table-cell;
+                    width: 10%; height: auto;
+                    font-size: #{$font-size};
+                    color: #999;
+                }
             }
 
             & > .user {
-                width: 20%;
-                height: auto;
-                display: table-cell;
-                color: #999;
-                font-size: #{$font-size};
+                & {
+                    display: table-cell;
+                    width: 20%; height: auto;
+                    font-size: #{$font-size};
+                    color: #999;
+                }
+            }
+
+            &.active {
+                & {
+                    background-color: #86b6e6;
+                    border-bottom: 1px solid $bg-blue-light;
+                }
+
+                &:nth-last-child(1){
+                    & {
+                        border-bottom: 0;
+                    }
+                }
+
+                & > .num {
+                    & > div {
+                        color: #f1f1f1;
+                    }
+                }
+
+                & > .title {
+                    & > a {
+                        & {
+                            color: #fff;
+                            padding: 10px 0;
+                        }
+
+                        & > div {
+                            & > h1 {
+                                & {
+                                    color: #fff;
+                                    font-size: #{$font-size};
+                                }
+                            }
+
+                            & > span {
+                                & {
+                                    color: #f1f1f1;
+                                    font-size: #{$font-size - 1};
+                                }
+                            }
+                        }
+                    }
+                }
+
+                & > .date {
+                    & {
+                        color: #f1f1f1;
+                        font-size: #{$font-size - 1};
+                        font-weight: bold;
+                    }
+                }
+
+                & > .user {
+                    & {
+                        color: #f1f1f1;
+                        font-size: #{$font-size - 1};
+                        font-weight: bold;
+                    }
+                }
             }
         }
     }

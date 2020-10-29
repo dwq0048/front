@@ -62,7 +62,7 @@ body {
     background-color: $bg;
 }
 
-button {
+button, select, option, input {
     font-family: $fontKR, 'Avenir', Helvetica, Arial, sans-serif;
 }
 
