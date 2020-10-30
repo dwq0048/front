@@ -101,8 +101,33 @@ const Post = {
                     withCredentials: true,
                 }).then((req) => {
                     let post = req.data.payload;
+                    
                     post.state.displayDate = SET_TIME(post.state.date_fix);
                     post.board = { original: post.board, name: SET_BOARD.category(post.board) }
+
+                    // 유저 정보
+                    if(typeof post.users == 'object'){
+                        try { post.users = post.users[0] }
+                        catch(e){ post.users = { nickname : '익명', type : undefined } }
+                    }
+
+                    // 댓글수 추출
+                    if(typeof req.data.payload.comment == 'object'){
+                        if(typeof req.data.payload.comment[0] == 'object'){
+                            if(typeof req.data.payload.comment[0].count == 'number'){
+                                post.comment = req.data.payload.comment[0].count;
+                            }else{
+                                post.comment = 0;
+                            }
+                        }else{
+                            post.comment = 0;
+                        }
+                    }else{
+                        post.comment = 0;
+                    }
+
+                    // 조회수 추출
+                    post.count = req.data.count;
                     
                     // 이미지 골라내기 시작
                     const Element = document.createElement('div');
@@ -133,23 +158,8 @@ const Post = {
                         item.setAttribute("style", `max-width: ${post.ImageMeta[index].meta.width}px`);
                     });
                     post.post = Element.outerHTML;
-                    // 이미지 골라내기 끝
                     
-                    // 유저 정보
-                    if(typeof post.users == 'object'){
-                        try {
-                            post.users = post.users[0];
-                        }catch(e){
-                            post.users = {
-                                nickname : '익명',
-                                type : undefined
-                            }
-                        }
-                    }
-                    // 유저 정보
-                    
-                    post.comment = req.data.comment;
-                    post.count = req.data.count;
+
                     resolve(post)
                 }).catch((err) => {
                     reject(err)

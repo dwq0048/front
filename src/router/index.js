@@ -14,7 +14,7 @@ const routes = [
 	{
 		path: '/auth',
 		name: 'Auth',
-		component: () => import('@/views/auth/user.vue'),
+		component: () => import('@/views/auth/sign/user.vue'),
 		beforeEnter: before(),
 		children: [
 			{
@@ -37,7 +37,7 @@ const routes = [
 	{
 		path: '/auth/:id',
 		name: 'Auth',
-		component: () => import('@/views/auth/index.vue'),
+		component: () => import('@/views/auth/sign/index.vue'),
 		beforeEnter: before(),
 		watch: {
 			'$route' (to, from) {
@@ -52,28 +52,19 @@ const routes = [
 	{
 		path: '/notice',
 		name: 'Notice',
-		component: () => import('@/views/Notice'),
+		component: () => import('@/views/board/notice'),
 		beforeEnter: before(),
-		watch: {
-			'$route' (to, from) {
-				const toDepth = to.path.split('/').length;
-				const fromDepth = from.path.split('/').length;
-				this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left';
-				
-				console.log('asdjsalkdjklsajdlksajdlkj');
-			}
-		}
 	},
 	{
 		path: '/notice/edit',
 		name: 'NoticeEdit',
-		component: () => import('@/views/Notice/edit'),
+		component: () => import('@/views/board/notice/edit'),
 		beforeEnter: before()
 	},
 	{
-		path: '/notice/post/:id',
+		path: '/notice/:id',
 		name: 'NoticePost',
-		component: () => import('@/views/Notice/post'),
+		component: () => import('@/views/board/notice/post'),
 		beforeEnter: before()
 	},
 
@@ -81,19 +72,19 @@ const routes = [
 	{
 		path: '/free',
 		name: 'Free',
-		component: () => import('@/views/Free'),
+		component: () => import('@/views/board/free'),
 		beforeEnter: before()
 	},
 	{
 		path: '/free/edit',
 		name: 'FreeEdit',
-		component: () => import('@/views/Free/edit'),
+		component: () => import('@/views/board/free/edit'),
 		beforeEnter: before()
 	},
 	{
-		path: '/free/post/:id',
+		path: '/free/:id',
 		name: 'FreePost',
-		component: () => import('@/views/Free/post'),
+		component: () => import('@/views/board/free/post'),
 		beforeEnter: before()
 	},
 
@@ -101,58 +92,22 @@ const routes = [
 	{
 		path: '/photo',
 		name: 'Photo',
-		component: () => import('@/views/photo/index.vue'),
+		component: () => import('@/views/board/photo'),
 		beforeEnter: before(),
-		watch: {
-			'$route' (to, from) {
-				const toDepth = to.path.split('/').length;
-				const fromDepth = from.path.split('/').length;
-				this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left';
-			}
-		}
 	},
 	{
 		path: '/photo/edit',
 		name: 'PhotoEdit',
-		component: () => import('@/views/photo/edit'),
+		component: () => import('@/views/board/photo/edit'),
 		beforeEnter: before()
 	},
 	{
 		path: '/photo/post/:id',
 		name: 'PhotoPost',
-		component: () => import('@/views/photo/post.vue'),
-		beforeEnter: before()
-	},
-
-	// 블로그
-	{
-		path: '/blog',
-		name: 'Blog',
-		component: () => import('@/views/Blog/index.vue'),
-		beforeEnter: before()
-	},
-	{
-		path: '/blog/edit',
-		name: 'BlogEdit',
-		component: () => import('@/views/Blog/edit'),
+		component: () => import('@/views/board/photo/post.vue'),
 		beforeEnter: before()
 	},
 ];
-
-/*
-boradJson.forEach((object) => {
-	const target = object;
-	const source = {
-		beforeEnter: token
-	}
-	const data = board(Object.assign(target, source));
-	for(let i=0; i<data.length; i++){
-		routes.push(data[i]);
-	}
-})
-
-console.log(routes);
-*/
 
 const router = new VueRouter({
 	mode: 'history',
