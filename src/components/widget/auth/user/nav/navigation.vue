@@ -31,7 +31,7 @@
             </router-link>
         </li>
         <li>
-            <router-link to="/auth" title="좋아요">
+            <router-link to="/auth/like" title="좋아요">
                 <div class="icon">
                     <i><font-awesome-icon :icon="faHeart" /></i>
                 </div>

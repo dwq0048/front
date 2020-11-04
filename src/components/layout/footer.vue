@@ -23,7 +23,7 @@ export default {
             background-color: $bg-black-light;
             padding: 10px 15px;
             position: absolute;
-            left: 0; bottom: 0;
+            left: 0; top: 100%;
         }
 
         & > div {

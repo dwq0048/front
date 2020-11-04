@@ -6,8 +6,8 @@
                     <div></div>
                 </div>
                 <div class="intro">
-                    <div class="name">
-                        이름
+                    <div class="name" v-if="users">
+                        {{ users.nickname }}
                     </div>
                     <div class="decoration">
                         프로필 설명이 없습니다.
@@ -59,7 +59,7 @@ import { faHeart as faHeartR, faCommentDots } from '@fortawesome/free-regular-sv
 
 export default {
     name : 'FixCard',
-    props : [ 'count' ],
+    props : [ 'count', 'users' ],
     data(){
         return {
             // Icon

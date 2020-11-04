@@ -92,7 +92,7 @@
             </div>
 
             <!-- Card -->
-            <card-skin :count="post.comment" />
+            <card-skin :count="post.comment" :users="post.users" />
             <!-- Card End -->
 
             <div class="setting">

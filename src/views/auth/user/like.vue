@@ -1,20 +1,20 @@
 <template>
-    <div class="post">
+    <div class="like">
         <widget-side :menu="MenuSide" />
 
         <div class="wrap">
 
             <div class="title">
                 <h1>
-                    <i><font-awesome-icon :icon="faUserEdit" /></i>
-                    <span>내 게시글</span>
+                    <i><font-awesome-icon :icon="faHeartR" /></i>
+                    <span>좋아요 리스트</span>
                 </h1>
             </div>
 
             <!-- 게시글 리스트 -->
             <div class="section">
                 <div class="title">
-                    <h1>게시글 리스트</h1>
+                    <h1>게시글</h1>
                     <div class="btn">
                         <router-link to="#">
                             <div>
@@ -28,69 +28,31 @@
                 <!-- Widget -->
                 <widget-list />
             </div>
-            
-            <!-- 댓글 리스트 -->
-            <div class="section">
-                <div class="title">
-                    <h1>댓글 리스트</h1>
-                    <div class="btn">
-                        <router-link to="#">
-                            <div>
-                                <i><font-awesome-icon :icon="faPlus" /></i>
-                                <span>더보기</span>
-                            </div>
-                        </router-link>
-                    </div>
-                </div>
 
-                <!-- Widget -->
-                <widget-comment />
-            </div>
-
-            <!-- 이미지 리스트 -->
-            <div class="section">
-                <div class="title">
-                    <h1>이미지 리스트</h1>
-                    <div class="btn">
-                        <router-link to="#">
-                            <div>
-                                <i><font-awesome-icon :icon="faPlus" /></i>
-                                <span>더보기</span>
-                            </div>
-                        </router-link>
-                    </div>
-                </div>
-
-                <!-- Widget -->
-                <widget-grid />
-            </div>
         </div>
     </div>
 </template>
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faUserEdit, faFlask, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faThLarge, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faHeart as faHeartR } from '@fortawesome/free-regular-svg-icons'
 
 import Side from '@/components/widget/auth/user/nav/side'
 
 import List from '@/components/board/list_skin/auth_list'
-import Comment from '@/components/board/list_skin/auth_comment'
-import Grid from '@/components/board/list_skin/auth_grid'
 
 export default {
-    name: 'AuthPost',
+    name : 'AuthLike',
     components: {
         'widget-side' : Side,
 
         'widget-list' : List,
-        'widget-comment' : Comment,
-        'widget-grid' : Grid,
     },
     data(){
         return {
             // Icon
-            faPlus, faUserEdit, faFlask,
+            faThLarge, faPlus, faHeartR,
 
             MenuSide : {
                 options : {
@@ -98,18 +60,18 @@ export default {
                 },
                 children : [
                     {
-                        ko : '내 게시글', en : 'My Post', icon : faUserEdit, link : '#', type : 'link',
+                        ko : '좋아요 리스트', en : 'My Like', icon : faHeartR, link : '#', type : 'link',
                         children : [
-                            { ko : '게시글 리스트', en : 'Post List', link : '#', type : 'link' },
-                            { ko : '댓글 리스트', en : 'Comment List', link : '#', type : 'link' },
-                            { ko : '이미지 리스트', en : 'Art List', link : '#', type : 'link' },
+                            { ko : '게시글', en : 'Post', link : '#', type : 'link' },
+                            { ko : '이미지', en : 'Images', link : '#', type : 'link' },
+                            { ko : '댓글', en : 'Comment', link : '#', type : 'link' },
                         ]
                     },
                     {
-                        ko : '실험실', en : 'Laboratory', icon : faFlask, link : '#', type : 'link',
+                        ko : '모아보기', en : 'Laboratory', icon : faThLarge, link : '#', type : 'link',
                         children : [
-                            { ko : '블로그', en : 'Blog', link : '#', type : 'link' },
-                            { ko : '헤시 태그', en : 'Hash Tag', link : '#', type : 'link' }
+                            { ko : '최신 순', en : 'New', link : '#', type : 'link' },
+                            { ko : '랜덤', en : 'Random', link : '#', type : 'link' }
                         ]
                     },
                 ]
@@ -120,7 +82,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    .post {
+    .like {
         & {
             display: table;
             width: 100%; height: auto;
@@ -240,5 +202,6 @@ export default {
                 }
             }
         }
+
     }
 </style>

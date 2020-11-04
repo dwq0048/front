@@ -23,6 +23,11 @@ const routes = [
 				component: () => import ('@/views/auth/user/home')
 			},
 			{
+				name: 'AuthLike',
+				path: 'like',
+				component: () => import ('@/views/auth/user/like')
+			},
+			{
 				name: 'AuthPost',
 				path: 'post',
 				component: () => import ('@/views/auth/user/post')

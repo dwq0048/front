@@ -18,7 +18,7 @@
                         <router-link :class="{ active : this.$route.name == 'Auth' }" to="/auth" title="Dashboard"></router-link>
                         <router-link to="/auth" title="Vrchat Api"></router-link>
                         <router-link to="/auth" title="알림"></router-link>
-                        <router-link to="/auth" title="좋아요"></router-link>
+                        <router-link :class="{ active : this.$route.name == 'AuthLike' }" to="/auth/like" title="좋아요"></router-link>
                         <router-link :class="{ active : this.$route.name == 'AuthPost' }" to="/auth/post" title="내 게시글"></router-link>
                         <router-link :class="{ active : this.$route.name == 'AuthSetting' }" to="/auth/setting" title="설정"></router-link>
                         <div>
@@ -28,6 +28,9 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 로그아웃 -->
+                    <!--
                     <div class="setting">
                         <ul>
                             <li>
@@ -37,6 +40,7 @@
                             </li>
                         </ul>
                     </div>
+                    -->
                 </div>
             </div>
         </div>
