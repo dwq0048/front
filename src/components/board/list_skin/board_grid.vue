@@ -5,12 +5,12 @@
                 <div class="love">
                     <div>
                         <i><font-awesome-icon :icon="faHeartR" /></i>
-                        <span>0</span>
+                        <span>{{ item.like.count }}</span>
                     </div>
                 </div>
                 <div class="list">
                     <div class="title">
-                        <h1>{{ item.title }}<span>[0]</span></h1>
+                        <h1>{{ item.title }}<span>[{{ (item.comment)?item.comment:0 }}]</span></h1>
                     </div>
                     <div class="options">
                         <ul>

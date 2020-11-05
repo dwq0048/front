@@ -30,7 +30,7 @@
                             <i><font-awesome-icon :icon="faPlus" /></i>
                             <span :class="{ active : Love }">
                                 <span class="current">{{ LoveCount }}</span>
-                                <span class="fake">{{ LoveFake }}</span>
+                                <span class="fake">{{ LoveCount }}</span>
                             </span>
                         </span>
                     </button>
@@ -59,7 +59,7 @@ import { faHeart as faHeartR, faCommentDots } from '@fortawesome/free-regular-sv
 
 export default {
     name : 'FixCard',
-    props : [ 'count', 'users' ],
+    props : [ 'count', 'users', 'Like' ],
     data(){
         return {
             // Icon
@@ -68,18 +68,27 @@ export default {
             // Variable
             Love : false,
             LoveCount : 0,
-            LoveFake : 0,
 
             FixBot : true
         }
     },
     methods : {
         LOVE_ME(){
+            const old = this.Love
             this.Love = (this.Love) ? false : true;
+
+            if(this.Love && !old){      // Up
+                this.LoveCount++
+            }else{                      // Down
+                this.LoveCount--
+            }
+
+            this.$emit('click-love', undefined);
         }
     },
     created(){
-        this.LoveFake = Number( this.LoveCount + 1 );
+        this.Love = this.Like.love;
+        this.LoveCount = this.Like.count;
     },
     mounted(){
         SET_SCRIPT.optimizedResize();

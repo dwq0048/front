@@ -5,7 +5,7 @@
                 <div v-if="!options">
                     <div>
                         <i><font-awesome-icon :icon="faHeartR" /></i>
-                        <span>0</span>
+                        <span>{{ item.like.count }}</span>
                     </div>
                 </div>
                 <div v-if="options">

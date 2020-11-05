@@ -15,11 +15,12 @@ const Post = {
         }
     },
     actions: {
+        // Write
         POST({commit}, payload){
             return new Promise((resolve, reject) => {
                 axios({
                     method: 'post',
-                    url: `/api/1/board/post`,
+                    url: `/api/1/board/write/post`,
                     data: payload,
                     headers: {'Content-Type': 'multipart/form-data'},
                     withCredentials: true,
@@ -30,11 +31,47 @@ const Post = {
                 })
             })
         },
+        POST_LIKE({commit}, payload){
+            return new Promise((resolve, reject) => {
+                axios({
+                    method: 'post',
+                    url: `/api/1/board/write/post/like`,
+                    data: payload,
+                    withCredentials: true
+                }).then((req) => {
+                    resolve(req);
+                }).catch((err) => {
+                    reject(err);
+                })
+            })
+        },
+        COMMENT_POST({commit}, payload){
+            return new Promise((resolve, reject) => {
+                const SEND = {
+                    board: payload.board,
+                    index: payload.index,
+                    comment: payload.comment
+                }
+
+                axios({
+                    method: 'post',
+                    url: `/api/1/board/write/comment`,
+                    data: SEND,
+                    withCredentials: true
+                }).then((req) => {
+                    resolve(req);
+                }).catch((err) => {
+                    reject(err);
+                })
+            })
+        },
+        
+        // Read
         POST_LIST({commit}, payload){
             return new Promise((resolve, reject) => {
                 axios({
                     method: 'post',
-                    url: `/api/1/board/list/${payload.board}`,
+                    url: `/api/1/board/read/list/${payload.board}`,
                     data: payload,
                     withCredentials: true,
                 }).then((req) => {
@@ -68,6 +105,7 @@ const Post = {
                             }
                         }
                         
+                        // 댓글 카운트
                         if(typeof item.comment == 'object'){
                             if(item.comment.length > 0){
                                 if(typeof item.comment[0] == 'object'){
@@ -85,6 +123,27 @@ const Post = {
                         }else{
                             item.comment = 0;
                         }
+
+                        item.like = { count : 0 };
+
+                        // 좋아요 카운트
+                        if(typeof item.like_count == 'object'){
+                            if(item.like_count.length > 0){
+                                try{
+                                    if(typeof item.like_count[0].count == 'number'){
+                                        item.like.count = item.like_count[0].count;
+                                    }else{
+                                        item.like.count = 0;
+                                    }
+                                }catch(err){
+                                    item.like.count = 0;
+                                }
+                            }else{
+                                item.like.count = 0;
+                            }
+                        }else{
+                            item.like.count = 0
+                        }
                     });
                     resolve(list);
                 }).catch((err) => {
@@ -96,7 +155,7 @@ const Post = {
             return new Promise((resolve, reject) => {
                 axios({
                     method: 'post',
-                    url: `/api/1/board/view/${payload.board}`,
+                    url: `/api/1/board/read/view/${payload.board}`,
                     data: payload,
                     withCredentials: true,
                 }).then((req) => {
@@ -124,6 +183,44 @@ const Post = {
                         }
                     }else{
                         post.comment = 0;
+                    }
+                    
+                    // 좋아요
+                    post.like = { love : false, count : 0 };
+                    if(typeof post.like_check == 'object'){
+                        try {
+                            if(post.like_check.length > 0){
+                                if(typeof post.like_check[0].count == 'number'){
+                                    if(post.like_check[0].count == 1){
+                                        post.like.love = true;
+                                    }else{
+                                        post.like.love = false;
+                                    }
+                                }else {
+                                    post.like.love = false;
+                                }
+                            }else{
+                                post.like.love = false;
+                            }
+                        }catch(err){
+                            post.like.love = false;
+                        }
+                    }
+
+                    if(typeof post.like_count == 'object'){
+                        try {
+                            if(post.like_count.length > 0){
+                                if(typeof post.like_count[0].count == 'number'){
+                                    post.like.count = post.like_count[0].count;
+                                }else {
+                                    post.like.count = 0;
+                                }
+                            }else{
+                                post.like.count = 0;
+                            }
+                        }catch(err){
+                            post.like.count = 0;
+                        }
                     }
 
                     // 조회수 추출
@@ -166,25 +263,19 @@ const Post = {
                 })
             })
         },
-        COMMENT_POST({commit}, payload){
+        POST_LIKE_READ({commit}, payload){
             return new Promise((resolve, reject) => {
-                const SEND = {
-                    board: payload.board,
-                    index: payload.index,
-                    comment: payload.comment
-                }
-
                 axios({
                     method: 'post',
-                    url: `/api/1/board/comment/reply`,
-                    data: SEND,
+                    url: `/api/1/board/read/post/like`,
+                    data: payload,
                     withCredentials: true
                 }).then((req) => {
                     resolve(req);
                 }).catch((err) => {
                     reject(err);
-                })
-            })
+                });
+            });
         },
         COMMENT_LIST({commit, dispatch}, payload){
 			return new Promise((resolve, reject) => {
@@ -197,7 +288,7 @@ const Post = {
 
 				axios({
 					method: 'post',
-					url: `/api/1/board/comment/`,
+					url: `/api/1/board/read/comment/`,
 					data: SEND,
 					withCredentials : true
 				}).then((req) => {

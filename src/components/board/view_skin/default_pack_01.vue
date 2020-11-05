@@ -81,7 +81,7 @@
                     <div class="right">
                         <span>조회수 : {{ post.count }}</span>
                         <span>댓글수 : {{ post.comment }}</span>
-                        <span>좋아요 : {{ 0 }}</span>
+                        <span>좋아요 : {{ post.like.count }}</span>
                     </div>
                 </div>
             </div>
@@ -92,7 +92,7 @@
             </div>
 
             <!-- Card -->
-            <card-skin :count="post.comment" :users="post.users" />
+            <card-skin v-if="post" :count="post.comment" :users="post.users" :Like="Like" @click-love="ClickLove()" />
             <!-- Card End -->
 
             <div class="setting">
@@ -133,7 +133,11 @@ export default {
             board: this.info.board,
             post: false,
 
+            // Icon
             faList, faCaretLeft, faCaretRight, faShareSquare, faPlus, faArrowLeft, faArrowRight, faEllipsisH, faTimes,
+
+            // Variable
+            Like : { love : false, count : 0 }
         }
     },
     components: {
@@ -142,17 +146,32 @@ export default {
         'card-skin' : CardSkin,
     },
     methods : {
-        ...mapActions(postStore, [ 'POST_VIEW' ]),
+        ...mapActions(postStore, [ 'POST_VIEW', 'POST_LIKE', 'POST_LIKE_READ' ]),
+
+        ClickLove(){
+            this.Like.love = (this.Like.love) ? false : true;
+            const data = { index : this.id, state : this.Like.love };
+
+            console.log(data);
+
+            this.POST_LIKE(data).then((req) => {
+                console.log(req);
+            }).catch((err) => {
+                console.log(err);
+            })
+        }
     },
     created(){
-        const data = {
-            index: this.id,
-            board: this.board
-        }
+        const data = { index: this.id, board: this.board }
 
         // 포스트 불러오기
         this.POST_VIEW(data).then((req) => {
             this.post = req;
+
+            this.Like.love = (this.post.like.love) ? true : false;
+            this.Like.count = (typeof this.post.like.count == 'number') ? this.post.like.count : 0;
+
+            console.log(this.Like);
         }).catch((err) => {
             console.log(err)
         });
