@@ -105,45 +105,6 @@ const Post = {
                             }
                         }
                         
-                        // 댓글 카운트
-                        if(typeof item.comment == 'object'){
-                            if(item.comment.length > 0){
-                                if(typeof item.comment[0] == 'object'){
-                                    if(typeof item.comment[0].count == 'number'){
-                                        item.comment = item.comment[0].count;
-                                    }else {
-                                        item.comment = 0;
-                                    }
-                                }else{
-                                    item.comment = 0;
-                                }
-                            }else {
-                                item.comment = 0;
-                            }
-                        }else{
-                            item.comment = 0;
-                        }
-
-                        item.like = { count : 0 };
-
-                        // 좋아요 카운트
-                        if(typeof item.like_count == 'object'){
-                            if(item.like_count.length > 0){
-                                try{
-                                    if(typeof item.like_count[0].count == 'number'){
-                                        item.like.count = item.like_count[0].count;
-                                    }else{
-                                        item.like.count = 0;
-                                    }
-                                }catch(err){
-                                    item.like.count = 0;
-                                }
-                            }else{
-                                item.like.count = 0;
-                            }
-                        }else{
-                            item.like.count = 0
-                        }
                     });
                     resolve(list);
                 }).catch((err) => {
@@ -169,62 +130,6 @@ const Post = {
                         try { post.users = post.users[0] }
                         catch(e){ post.users = { nickname : '익명', type : undefined } }
                     }
-
-                    // 댓글수 추출
-                    if(typeof req.data.payload.comment == 'object'){
-                        if(typeof req.data.payload.comment[0] == 'object'){
-                            if(typeof req.data.payload.comment[0].count == 'number'){
-                                post.comment = req.data.payload.comment[0].count;
-                            }else{
-                                post.comment = 0;
-                            }
-                        }else{
-                            post.comment = 0;
-                        }
-                    }else{
-                        post.comment = 0;
-                    }
-                    
-                    // 좋아요
-                    post.like = { love : false, count : 0 };
-                    if(typeof post.like_check == 'object'){
-                        try {
-                            if(post.like_check.length > 0){
-                                if(typeof post.like_check[0].count == 'number'){
-                                    if(post.like_check[0].count == 1){
-                                        post.like.love = true;
-                                    }else{
-                                        post.like.love = false;
-                                    }
-                                }else {
-                                    post.like.love = false;
-                                }
-                            }else{
-                                post.like.love = false;
-                            }
-                        }catch(err){
-                            post.like.love = false;
-                        }
-                    }
-
-                    if(typeof post.like_count == 'object'){
-                        try {
-                            if(post.like_count.length > 0){
-                                if(typeof post.like_count[0].count == 'number'){
-                                    post.like.count = post.like_count[0].count;
-                                }else {
-                                    post.like.count = 0;
-                                }
-                            }else{
-                                post.like.count = 0;
-                            }
-                        }catch(err){
-                            post.like.count = 0;
-                        }
-                    }
-
-                    // 조회수 추출
-                    post.count = req.data.count;
                     
                     // 이미지 골라내기 시작
                     const Element = document.createElement('div');
@@ -292,8 +197,9 @@ const Post = {
 					data: SEND,
 					withCredentials : true
 				}).then((req) => {
-                    const payload = req.data.result;
+                    const payload = req.data.payload;
                     payload.map(item => {
+                        // 시간 설정
                         item.state.date_fix = SET_TIME(item.state.date_fix);
                     });
 

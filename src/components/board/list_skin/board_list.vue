@@ -5,7 +5,7 @@
                 <div v-if="!options">
                     <div>
                         <i><font-awesome-icon :icon="faHeartR" /></i>
-                        <span>{{ item.like.count }}</span>
+                        <span>{{ item.like_count }}</span>
                     </div>
                 </div>
                 <div v-if="options">
@@ -27,7 +27,7 @@
             </div>
             <div class="views">
                 <i><font-awesome-icon :icon="faEye" /></i>
-                <span>0</span>
+                <span>{{ item.views_count }}</span>
             </div>
             <div class="date">
                 <span>{{ item.state.displayDate }}</span>

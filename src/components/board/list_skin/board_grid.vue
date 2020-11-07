@@ -5,7 +5,7 @@
                 <div class="love">
                     <div>
                         <i><font-awesome-icon :icon="faHeartR" /></i>
-                        <span>{{ item.like.count }}</span>
+                        <span>{{ item.like_count }}</span>
                     </div>
                 </div>
                 <div class="list">

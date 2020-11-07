@@ -79,9 +79,9 @@
                         -->
                     </div>
                     <div class="right">
-                        <span>조회수 : {{ post.count }}</span>
+                        <span>조회수 : {{ post.views_count }}</span>
                         <span>댓글수 : {{ post.comment }}</span>
-                        <span>좋아요 : {{ post.like.count }}</span>
+                        <span>좋아요 : {{ post.like_count }}</span>
                     </div>
                 </div>
             </div>
@@ -168,10 +168,8 @@ export default {
         this.POST_VIEW(data).then((req) => {
             this.post = req;
 
-            this.Like.love = (this.post.like.love) ? true : false;
-            this.Like.count = (typeof this.post.like.count == 'number') ? this.post.like.count : 0;
-
-            console.log(this.Like);
+            this.Like.love = (this.post.like_check) ? true : false;
+            this.Like.count = (this.post.like_count) ? this.post.like_count : 0;
         }).catch((err) => {
             console.log(err)
         });

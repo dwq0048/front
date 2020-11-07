@@ -59,8 +59,8 @@
                                     <p class="date">{{ item.state.date_fix }}</p>
                                 </div>
                                 <div class="post">
-                                    <div class="text">
-                                        {{ item.post }}
+                                    <div class="text" v-for="(items, k) in item.post" :key="k">
+                                        {{ items }}
                                     </div>
                                 </div>
                             </div>
@@ -143,6 +143,20 @@ export default {
             view: 15
         }).then((req) => {
             this.list = req;
+
+            this.list.forEach((item, index) => {
+                item.post = new Array( item.post );
+                console.log(item);
+                
+                if(typeof this.list[index + 1] == 'object'){
+                    if(item.users._id == this.list[index + 1].users._id){
+                        item.post.push(this.list[index + 1].post);
+
+                        const idx = a.indexOf(index + 1);
+                        (idx > -1) ? this.list.splice(idx, 1) : undefined;
+                    }
+                }
+            });
 
             socket.on(this.index, (data) => {
                 this.list.unshift(data.payload.data.result);
