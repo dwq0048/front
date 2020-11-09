@@ -73,7 +73,7 @@
                 <div class="display" v-if="post">
                     <div class="left">
                         <span>{{ post.board.name }}</span>
-                        <span>{{ post.state.displayDate }}</span>
+                        <span>{{ post.state.date_display }}</span>
                         <span>{{ post.users.nickname }}</span>
                         <!--
                         -->
@@ -92,36 +92,38 @@
             </div>
 
             <!-- Card -->
-            <card-skin v-if="post" :count="post.comment" :users="post.users" :Like="Like" @click-love="ClickLove()" />
+            <card-skin v-if="post" :count="post.comment" :users="post.users" :Like="Like" @click-love="LoveSubmit()" />
             <!-- Card End -->
 
             <div class="setting">
                 <div class="default_btn">
-                    <button type="button">공유하기</button>
                     <button type="button">신고</button>
+                    <button type="button">공유하기</button>
+                    <button type="button">수정하기</button>
                 </div>
             </div>
         </div>
 
-        <div class="comment" v-if="post">
-            <comment-skin :info="info" :count="post.comment" />
+        <div class="comment">
+            <comment-skin :comment="comment" :count="post.comment" @comment-submit="CommentSubmit" ref="commentRef"/>
         </div>
     </div>
 </template>
 
 <script>
+import io from 'socket.io-client';
 import { mapActions, mapGetters } from 'vuex'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faList, faCaretLeft, faCaretRight, faShareSquare, faPlus, faArrowLeft, faArrowRight, faEllipsisH, faTimes } from '@fortawesome/free-solid-svg-icons'
 
-import { SET_TIME } from '@/store/helper'
-import { SET_BOARD } from '@/store/helper'
+import { SET_TIME, SET_BOARD, SET_SCRIPT } from '@/store/helper'
 
 import SettingPop from '@/components/board/_variety/setting-edit'
 import CardSkin from '@/components/board/_variety/fix_card'
 import CommentSkin from '@/components/board/comment_skin/chat_pack_01'
 
+const socket = io('http://localhost:3000');
 const postStore = 'postStore'
 
 export default {
@@ -132,6 +134,8 @@ export default {
             id: this.$route.params.id,
             board: this.info.board,
             post: false,
+            comment: false,
+            socket: "",
 
             // Icon
             faList, faCaretLeft, faCaretRight, faShareSquare, faPlus, faArrowLeft, faArrowRight, faEllipsisH, faTimes,
@@ -146,18 +150,26 @@ export default {
         'card-skin' : CardSkin,
     },
     methods : {
-        ...mapActions(postStore, [ 'POST_VIEW', 'POST_LIKE', 'POST_LIKE_READ' ]),
+        ...mapActions(postStore, [ 'POST_VIEW', 'POST_LIKE', 'POST_LIKE_READ', 'COMMENT_LIST', 'COMMENT_POST' ]),
 
-        ClickLove(){
+        // 좋아요 입력
+        LoveSubmit(){
             this.Like.love = (this.Like.love) ? false : true;
             const data = { index : this.id, state : this.Like.love };
-
-            console.log(data);
-
             this.POST_LIKE(data).then((req) => {
                 console.log(req);
             }).catch((err) => {
                 console.log(err);
+            })
+        },
+
+        // 댓글 입력
+        CommentSubmit(content){
+            this.COMMENT_POST({ board: this.info.board, index: this.id, comment: content }).then((payload) => {
+                socket.emit(this.id, { payload });
+                this.$refs.commentRef.content = "";
+            }).catch((err) => {
+                console.log(err)
             })
         }
     },
@@ -173,6 +185,69 @@ export default {
         }).catch((err) => {
             console.log(err)
         });
+
+        // 댓글 불러오기
+        this.COMMENT_LIST({ board : this.info.board, index: this.id }).then((req) => {
+            const Temp = req;
+            const Comment = [];
+
+            Temp.map((item) => {
+                let NoneObject = true;
+                let UseObject = {};
+                Comment.forEach((items, index) => {               
+                    if(SET_SCRIPT.CalculationDate(item.state.date) == items.date){
+                        NoneObject = false;
+                        UseObject = { index: index };
+                    }else{
+                        NoneObject = true;
+                    }
+                })
+
+                if(NoneObject){
+                    Comment.push({
+                        user : item.users._id,
+                        date : SET_SCRIPT.CalculationDate(item.state.date),
+                        post : item,
+                        array : new Array( item.post )
+                    });
+                }else{
+                    Comment[UseObject.index].array.push( item.post )
+                }
+            });
+
+            this.comment = Comment;
+
+            // 불러온 뒤 소켓 연결
+            socket.on(this.id, (data) => {
+                data.state.date_display = SET_TIME(data.state.date_fix)
+                const object = {
+                    user : data.users._id,
+                    date : SET_SCRIPT.CalculationDate(data.state.date),
+                    post : data,
+                    array : new Array( data.post )
+                }
+
+                if(this.comment){
+                    if(this.comment.length > 0){
+                        if(typeof this.comment[0].date == 'string'){
+                            if(this.comment[0].date == SET_SCRIPT.CalculationDate(data.state.date)){
+                                this.comment[0].array.unshift(data.post);
+                            }else{
+                                this.comment.unshift(object);
+                            }
+                        }else{
+                            this.comment.unshift(object);
+                        }
+                    }else{
+                        this.comment.unshift(object);
+                    }
+                }else{
+                    this.comment.unshift(object);
+                }
+            });
+        }).catch((err) => {
+            console.log(err);
+        });
     }
 }
 </script>
@@ -182,6 +257,7 @@ export default {
         & {
             width: 100%;
             height: auto;
+            padding-bottom: 15px;
         }
 
         & > .contents {

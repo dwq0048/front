@@ -29,10 +29,10 @@
                     </div>
                     <div class="text">
                         <div>
-                            <textarea v-model="reply"></textarea>
+                            <textarea v-model="content"></textarea>
                         </div>
                     </div>
-                    <div class="submit" @click="Comment">
+                    <div class="submit" @click="Submit">
                         <button type="button">
                             <i><font-awesome-icon :icon="faArrowUp" /></i>
                         </button>
@@ -41,12 +41,12 @@
             </div>
         </div>
         <div class="contents">
-            <div class="no-reply" v-if="!list">
+            <div class="no-reply" v-if="!comment || comment.length <= 0">
                 <p>댓글이 없습니다.</p>
             </div>
-            <div class="reply" v-if="list">
+            <div class="reply" v-if="comment">
                 <ul>
-                    <li v-for="(item, i) in list" :key="i">
+                    <li v-for="(item, i) in comment" :key="i">
                         <div>
                             <div class="profile">
                                 <div>
@@ -55,11 +55,11 @@
                             </div>
                             <div class="content">
                                 <div class="title">
-                                    <p class="name">이름</p>
-                                    <p class="date">{{ item.state.date_fix }}</p>
+                                    <p class="name">{{ item.post.users.nickname }}</p>
+                                    <p class="date">{{ item.post.state.date_display }}</p>
                                 </div>
-                                <div class="post">
-                                    <div class="text" v-for="(items, k) in item.post" :key="k">
+                                <div class="post" v-for="(items, k) in item.array" :key="k">
+                                    <div class="text">
                                         {{ items }}
                                     </div>
                                 </div>
@@ -73,29 +73,26 @@
 </template>
 
 <script>
-import io from 'socket.io-client';
-
 import { mapActions, mapGetters } from 'vuex'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPlus, faArrowUp, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { faSmile } from '@fortawesome/free-regular-svg-icons'
 
-const socket = io('http://localhost:3000')
 const userStore = 'userStore'
 const postStore = 'postStore'
 
 export default {
     name: 'comment_chat',
-    props: ['info', 'count'],
+    props: ['comment', 'count'],
     data() {
         return {
+            // Icon
             faPlus, faArrowUp, faSortUp, faSmile,
-            reply: '',
-            page: 0,
-            index: false,
-            list: false,
-            socket: "",
 
+            // Variable
+            content : "",
+
+            // Menu
             Menu : {
                 options : {},
                 children : [
@@ -111,60 +108,13 @@ export default {
         ])
     },
     methods: {
-        ...mapActions(postStore, [
-            'COMMENT_LIST', 'COMMENT_POST'
-        ]),
         MenuActive(option){
             this.Menu.children.map(item => { item.Active = false });
             this.Menu.children[option].Active = true;
         },
-        Comment(){
-            this.COMMENT_POST({
-                board: this.info.board,
-                index: this.index,
-                comment: this.reply
-            }).then((payload) => {
-                socket.emit(this.index, {
-                    payload
-                });
-            }).catch((err) => {
-                console.log(err)
-            })
+        Submit(){
+            this.$emit('comment-submit', this.content);
         }
-    },
-    created() {
-        this.index = this.$route.params.id;
-
-        // 댓글 불러오기
-        this.COMMENT_LIST({
-            board: this.info.board,
-            index: this.index,
-            page: this.page,
-            view: 15
-        }).then((req) => {
-            this.list = req;
-
-            this.list.forEach((item, index) => {
-                item.post = new Array( item.post );
-                console.log(item);
-                
-                if(typeof this.list[index + 1] == 'object'){
-                    if(item.users._id == this.list[index + 1].users._id){
-                        item.post.push(this.list[index + 1].post);
-
-                        const idx = a.indexOf(index + 1);
-                        (idx > -1) ? this.list.splice(idx, 1) : undefined;
-                    }
-                }
-            });
-
-            socket.on(this.index, (data) => {
-                this.list.unshift(data.payload.data.result);
-            });
-        }).catch((err) => {
-            console.log(err);
-        });
-
     }
 }
 </script>
@@ -508,7 +458,7 @@ export default {
                                 & > .post {
                                     & {
                                         position: relative;
-                                        display: inline-block;
+                                        display: table;
                                         font-size: #{$font-size};
                                         background-color: rgb(202, 234, 247);
                                         margin-top: 10px;

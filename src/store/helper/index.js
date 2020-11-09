@@ -67,6 +67,16 @@ const SET_SCRIPT = {
           };
           i.src = file
         })
+    },
+    CalculationDate(date){
+        const current = new Array();
+        const time = new Date(date);
+        current.push(time.getFullYear());
+        current.push(time.getMonth() + 1);
+        current.push(time.getDate());
+        current.push(time.getHours());
+        current.push(time.getMinutes());
+        return current.join('');
     }
 }
 

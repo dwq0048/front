@@ -122,7 +122,7 @@ const Post = {
                 }).then((req) => {
                     let post = req.data.payload;
                     
-                    post.state.displayDate = SET_TIME(post.state.date_fix);
+                    post.state.date_display = SET_TIME(post.state.date_fix);
                     post.board = { original: post.board, name: SET_BOARD.category(post.board) }
 
                     // 유저 정보
@@ -182,15 +182,9 @@ const Post = {
                 });
             });
         },
-        COMMENT_LIST({commit, dispatch}, payload){
+        COMMENT_LIST({commit}, payload){
 			return new Promise((resolve, reject) => {
-                const SEND = {
-                    board: payload.board,
-                    index: payload.index,
-                    page: payload.page,
-                    view: payload.view
-                }
-
+                const SEND = { board: payload.board, index: payload.index, comment : payload.comment }
 				axios({
 					method: 'post',
 					url: `/api/1/board/read/comment/`,
@@ -198,11 +192,9 @@ const Post = {
 					withCredentials : true
 				}).then((req) => {
                     const payload = req.data.payload;
-                    payload.map(item => {
-                        // 시간 설정
-                        item.state.date_fix = SET_TIME(item.state.date_fix);
-                    });
-
+                    payload.map((item) => {
+                        item.state.date_display = SET_TIME(item.state.date_fix)
+                    })
 					resolve(payload);
 				}).catch((err) => {
 					reject(err)

@@ -10,7 +10,9 @@
                 </div>
                 <div class="list">
                     <div class="title">
-                        <h1>{{ item.title }}<span>[{{ (item.comment)?item.comment:0 }}]</span></h1>
+                        <router-link :to="'/'+info.board+'/'+item._id">
+                            <h1>{{ item.title }}<span>[{{ (item.comment)?item.comment:0 }}]</span></h1>
+                        </router-link>
                     </div>
                     <div class="options">
                         <ul>
@@ -24,13 +26,15 @@
                     </div>
                 </div>
                 <div class="thumbnail">
+                    <router-link :to="'/'+info.board+'/'+item._id">
                         <i v-if="(item.meta.thumbnail == undefined) ? true : false">
                             <font-awesome-icon :icon="faImage" />
                         </i>
-                    <img
-                        :src="`http://127.0.0.1:3000/images/${item.images[item.meta.thumbnail]}?resize=480`"
-                        v-if="(item.meta.thumbnail != undefined) ? true : false"
-                    />
+                        <img
+                            :src="`http://127.0.0.1:3000/images/${item.images[item.meta.thumbnail]}?resize=480`"
+                            v-if="(item.meta.thumbnail != undefined) ? true : false"
+                        />
+                    </router-link>
                 </div>
             </div>
         </li>
@@ -128,20 +132,28 @@ export default {
                             display: block;
                         }
 
-                        & > h1 {
+                        & > a {
                             & {
-                                font-size: #{$font-size + 1};
+                                text-decoration: none;
                                 color: #555;
-                                font-weight: bold;
-                                margin: 0; padding: 0;
-                                line-height: 1.3;
+                                display: block;
                             }
 
-                            & > span {
+                            & > h1 {
                                 & {
-                                    color: $bg-blue;
+                                    font-size: #{$font-size + 1};
+                                    color: #555;
                                     font-weight: bold;
-                                    padding-left: 5px;
+                                    margin: 0; padding: 0;
+                                    line-height: 1.3;
+                                }
+
+                                & > span {
+                                    & {
+                                        color: $bg-blue;
+                                        font-weight: bold;
+                                        padding-left: 5px;
+                                    }
                                 }
                             }
                         }
@@ -197,24 +209,26 @@ export default {
                         }
                     }
 
-                    & > i {
-                        & {
-                            position: absolute;
-                            color: #bbb;
-                            font-size: #{$font-size + 4};
-                            left: 50%; top: 50%;
-                            @include transform(translate(-50%, -50%));
+                    & > a {
+                        & > i {
+                            & {
+                                position: absolute;
+                                color: #bbb;
+                                font-size: #{$font-size + 4};
+                                left: 50%; top: 50%;
+                                @include transform(translate(-50%, -50%));
+                            }
                         }
-                    }
 
-                    & > img {
-                        & {
-                            position: absolute;
-                            display: block;
-                            width: 100%; height: 100%;
-                            left: 50%; top: 50%;
-                            object-fit: cover;
-                            @include transform(translate(-50%, -50%));
+                        & > img {
+                            & {
+                                position: absolute;
+                                display: block;
+                                width: 100%; height: 100%;
+                                left: 50%; top: 50%;
+                                object-fit: cover;
+                                @include transform(translate(-50%, -50%));
+                            }
                         }
                     }
                 }
