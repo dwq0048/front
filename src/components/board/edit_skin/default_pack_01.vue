@@ -118,7 +118,7 @@
 
 					<button type="button" @click="Submit">
 						<i><font-awesome-icon :icon="faEdit" /></i>
-						<span>글쓰기</span>
+						<span>{{ (PostFixed) ? '수정하기' : '작성하기' }}</span>
 					</button>
 				</div>
 			</div>
@@ -206,7 +206,7 @@ export default {
 						showOnlyCurrent: true,
 					}),
         		],
-				content: ``,
+				content: '',
 				onUpdate: ({ getHTML }) => {
 					this.Post.content = getHTML();
 				},
@@ -252,9 +252,7 @@ export default {
 			],
 
 			// Swiper
-			ImageSwipeOption : {
-
-			},
+			ImageSwipeOption : {},
 			
 			// Icon
 			faPlus, faFileUpload, faFile, faChevronLeft,
@@ -268,6 +266,7 @@ export default {
 			// Storage
 			StorageImages : [],
 			StorageHashs : [],
+			StorageEdit : false,
 
 			// State
 			ImagesActive : {
@@ -277,6 +276,7 @@ export default {
 				ratio : 0
 			},
 			ImagesThumbnail : undefined,
+			PostFixed : false,
 			
 			CheckSetting : { search : true, anonymous : false, private : false },
 
@@ -289,7 +289,7 @@ export default {
 	},
 	methods: {
 		...mapActions(postStore, [
-			'POST'
+			'POST', 'POST_VIEW'
 		]),
 		UpdateImage(option){
 			this.StorageImages = option;
@@ -355,6 +355,8 @@ export default {
 				ImageList.push(toFile);
 			});
 
+			console.log(ImageList);
+
 			const ImageRequest = new FileListItems(ImageList);
 
 			const fs = new FormData();
@@ -374,6 +376,55 @@ export default {
 			});
 		}
 	},
+	created(){
+		this.PostFixed = (typeof this.$route.params.id == 'string') ? true : false;
+
+		// 포스트 수정의 경우
+		if(this.PostFixed){
+			const data = { index : this.$route.params.id, board : this.info.board };
+			this.POST_VIEW(data).then((req) => {
+				this.StorageEdit = req;
+
+				// 제목 변경
+				this.Post.title = this.StorageEdit.title;
+				// 내용 변경
+				this.Post.content = this.StorageEdit.post;
+				this.editor.setContent(this.StorageEdit.post);
+				// Meta 변경
+				if(typeof this.StorageEdit.meta == 'object'){
+					// 카테고리 변경
+					if(typeof this.category == 'string'){
+						if(typeof this.StorageEdit.meta.category == 'string'){
+							this.category = this.StorageEdit.meta.category;
+						}
+					}
+					// 공개 설정 변경
+					if(typeof this.CheckSetting == 'object'){
+						if(typeof this.StorageEdit.meta.openSetting == 'object'){
+							for(let item in this.CheckSetting){
+								if(typeof this.StorageEdit.meta.openSetting[item] == 'boolean'){
+									this.CheckSetting[item] = this.StorageEdit.meta.openSetting[item];
+								}
+							}
+						}
+					}
+					// 헤시 변경
+					if(typeof this.StorageHashs == 'object'){
+						if(typeof this.StorageEdit.meta.hash == 'object'){
+							if(typeof this.$refs.HashArea == 'object'){
+								if(typeof this.$refs.HashArea.SubStorageHashs == 'object'){
+									this.StorageHashs = this.StorageEdit.meta.hash;
+									this.$refs.HashArea.SubStorageHashs = this.StorageEdit.meta.hash;
+								}
+							}
+						}
+					}
+				}
+			}).catch((err) => {
+				console.log(err);
+			})
+		}
+	}
 }
 </script>
 

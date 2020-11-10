@@ -64,13 +64,19 @@ const routes = [
 		path: '/notice/edit',
 		name: 'NoticeEdit',
 		component: () => import('@/views/board/notice/edit'),
-		beforeEnter: before()
+		beforeEnter: before(),
+		children: [
+			{
+				path: ':id',
+				name: 'NoticeEditFixed',
+			}
+		]
 	},
 	{
 		path: '/notice/:id',
 		name: 'NoticePost',
 		component: () => import('@/views/board/notice/post'),
-		beforeEnter: before()
+		beforeEnter: before(),
 	},
 
 	// 자유게시판
@@ -84,7 +90,13 @@ const routes = [
 		path: '/free/edit',
 		name: 'FreeEdit',
 		component: () => import('@/views/board/free/edit'),
-		beforeEnter: before()
+		beforeEnter: before(),
+		children: [
+			{
+				path: ':id',
+				name: 'FreeEditFixed',
+			}
+		]
 	},
 	{
 		path: '/free/:id',

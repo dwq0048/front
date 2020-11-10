@@ -331,6 +331,9 @@ export default {
             this.$emit('update-thumbnail', this.SubImagesThumbnail);
             this.$emit('update-image', this.SubStorageImages);
             this.$emit('update-image-active', this.SubImagesActive);
+
+            
+            console.log(this.SubStorageImages);
         },
 		EditorActive(index){
 			this.EditorMenu.map(item => {
@@ -415,10 +418,33 @@ export default {
 						}
                     });
 
+
 					for await (const item of storage){
 						const src = await SET_BOARD.encodeBase64ImageFile(item);
                         const options = await SET_SCRIPT.getImageDimensions(src);
-                        const index = _this.SubStorageImages.length;
+
+                        const PriKey = (string) => {
+                            const getRandomInt = (min, max) => {
+                                min = Math.ceil(min);
+                                max = Math.floor(max);
+                                return Math.floor(Math.random() * (max - min)) + min;
+                            }
+                            const current = new Array();
+                            const time = new Date();
+                            current.push(getRandomInt(0,100));
+                            current.push(time.getDate());
+                            current.push(time.getHours());
+                            current.push(time.getFullYear());
+                            current.push(time.getMinutes());
+                            current.push(time.getSeconds());
+                            current.push(time.getMonth() + 1);
+                            current.push(time.getMilliseconds());
+                            current.push(string);
+
+                            return current.join('');
+                        }
+
+                        const index = PriKey(_this.SubStorageImages.length);
 						const position = {
 							width: options.w,
 							height: options.h,
@@ -426,6 +452,7 @@ export default {
 						}
 
                         _this.SubStorageImages.push({
+                            index : index,
 							base : src,
 							type : item.type,
 							size : item.size,
@@ -467,11 +494,14 @@ export default {
                     _this.FixedMove(false);
 
                     ref['UploadImage'].value = '';
+
+                    console.log(_this.SubStorageImages);
 				},
 			}
 
 			try{
-				Spend[type](type);
+                Spend[type](type);
+                console.log(this.SubStorageImages);
 			} catch(err) {
 				console.log(err);
 			}

@@ -43,6 +43,7 @@ export default {
                 this.EnterChars(event, able);
                 this.SpecialChars(event, able);
             }
+            console.log(this.SubStorageHashs);
         },
         EnterChars(event, able){
             // enter, spacebar

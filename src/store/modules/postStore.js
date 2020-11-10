@@ -156,8 +156,14 @@ const Post = {
                         } catch(error) { undefined }
 
                         const result = (query.length != 0) ? '?'+query.join('&') : '';
-                        item.setAttribute("src", `http://127.0.0.1:3000/images/${post.ImageMeta[index]._id + result}`);
-                        item.setAttribute("style", `max-width: ${post.ImageMeta[index].meta.width}px`);
+                        if(typeof post.ImageMeta[index] == 'object'){
+                            if(typeof post.ImageMeta[index]._id){
+                                item.setAttribute("src", `http://127.0.0.1:3000/images/${post.ImageMeta[index]._id + result}`);
+                            }
+                            if(typeof post.ImageMeta[index].meta){
+                                item.setAttribute("style", `max-width: ${post.ImageMeta[index].meta.width}px`);
+                            }
+                        }
                     });
                     post.post = Element.outerHTML;
                     
