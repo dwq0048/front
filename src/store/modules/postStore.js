@@ -130,41 +130,44 @@ const Post = {
                         try { post.users = post.users[0] }
                         catch(e){ post.users = { nickname : '익명', type : undefined } }
                     }
-                    
-                    // 이미지 골라내기 시작
+
+                    // 이미지 인덱스 지정 시작
                     const Element = document.createElement('div');
                     Element.innerHTML = post.post;
-                    const DataElement = Element.querySelectorAll(`[data-index]`);
-                    DataElement.forEach(item => {
+                    Element.querySelectorAll(`[data-index]`).forEach(item => {
                         const index = item.getAttribute("data-index");
-                        let query = [];
+                        post.ImageMeta.map(list => {
+                            if(typeof list.meta == 'object'){
+                                if(typeof list.meta.index =='string'){
+                                    if(index == list.meta.index){
+                                        let query = [];
+                                        let resize = { option : false, width : 0 };
+                                        if(typeof list.meta.options == 'object'){
+                                            if(typeof list.meta.options.resize == 'object'){
+                                                resize.option = list.meta.options.resize;
+                                                resize.option.forEach(value => {
+                                                    (resize.width < value) ? resize.width = value : undefined
+                                                });
+                                                (resize.width < 960) ? resize.width = 0 : undefined;
+                                                (resize.width != 0) ? query.push(`${encodeURIComponent('resize')}=${encodeURIComponent(resize.width)}`) : undefined;
+                                            }
+                                        }
+                                        const result = (query.length != 0) ? '?'+query.join('&') : '';
+                                        if(typeof list._id == 'string'){
+                                            item.setAttribute("src", `http://127.0.0.1:3000/images/${list._id + result}`);
+                                        }
 
-                        try {
-                            let resize = { option : false, width: 0 };
-                            resize.option = post.ImageMeta[index].meta.options.resize;
-                            resize.option.forEach(value => {
-                                if(resize.width < value){
-                                    resize.width = value
+                                        if(typeof list.meta == 'object'){
+                                            if(typeof list.meta.width == 'number'){
+                                                item.setAttribute("style", `max-width: ${list.meta.width}px`);
+                                            }
+                                        }
+                                    }
                                 }
-                            });
-                            // if pc
-                                if(resize.width < 960){
-                                    resize.width = 0;
-                                }
-                            // if pc end
-                            (resize.width != 0) ? query.push(`${encodeURIComponent('resize')}=${encodeURIComponent(resize.width)}`) : undefined;
-                        } catch(error) { undefined }
-
-                        const result = (query.length != 0) ? '?'+query.join('&') : '';
-                        if(typeof post.ImageMeta[index] == 'object'){
-                            if(typeof post.ImageMeta[index]._id){
-                                item.setAttribute("src", `http://127.0.0.1:3000/images/${post.ImageMeta[index]._id + result}`);
                             }
-                            if(typeof post.ImageMeta[index].meta){
-                                item.setAttribute("style", `max-width: ${post.ImageMeta[index].meta.width}px`);
-                            }
-                        }
+                        });
                     });
+                    // 이미지 인덱스 지정 끝
                     post.post = Element.outerHTML;
                     
 

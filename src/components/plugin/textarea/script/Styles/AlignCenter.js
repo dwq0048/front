@@ -1,6 +1,26 @@
 import { Node } from 'tiptap'
 import { wrappingInputRule, setBlockType, toggleWrap } from 'tiptap-commands'
 
+const test = (styleAttr) => {
+  let result = '';
+  const styleArray = styleAttr ? styleAttr.split(';') : [];
+
+  styleArray.forEach(function(value) {
+    const v = value.split(':');
+
+    if (v.length === 2) {
+      const key = v[0].toLowerCase().trim();
+      const value = v[1].toLowerCase().trim();
+    
+      if(key == 'text-align' && ( value == 'left' || value == 'center' || valye == 'right' )){
+        result += key + ': ' + value + ';'
+      }
+    }
+  });
+
+  return result;
+}
+
 export default class AlignLeft extends Node {
 
   get name() {
@@ -14,7 +34,14 @@ export default class AlignLeft extends Node {
       defining: true,
       draggable: false,
       parseDOM: [
-        { tag: 'p' },
+        {
+          tag: 'p',
+
+          getAttrs: dom => ({
+            style: test(dom.getAttribute('style'))
+          })
+
+        },
       ],
       toDOM: () => ['p', { style: 'text-align: center' }, 0],
     }

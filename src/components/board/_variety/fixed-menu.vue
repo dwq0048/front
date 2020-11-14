@@ -284,6 +284,22 @@ export default {
             this.$emit('update-thumbnail', this.SubImagesThumbnail);
         },
         ImageRemove(index){
+            // 이미지 삭제시 내용에서 index를 조회하여 같은 index의 이미지를 삭제함
+            if(typeof this.SubStorageImages[index] == 'object'){
+                if(typeof this.SubStorageImages[index].index == ('string' || 'number')){
+                    const SubElement = document.createElement('div');
+                    SubElement.innerHTML = this.editor.getHTML();
+                    try {
+                        const key = this.SubStorageImages[index].index;
+                        SubElement.querySelectorAll(`img[data-index]`).forEach((item, index) => {
+                            (item.getAttribute('data-index') == key) ? item.remove() : undefined;
+                        });
+                    }catch(err){ undefined };
+                    this.editor.setContent(SubElement.innerHTML);
+                }
+
+            }
+
             this.SubStorageImages.splice(index, 1);
 
             // 엑티브 설정
@@ -331,9 +347,6 @@ export default {
             this.$emit('update-thumbnail', this.SubImagesThumbnail);
             this.$emit('update-image', this.SubStorageImages);
             this.$emit('update-image-active', this.SubImagesActive);
-
-            
-            console.log(this.SubStorageImages);
         },
 		EditorActive(index){
 			this.EditorMenu.map(item => {

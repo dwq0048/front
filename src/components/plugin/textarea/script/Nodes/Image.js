@@ -37,7 +37,7 @@ export default class Image extends Node {
           tag: 'img[src]',
           getAttrs: dom => ({
             src: dom.getAttribute('src'),
-            index: dom.getAttribute('index'),
+            index: dom.getAttribute('data-index'),
             title: dom.getAttribute('title'),
             alt: dom.getAttribute('alt'),
           }),

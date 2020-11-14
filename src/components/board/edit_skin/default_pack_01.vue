@@ -300,34 +300,6 @@ export default {
 		UpdateThumbnail(option){
 			this.ImagesThumbnail = option;
 		},
-		SetHtml(content) {
-			return sanitizeHtml(content ,{
-				allowedTags: [ 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b', 'i', 's', 'a', 'p', 'hr', 'br', 'ul', 'ol', 'li', 'blockquote', 'img', 'iframe' ],
-				allowedAttributes: {
-					'a': [ 'href', 'name', 'target' ],
-					'*': [ 'style' ],
-					'img': [ 'data-index', 'src' ]
-				},
-				allowedStyles: {
-					'*': {
-						'text-align': [/^left$/, /^right$/, /^center$/]
-					}
-				},
-				allowedIframeHostnames: ['www.youtube.com'],
-				transformTags: {
-					'img': function(tagName, attribs) {
-						let imageIndex = attribs['data-index'];
-
-						return {
-							tagName: 'img',
-							attribs: {
-								'data-index': imageIndex
-							}
-						};
-					}
-				}
-			});
-		},
 		Submit() {
 			const FileListItems = (files) => {
 				var b = new ClipboardEvent("").clipboardData || new DataTransfer()
@@ -335,8 +307,29 @@ export default {
 				return b.files
 			}
 
-			const ContentFixed = this.SetHtml(this.Post.content);
+			let ContentFixed = '';
+			try {
+				const TempElement = document.createElement('div');
+				TempElement.innerHTML = this.editor.getHTML();
+				TempElement.querySelectorAll('img').forEach((item, index) => {
+					item.removeAttribute('src');
+				});
+
+				ContentFixed = TempElement.innerHTML;
+			}catch(err){
+				console.log(err);
+				ContentFixed = undefined;
+			}
+
+			console.log(ContentFixed);
 			this.StorageHashs = this.$refs.HashArea.SubStorageHashs;
+
+			const ImageTemp = [];
+			this.StorageImages.map(item => {
+				if(typeof item.index == 'string'){
+					ImageTemp.push({ index : item.index });
+				}
+			});
 
 			const ImageList = [];
 			const data = {
@@ -347,15 +340,14 @@ export default {
 					category : 'default',
 					openSetting : this.CheckSetting,
 					hash : this.StorageHashs,
+					images : ImageTemp
 				},
 			}
 
-			this.StorageImages.map(item => {
+			this.StorageImages.forEach((item, index) => {
 				const toFile = SET_BOARD.dataURLtoFile(item.base, item.name);
 				ImageList.push(toFile);
 			});
-
-			console.log(ImageList);
 
 			const ImageRequest = new FileListItems(ImageList);
 
