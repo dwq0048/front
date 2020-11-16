@@ -77,6 +77,7 @@ const Post = {
                 }).then((req) => {
                     const index = [];
                     let list = req.data.payload;
+                    let count = req.data.count;
                     list.map(item => {
                         // 시간 설정
                         item.state.displayDate = SET_TIME(item.state.date_fix);
@@ -106,7 +107,12 @@ const Post = {
                         }
                         
                     });
-                    resolve(list);
+
+                    const post = {
+                        list : list,
+                        count : count
+                    }
+                    resolve(post);
                 }).catch((err) => {
                     reject(err);
                 })
@@ -193,7 +199,7 @@ const Post = {
         },
         COMMENT_LIST({commit}, payload){
 			return new Promise((resolve, reject) => {
-                const SEND = { board: payload.board, index: payload.index, comment : payload.comment }
+                const SEND = { board: payload.board, index: payload.index, list: payload.list, view: payload.view };
 				axios({
 					method: 'post',
 					url: `/api/1/board/read/comment/`,

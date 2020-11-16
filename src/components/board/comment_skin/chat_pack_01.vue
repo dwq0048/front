@@ -68,6 +68,14 @@
                     </li>
                 </ul>
             </div>
+            <div class="more">
+                <button type="button" @click="ViewMore()">
+                    <div>
+                        <i><font-awesome-icon :icon="faPlus" /></i>
+                        <span>더보기</span>
+                    </div>
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -83,7 +91,7 @@ const postStore = 'postStore'
 
 export default {
     name: 'comment_chat',
-    props: ['comment', 'count'],
+    props: ['comment', 'count', 'list'],
     data() {
         return {
             // Icon
@@ -111,6 +119,9 @@ export default {
         MenuActive(option){
             this.Menu.children.map(item => { item.Active = false });
             this.Menu.children[option].Active = true;
+        },
+        ViewMore(){
+            this.$emit('view-more')
         },
         Submit(){
             this.$emit('comment-submit', this.content);
@@ -379,7 +390,7 @@ export default {
             & {
                 width: 100%;
                 min-height: 100px;
-                background-color: #f9f9f9;   
+                background-color: #f9f9f9;
             }
 
             & > .no-reply {
@@ -391,6 +402,10 @@ export default {
             }
 
             & > .reply {
+                & {
+                    padding-bottom: 15px;
+                }
+
                 & > ul {
                     & {
                         display: block;
@@ -466,6 +481,71 @@ export default {
                                         padding: 5px 15px;
                                     }
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+
+            & > .more {
+                & {
+                    width: 100%; height: auto;
+                }
+
+                & > button {
+                    & {
+                        display: block;
+                        width: 100%; height:auto;
+                        outline: none; cursor: pointer;
+                        background: none; border: 0;
+                        margin: 0; padding: 0;
+                        text-align: center;
+                        background-color: #eee;
+                        font-size: 0;
+                        padding: 7px 0;
+                        @include box-shadow(2px -1px 2px rgba(0,0,0,0.1));
+                        @include transition(.2s all);
+                    }
+
+                    & > div {
+                        & {
+                            display: inline-block;
+                            font-size: 0;
+                            @include transform(scale(1.0));
+                            @include transition(.2s);
+                        }
+
+                        & > i {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                font-size: #{$font-size - 2};
+                                color: $bg-blue-light;
+                            }
+                        }
+
+                        & > span {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                font-size: #{$font-size};
+                                font-weight: bold;
+                                color: $bg-blue-light;
+                                padding-left: 7px;
+                            }
+                        }   
+                    }
+
+                    &:hover {
+                        & {
+                            background-color: #e9e9e9;
+                            @include transition(.2s all);
+                        }
+
+                        & > div {
+                            & {                                
+                                @include transform(scale(1.05));
+                                @include transition(.2s);
                             }
                         }
                     }

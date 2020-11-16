@@ -105,7 +105,7 @@
         </div>
 
         <div class="comment">
-            <comment-skin :comment="comment" :count="post.comment" @comment-submit="CommentSubmit" ref="commentRef"/>
+            <comment-skin :comment="comment" :count="post.comment" :list="list" @view-more="ViewMore" @comment-submit="CommentSubmit" ref="commentRef"/>
         </div>
     </div>
 </template>
@@ -141,7 +141,9 @@ export default {
             faList, faCaretLeft, faCaretRight, faShareSquare, faPlus, faArrowLeft, faArrowRight, faEllipsisH, faTimes,
 
             // Variable
-            Like : { love : false, count : 0 }
+            Like : { love : false, count : 0 },
+            view : 50,
+            list : 0,
         }
     },
     components: {
@@ -171,7 +173,63 @@ export default {
             }).catch((err) => {
                 console.log(err)
             })
-        }
+        },
+
+        // 댓글 더보기
+        CommentLoad(){
+            const data = { board : this.info.board, list : this.list, view : this.view, index: this.id };
+            return new Promise((resolve, reject) => {
+                this.COMMENT_LIST(data).then((req) => {
+                    const Temp = req;
+                    const Comment = [];
+
+                    Temp.map((item) => {
+                        let NoneObject = true;
+                        let UseObject = {};
+                        Comment.forEach((items, index) => {               
+                            if(SET_SCRIPT.CalculationDate(item.state.date) == items.date){
+                                NoneObject = false;
+                                UseObject = { index: index };
+                            }else{
+                                NoneObject = true;
+                            }
+                        })
+
+                        if(NoneObject){
+                            Comment.push({
+                                user : item.users._id,
+                                date : SET_SCRIPT.CalculationDate(item.state.date),
+                                post : item,
+                                array : new Array( item.post )
+                            });
+                        }else{
+                            Comment[UseObject.index].array.push( item.post )
+                        }
+                    });
+                    
+                    this.list = (req.length > 0) ? this.list + req.length : 0;
+                    console.log(this.list);
+
+                    if(!this.comment){
+                        this.comment = Comment;
+                    }else{
+                        Comment.forEach((item, index) => {
+                            this.comment.push(item);
+                        });
+                    }
+                    resolve(true);
+                }).catch((err) => {
+                    reject(false)
+                });
+            })
+        },
+        ViewMore(){
+            this.CommentLoad().then((req) => {
+                console.log('success'); 
+            }).catch((err) => {
+                console.log(err);
+            });
+        },
     },
     created(){
         const data = { index: this.id, board: this.board }
@@ -186,37 +244,7 @@ export default {
             console.log(err)
         });
 
-        // 댓글 불러오기
-        this.COMMENT_LIST({ board : this.info.board, index: this.id }).then((req) => {
-            const Temp = req;
-            const Comment = [];
-
-            Temp.map((item) => {
-                let NoneObject = true;
-                let UseObject = {};
-                Comment.forEach((items, index) => {               
-                    if(SET_SCRIPT.CalculationDate(item.state.date) == items.date){
-                        NoneObject = false;
-                        UseObject = { index: index };
-                    }else{
-                        NoneObject = true;
-                    }
-                })
-
-                if(NoneObject){
-                    Comment.push({
-                        user : item.users._id,
-                        date : SET_SCRIPT.CalculationDate(item.state.date),
-                        post : item,
-                        array : new Array( item.post )
-                    });
-                }else{
-                    Comment[UseObject.index].array.push( item.post )
-                }
-            });
-
-            this.comment = Comment;
-
+        this.CommentLoad().then((req) => {
             // 불러온 뒤 소켓 연결
             socket.on(this.id, (data) => {
                 data.state.date_display = SET_TIME(data.state.date_fix)

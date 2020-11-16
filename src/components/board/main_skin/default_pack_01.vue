@@ -52,6 +52,9 @@
             <board-list v-if="Active.list" :list="list" :info="info" :page="page"/>
             <board-grid v-if="Active.grid" :list="list" :info="info" />
         </div>
+        <div class="pagenation">
+            <pagenation v-if="count" :count="count" :board="info.board" @list-load="ListLoad()"/>
+        </div>
     </div>
 </template>
 
@@ -64,6 +67,7 @@ import { faThLarge, faThList, faEdit, faFilter, faSearch } from '@fortawesome/fr
 
 import BoardList from '../list_skin/board_list.vue'
 import BoardGrid from '../list_skin/board_grid.vue'
+import Pagenation from '@/components/board/_variety/pagenation'
 
 const postStore = 'postStore'
 
@@ -73,11 +77,15 @@ export default {
     components: {
         'board-list': BoardList,
         'board-grid': BoardGrid,
+        'pagenation' : Pagenation,
     },
     data() {
         return {
             list : [],
             page : 0,
+            view : 15,
+            count : false,
+
             title: '',
             Active: {
                 list: false,
@@ -141,24 +149,30 @@ export default {
                 list: false,
                 grid: false
             }
+        },
+        UpdateData(){
+            this.page = (this.$route.query.page) ? Number(Number(this.$route.query.page) - 1) : 0;
+            (isNaN(this.page)) ? this.page = 0 : undefined;
+            
+            return { board: this.info.board, page: this.page, view: this.view };
+        },
+        ListLoad(){
+            const data = this.UpdateData();
+            
+            this.POST_LIST(data).then((req) => {
+                this.list = req.list;
+                this.count = req.count;
+            }).catch((err) => {
+                console.log(err);
+            })
         }
     },
     created: function(){
         this.title = SET_BOARD.category(this.info.board);
         this.boardStyle(this.info.list);
 
-        const data = {
-            board: this.info.board,
-            page: this.page,
-            view: 15
-        }
-        
-        this.POST_LIST(data).then((req) => {
-            this.list = req;
-        }).catch((err) => {
-            console.log(err);
-        })
-
+        this.UpdateData();
+        this.ListLoad();
     }
 }
 </script>
@@ -358,6 +372,12 @@ export default {
                 border-radius: 5px;
                 overflow: hidden;
                 @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
+            }
+        }
+
+        & > .pagenation {
+            & {
+                padding-top: 25px;
             }
         }
     }
