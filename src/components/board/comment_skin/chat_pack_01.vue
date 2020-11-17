@@ -91,7 +91,7 @@ const postStore = 'postStore'
 
 export default {
     name: 'comment_chat',
-    props: ['comment', 'count', 'list'],
+    props: ['comment', 'count'],
     data() {
         return {
             // Icon
@@ -500,10 +500,9 @@ export default {
                         background: none; border: 0;
                         margin: 0; padding: 0;
                         text-align: center;
-                        background-color: #eee;
                         font-size: 0;
-                        padding: 7px 0;
-                        @include box-shadow(2px -1px 2px rgba(0,0,0,0.1));
+                        padding: 10px 0;
+                        @include box-shadow(2px 0px 2px rgba(0,0,0,0.1));
                         @include transition(.2s all);
                     }
 
@@ -538,8 +537,7 @@ export default {
 
                     &:hover {
                         & {
-                            background-color: #e9e9e9;
-                            @include transition(.2s all);
+                            @include box-shadow(4px -2px 4px rgba(0,0,0,0.1));
                         }
 
                         & > div {

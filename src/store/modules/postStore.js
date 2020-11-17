@@ -199,7 +199,7 @@ const Post = {
         },
         COMMENT_LIST({commit}, payload){
 			return new Promise((resolve, reject) => {
-                const SEND = { board: payload.board, index: payload.index, list: payload.list, view: payload.view };
+                const SEND = { board: payload.board, index: payload.index, limit: payload.limit, last: payload.last };
 				axios({
 					method: 'post',
 					url: `/api/1/board/read/comment/`,

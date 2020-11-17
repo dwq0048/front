@@ -105,7 +105,7 @@
         </div>
 
         <div class="comment">
-            <comment-skin :comment="comment" :count="post.comment" :list="list" @view-more="ViewMore" @comment-submit="CommentSubmit" ref="commentRef"/>
+            <comment-skin :comment="comment" :count="post.comment" @view-more="ViewMore" @comment-submit="CommentSubmit" ref="commentRef"/>
         </div>
     </div>
 </template>
@@ -142,8 +142,11 @@ export default {
 
             // Variable
             Like : { love : false, count : 0 },
-            view : 50,
-            list : 0,
+
+            CommentOptions : {
+                limit : 50,
+                last : false,
+            },
         }
     },
     components: {
@@ -177,12 +180,13 @@ export default {
 
         // 댓글 더보기
         CommentLoad(){
-            const data = { board : this.info.board, list : this.list, view : this.view, index: this.id };
+            const data = { board : this.info.board, index: this.id, limit : this.CommentOptions.limit, last : this.CommentOptions.last };
             return new Promise((resolve, reject) => {
                 this.COMMENT_LIST(data).then((req) => {
                     const Temp = req;
                     const Comment = [];
 
+                    // 같은 시간 댓글 합치기
                     Temp.map((item) => {
                         let NoneObject = true;
                         let UseObject = {};
@@ -206,10 +210,28 @@ export default {
                             Comment[UseObject.index].array.push( item.post )
                         }
                     });
-                    
-                    this.list = (req.length > 0) ? this.list + req.length : 0;
-                    console.log(this.list);
 
+                    // 마지막 게시물 확인
+                    if(Temp.length >= this.CommentOptions.limit){
+                        if(typeof Temp[(this.CommentOptions.limit - 1)] == 'object'){
+                            if(typeof Temp[(this.CommentOptions.limit - 1)]._id == 'string' && typeof Temp[(this.CommentOptions.limit - 1)].state == 'object'){
+                                if(typeof Temp[(this.CommentOptions.limit - 1)].state.date == 'string'){
+                                    this.CommentOptions.last = {
+                                        index : Temp[(this.CommentOptions.limit - 1)]._id,
+                                        date : Temp[(this.CommentOptions.limit - 1)].state.date
+                                    };
+                                }
+                            }else{
+                                this.CommentOptions.last = undefined;
+                            }
+                        }else{
+                            this.CommentOptions.last = undefined;
+                        }
+                    }else{
+                        this.CommentOptions.last = undefined;
+                    }
+
+                    // ???
                     if(!this.comment){
                         this.comment = Comment;
                     }else{
@@ -217,6 +239,7 @@ export default {
                             this.comment.push(item);
                         });
                     }
+
                     resolve(true);
                 }).catch((err) => {
                     reject(false)
@@ -225,7 +248,7 @@ export default {
         },
         ViewMore(){
             this.CommentLoad().then((req) => {
-                console.log('success'); 
+                console.log('success');
             }).catch((err) => {
                 console.log(err);
             });
