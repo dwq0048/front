@@ -12,8 +12,8 @@
                     <div class="select">
                         <select>
                             <option value="" checked>전체</option>
-                            <option value="">주간</option>
-                            <option value="">월간</option>
+                            <option value="">노답</option>
+                            <option value="">예스답</option>
                         </select>
                     </div>
                 </div>
@@ -32,6 +32,7 @@
                 </div>
                 <div class="right">
                     <ul>
+                        <!--
                         <li>
                             <button type="button" title="리스트" v-on:click="boardStyle('list')" :class="{ active: Active.list }">
                                 <i><font-awesome-icon :icon="faThList" /></i>
@@ -42,18 +43,24 @@
                                 <i><font-awesome-icon :icon="faThLarge" /></i>
                             </button>
                         </li>
+                        -->
                     </ul>
                 </div>
             </div>
         </div>
         <div class="list">
+            <board-qna />
+            <!--
             <board-list :info="info" :list="Notice" :page="page" :option="{ style : 'notice' }" />
 
             <board-list v-if="Active.list" :list="list" :info="info" :page="page"/>
             <board-grid v-if="Active.grid" :list="list" :info="info" />
+            -->
         </div>
         <div class="pagenation">
+            <!--
             <pagenation v-if="count" :count="count" :board="info.board" @list-load="ListLoad()"/>
+            -->
         </div>
     </div>
 </template>
@@ -65,8 +72,7 @@ import { SET_BOARD, SET_TIME } from '@/store/helper/'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faThLarge, faThList, faEdit, faFilter, faSearch } from '@fortawesome/free-solid-svg-icons'
 
-import BoardList from '../list_skin/board_list.vue'
-import BoardGrid from '../list_skin/board_grid.vue'
+import BoardQna from '../list_skin/board_qna'
 import Pagenation from '@/components/board/_variety/pagenation'
 
 const postStore = 'postStore'
@@ -75,8 +81,7 @@ export default {
     name: 'DefaultMain',
     props: ['info'],
     components: {
-        'board-list': BoardList,
-        'board-grid': BoardGrid,
+        'board-qna': BoardQna,
         'pagenation' : Pagenation,
     },
     data() {
@@ -129,6 +134,7 @@ export default {
         ...mapActions(postStore, [
             'POST_LIST'
         ]),
+        /*
         boardStyle(type){
             switch(type){
                 case 'list':
@@ -144,6 +150,7 @@ export default {
                     this.Active.list = true;
             }
         },
+        */
         boardReset(){
             this.Active = {
                 list: false,
@@ -168,8 +175,8 @@ export default {
         }
     },
     created: function(){
-        this.title = SET_BOARD.category(this.info.board);
-        this.boardStyle(this.info.list);
+        this.title = "Qna 게시판"//SET_BOARD.category(this.info.board);
+        //this.boardStyle(this.info.list);
 
         this.UpdateData();
         this.ListLoad();

@@ -68,7 +68,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="more">
+            <div class="more" v-if="options.last || options.last != undefined">
                 <button type="button" @click="ViewMore()">
                     <div>
                         <i><font-awesome-icon :icon="faPlus" /></i>
@@ -91,7 +91,7 @@ const postStore = 'postStore'
 
 export default {
     name: 'comment_chat',
-    props: ['comment', 'count'],
+    props: ['comment', 'count', 'options'],
     data() {
         return {
             // Icon

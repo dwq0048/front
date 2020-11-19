@@ -105,7 +105,7 @@
         </div>
 
         <div class="comment">
-            <comment-skin :comment="comment" :count="post.comment" @view-more="ViewMore" @comment-submit="CommentSubmit" ref="commentRef"/>
+            <comment-skin :comment="comment" :count="post.comment" :options="CommentOptions" @view-more="ViewMore" @comment-submit="CommentSubmit" ref="commentRef"/>
         </div>
     </div>
 </template>
@@ -228,6 +228,7 @@ export default {
                             this.CommentOptions.last = undefined;
                         }
                     }else{
+                        // 불러온 게시글이 50개가 안될경우
                         this.CommentOptions.last = undefined;
                     }
 
@@ -235,9 +236,7 @@ export default {
                     if(!this.comment){
                         this.comment = Comment;
                     }else{
-                        Comment.forEach((item, index) => {
-                            this.comment.push(item);
-                        });
+                        Comment.forEach((item, index) => { this.comment.push(item) });
                     }
 
                     resolve(true);

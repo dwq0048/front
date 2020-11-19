@@ -124,6 +124,14 @@ const routes = [
 		component: () => import('@/views/board/photo/post.vue'),
 		beforeEnter: before()
 	},
+
+	// QNA 페이지
+	{
+		path: '/qna',
+		name: 'Qna',
+		component: () => import('@/views/board/qna'),
+		beforeEnter: before()
+	}
 ];
 
 const router = new VueRouter({

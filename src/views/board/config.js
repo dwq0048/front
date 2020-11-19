@@ -13,4 +13,8 @@ const Photo = {
     list: 'grid'
 }
 
-export { Notice, Free, Photo }
+const Qna = {
+    board: 'qna'
+}
+
+export { Notice, Free, Photo, Qna }
