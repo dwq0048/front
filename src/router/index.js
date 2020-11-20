@@ -53,6 +53,14 @@ const routes = [
 		}
 	},
 
+	// 커뮤니티 메인
+	{
+		path: '/community',
+		name: 'Community',
+		component: () => import('@/views/Community'),
+		beforeEnter: before(),
+	},
+
 	// 공지사항 게시판
 	{
 		path: '/notice',
