@@ -10,7 +10,7 @@ const Free = {
 
 const Photo = {
     board: 'photo',
-    list: 'grid'
+    list: 'photo'
 }
 
 const Qna = {

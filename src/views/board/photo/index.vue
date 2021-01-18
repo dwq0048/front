@@ -3,7 +3,11 @@
         <layout-navigation />
         <layout-header />
 
-        <div class="title"></div>
+        <div class="title" >
+            <div class="background"></div>
+            <div class="bg" :style="'background-image:url(' + require(`@/assets/bg.png`)+ ')'"></div>
+        </div>
+        
         <div class="contents">
             <div class="board">
                 <board-skin :info="info" />
@@ -23,7 +27,7 @@ import Navigation from '@/components/layout/navigation'
 import Footer from '@/components/layout/footer'
 
 import MenuSkin from '@/components/board/menu_skin/side_pack_01'
-import BoardSkin from '@/components/board/main_skin/default_pack_01'
+import BoardSkin from '@/components/board/main_skin/photo_pack_01'
 
 import { Photo } from '../config'
 

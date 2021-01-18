@@ -3,7 +3,11 @@
         <layout-navigation />
         <layout-header />
 
-        <div class="title"></div>
+        <div class="title" >
+            <div class="background"></div>
+            <div class="bg" :style="'background-image:url(' + require(`@/assets/bg.png`)+ ')'"></div>
+        </div>
+        
         <div class="contents">
             <div class="main">
                 <!-- SECTION 1 -->
@@ -483,6 +487,115 @@ export default {
                                             font-size: #{$font-size - 2};
                                             color: $bg-blue;
                                             @include transform(translateY(-50%));
+                                        }
+                                    }
+                                }
+
+                                & > ul {
+                                    & {
+                                        display: block;
+                                        width: 100%; height: auto;
+                                        list-style: none;
+                                        font-size: 0;
+                                    }
+
+                                    & > li {
+                                        & {
+                                            display: inline-block;
+                                            vertical-align: top;
+                                            width: 50%; height: auto;
+                                            padding: 10px;
+                                        }
+
+                                        & > div {
+                                            & {
+                                                display: block;
+                                                width: 100%; height: auto;
+                                            }
+
+                                            & > .text {
+                                                & {
+                                                    display: block;
+                                                    width: 100%; height: auto;
+                                                }
+
+                                                & > .title {
+                                                    & {
+                                                        display: block;
+                                                        width: 100%; height: auto;
+                                                    }
+
+                                                    & > h1 {
+                                                        & {
+                                                            display:block;
+                                                            width: 100%; height: auto;
+                                                            font-size: #{$font-size};
+                                                            font-weight: bold;
+                                                            color: #555;
+                                                            line-height: 1;
+                                                        }
+                                                    }
+                                                }
+
+                                                & > .tag {
+                                                    & {
+                                                        display: block;
+                                                        width: 100%; height: auto;
+                                                        padding-top: 10px;
+                                                    }
+
+                                                    & > ul {
+                                                        & {
+                                                            display: block;
+                                                            width: 100%; height: auto;
+                                                            list-style: none;
+                                                            font-size: 0;
+                                                        }
+
+                                                        & > li {
+                                                            & {
+                                                                display: inline-block;
+                                                                vertical-align: top;
+                                                                padding-right: 5px;
+                                                            }
+
+                                                            & > button {
+                                                                & {
+                                                                    display: block;
+                                                                    outline: none; cursor: pointer;
+                                                                    background: none; border: 0;
+                                                                    padding: 0; margin: 0;
+                                                                    font-size: 0;
+                                                                    background-color: #aaa;
+                                                                    border-radius: 3px;
+                                                                    padding: 3px 5px;
+                                                                }
+
+                                                                & > i {
+                                                                    & {
+                                                                        display: inline-block;
+                                                                        font-size: #{$font-size - 4};
+                                                                        line-height: 1;
+                                                                        color: #fff;
+                                                                    }
+                                                                }
+
+                                                                & > span {
+                                                                    & {
+                                                                        display: inline-block;
+                                                                        font-size: #{$font-size - 4};
+                                                                        line-height: 1;
+                                                                        color: #fff;
+                                                                        padding-left: 5px;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+
+                                            /* 여기까지 입니다. */
                                         }
                                     }
                                 }

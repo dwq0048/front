@@ -3,7 +3,11 @@
         <layout-navigation />
         <layout-header />
 
-        <div class="title"></div>
+        <div class="title" >
+            <div class="background"></div>
+            <div class="bg" :style="'background-image:url(' + require(`@/assets/bg.png`)+ ')'"></div>
+        </div>
+        
         <div class="contents">
             <div class="nav">
                 <menu-skin />
