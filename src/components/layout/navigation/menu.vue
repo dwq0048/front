@@ -1,5 +1,5 @@
 <template>
-    <li>
+    <li v-if="!is_mobile()"> <!-- PC -->
         <div class="view">
             <div class="no-padding">
                 <div class="menu">
@@ -82,11 +82,91 @@
             </div>
         </div>
     </li>
+
+    <li v-else> <!-- MOBILE -->
+        <div class="view mobile">
+            <div class="no-padding">
+                <div class="menu">
+                    <div>
+                        <ul>
+                            <li>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <i><font-awesome-icon :icon="faHome" /></i>
+                                            <span>홈페이지</span>
+                                        </div>
+                                    </div>
+                                    <span>
+                                        <div></div>
+                                    </span>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <router-link to="/community">커뮤니티 홈</router-link>
+                                        <router-link to="/notice">공지사항</router-link>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul>
+                            <li>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <i><font-awesome-icon :icon="faInfo" /></i>
+                                            <span>정보</span>
+                                        </div>
+                                    </div>
+                                    <span>
+                                        <div></div>
+                                    </span>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <router-link to="/wiki">위키</router-link>
+                                        <router-link to="/qna">질문</router-link>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul>
+                            <li>
+                                <div>
+                                    <div>
+                                        <div>
+                                            <i><font-awesome-icon :icon="faComments" /></i>
+                                            <span>커뮤니티</span>
+                                        </div>
+                                    </div>
+                                    <span>
+                                        <div></div>
+                                    </span>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <router-link to="/free">자유 게시판</router-link>
+                                        <router-link to="/photo">이미지 게시판</router-link>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </li>
 </template>
 
 <script>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faHome, faInfo, faComments } from '@fortawesome/free-solid-svg-icons'
+
+import { IS_MOBILE } from '@/store/helper/'
 
 export default {
     name: 'navMenu',
@@ -94,6 +174,9 @@ export default {
         return {
             faHome, faInfo, faComments
         }
+    },
+    methods : {
+        is_mobile(){ return IS_MOBILE() }
     }
 }
 </script>
@@ -258,6 +341,49 @@ export default {
 
         & > div.no-padding {
             padding: 0;
+        }
+
+        &.mobile {
+            & > div {
+                & > .menu {
+                    & > div {
+                        & > ul {
+                            & {
+                                width: 100%;
+                            }
+
+                            & > li {
+                                & > div {
+                                    & > div {
+                                        & > div {
+                                            & > i {
+                                                & {
+                                                    padding-right: 10px;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                & > ul {
+                                    & > li {
+                                        & {
+                                            padding-bottom: 25px;
+                                        }
+
+                                        & > a {
+                                            & {
+                                                padding: 10px 25px;
+                                                font-size: #{$font-size - 1};
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 </style>

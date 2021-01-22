@@ -1,6 +1,51 @@
 <template>
-    <li>
+    <li v-if="!is_mobile()"> <!-- PC -->
         <div class="view">
+            <div>
+                <div class="login">
+                    <form v-on:submit.prevent="Login">
+                        <div class="form" :class="{ active: LOGIN_ALERT['ERROR'] }">
+                            <div class="form-input" :class="{ active: LOGIN_ALERT['USER_ID'] }">
+                                <input type="text" placeholder="USER ID / E-MAIL" v-model="USER_ID"/>
+                            </div>
+                            <div class="form-input" :class="{ active: LOGIN_ALERT['USER_PW'] }">
+                                <input type="password" placeholder="PASSWORD" v-model="USER_PW"/>
+                            </div>
+                            <div class="checkbox">
+                                <label>
+                                    <div class="form-checkbox">
+                                        <input type="checkbox" />
+                                        <div>
+                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 10 10">
+                                                <path d="M 1,6 3,8 8,1" style="stroke:#000; stroke-width:2; fill:none;" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <p>자동 로그인</p>
+                                </label>
+                            </div>
+                            <div class="form-submit">
+                                <button type="submit">LOGIN</button>
+                            </div>
+
+                            <div class="alert" :class="{ active: LOGIN_ALERT['ALERT'] }">
+                                <p>{{ LOGIN_ALERT['MESSAGE'] }}</p>
+                            </div>
+
+                            <div class="line">
+                                <div>
+                                    <p>OR</p>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </li>
+
+    <li v-else>
+        <div class="view mobile"> <!-- MOBILE -->
             <div>
                 <div class="login">
                     <form v-on:submit.prevent="Login">
@@ -47,6 +92,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { IS_MOBILE } from '@/store/helper/'
 
 const userStore = 'userStore'
 
@@ -68,6 +114,7 @@ export default {
         ...mapActions(userStore, [
             'USER_ALERT','USER_LOGIN'
         ]),
+        is_mobile(){ return IS_MOBILE() },
         Login : function(){
             const payload = {
                 USER_ID: this.USER_ID,

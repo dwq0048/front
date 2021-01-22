@@ -4,6 +4,7 @@
             <div>
                 <div class="thumbnail">
                     <div>
+                        {{ item }}
                         <img
                             :src="`http://127.0.0.1:3000/images/${item.images[item.meta.thumbnail]}?resize=480`"
                             v-if="(item.meta.thumbnail != undefined) ? true : false"
@@ -90,7 +91,7 @@ export default {
         return {
             faHeartR, faImage, faEye, faComment
         }
-    }
+    },
 }
 </script>
 

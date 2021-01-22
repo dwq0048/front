@@ -1,5 +1,5 @@
 <template>
-	<div class="home">
+	<div class="home" v-if="!is_mobile()"> <!-- PC -->
 		<layout-navigation />
 		<layout-header />
 
@@ -11,30 +11,6 @@
 			</div>
 			<!-- Title End -->
 
-			<!--
-			<div class="main-menu">
-				<div>
-					<ul>
-						<li>
-							<button type="button">
-								<h1>홈페이지</h1>
-							</button>
-						</li>
-						<li>
-							<button type="button">
-								<h1>정보</h1>
-							</button>
-						</li>
-						<li>
-							<button type="button">
-								<h1>커뮤니티</h1>
-							</button>
-						</li>
-					</ul>
-				</div>
-			</div>
-			-->
-
 			<!-- Pee -->
 			<div class="section-2">
 				<pee :grid="{ img : 'auto' }" />
@@ -42,12 +18,29 @@
 			<!-- Pee End -->
 
 		</div>
+
+		<layout-footer />
+	</div>
+	<div class="home mobile" v-else> <!-- Mobile -->
+		<layout-navigation />
+		<layout-header />
+		
+		<div class="contents">
+
+		</div>
+
+		<layout-footer />
 	</div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+import { IS_MOBILE } from '@/store/helper/'
+
 import Header from '@/components/layout/header'
 import Navigation from '@/components/layout/navigation'
+import Footer from '@/components/layout/footer'
+
 import Search from '@/components/widget/main/search'
 import Grid from '@/components/widget/main/grid-square'
 
@@ -56,8 +49,15 @@ export default {
 	components: {
 		'layout-header': Header,
 		'layout-navigation': Navigation,
+        'layout-footer' : Footer,
 		'layout-search': Search,
 		'pee' : Grid
+	},
+	methods : {
+		is_mobile(){ return IS_MOBILE() }
+	},
+	created(){
+		console.log(IS_MOBILE());
 	}
 }
 
@@ -77,7 +77,6 @@ export default {
 			& {
 				position: absolute;
 				right: 100%; top: 50%;
-				//@include transform(translateY(-50%));
 			}
 
 			& > h1 {
@@ -94,81 +93,6 @@ export default {
 				line-height: 1.6;
 			}
 		}
-	}
-
-	.main-menu {
-		& {
-			width: 100%;
-			height: 3px;
-			background-color: $bg-orange;
-		}
-
-		& > * {
-			display: none;
-		}
-		/*
-		& {
-			width: 100%;
-			max-width: $wrap;
-			margin: 0 auto;
-			height: 50px;
-			background-color: #555;
-			//border: 2px solid $bg-blue;
-			margin-top: 50px;
-			border-radius: 5px;
-            @include box-shadow(5px 5px 5px rgba(0,0,0,0.1));
-		}
-
-		& > div {
-			& {
-				width: 100%;
-				max-width: $wrap;
-				height: 100%;
-				margin: 0 auto;
-			}
-
-			& > ul {
-				& {
-					width: 100%;
-					height: 100%;
-					font-size: none;
-					list-style: none;
-					padding-left: 15px;
-				}
-
-				& > li {
-					& {
-						width: auto;
-						height: 100%;
-						display: inline-block;
-					}
-
-					& > button {
-						& {
-							display: inline-block;
-							margin: 0;
-							padding: 0;
-							width: auto;
-							height: 100%;
-							border: 0;
-							background: none;
-							outline: none;
-							padding: 0 15px;
-						}
-						
-
-						& > h1 {
-							& {
-								font-size : #{$font-size};
-								color: #fff;
-								font-weight: 300;
-							}
-						}
-					}
-				}
-			}
-		}
-		*/
 	}
 
 	.section-2 {

@@ -1,5 +1,5 @@
 <template>
-    <div class="board">
+    <div class="board" v-if="!is_mobile()">
         <layout-navigation />
         <layout-header />
 
@@ -19,9 +19,24 @@
 
         <layout-footer />
     </div>
+
+    <div class="board mobile" v-else>
+        <layout-navigation />
+        <layout-header />
+        
+        <div class="contents">
+            <div class="board">
+                <board-skin :info="info" />
+            </div>
+        </div>
+
+        <layout-footer />
+    </div>
 </template>
 
 <script>
+import { IS_MOBILE } from '@/store/helper/'
+
 import Header from '@/components/layout/header'
 import Navigation from '@/components/layout/navigation'
 import Footer from '@/components/layout/footer'
@@ -46,6 +61,9 @@ export default {
         return {
             info: Free,
         }
+    },
+    methods : {
+        is_mobile(){ return IS_MOBILE() }
     }
 }
 </script>

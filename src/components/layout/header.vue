@@ -1,5 +1,5 @@
 <template>
-    <div id="header">
+    <div id="header" v-if="!is_mobile()"> <!-- PC -->
         <div class="top-bar">
             <div>
                 <div class="logo">
@@ -30,14 +30,52 @@
                 </div>
             </div>
         </div>
-        <div class="nav">
+    </div>
 
+    <div id="header" class="mobile" v-else> <!-- MOBILE -->
+        <div class="top-bar">
+            <div>
+                <div class="logo">
+                    <router-link to="/" title="홈으로"><span>VV</span></router-link>
+                </div>
+                <div class="menu" title="메뉴">
+
+                    <!-- sign out -->
+                    <router-link to="/auth/login" title="로그인" v-if="!GET_LOGIN" class="btn">
+                        <i><font-awesome-icon :icon="faSignInAlt" /></i>
+                    </router-link>
+
+                    <!-- sign in -->
+                    
+                    <!--
+                    <router-link to="#" title="검색" v-if="GET_LOGIN" class="btn">
+                        <i><font-awesome-icon :icon="faSearch" /></i>
+                    </router-link>
+                    -->
+
+                    <router-link to="#" title="프로필" v-if="GET_LOGIN" class="btn profile">
+                        <div>
+                            <div>
+
+                            </div>
+                        </div>
+                    </router-link>
+
+                    <a class="ham" v-on:click="Navigation(true)">
+                        <i><font-awesome-icon :icon="faBars" /></i>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { IS_MOBILE } from '@/store/helper/'
+
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faBars, faSignInAlt, faSearch } from '@fortawesome/free-solid-svg-icons'
 
 const userStore = 'userStore';
 
@@ -51,10 +89,17 @@ export default {
             'GET_LOGIN'
         ])
     },
+    data(){
+        return {
+            // Icon
+            faBars, faSignInAlt, faSearch,
+        }
+    },
     methods : {
         ...mapActions([
             'ON_NAVIGATION'
         ]),
+        is_mobile(){ return IS_MOBILE() },
         Navigation : function(value){
             this.ON_NAVIGATION(true)
         }
@@ -93,15 +138,22 @@ export default {
 
                 & > .logo {
                     & {
-                        height: 50px;
+                        width: 50px;
                         background-color: $bg-blue;
                         display: table;
                         vertical-align: middle;
                         float: left;
+                        position: relative;
                         @include box-shadow(5px 5px 15px rgba(0,0,0,0.1));
                     }
 
-                    & > a{
+                    &:after {
+                        content: " ";
+                        display: block;
+                        padding-bottom: 100%;
+                    }
+
+                    & > a {
                         & {
                             color: #fff;
                             font-size: 18px;
@@ -111,6 +163,9 @@ export default {
                             padding: 0 20px;
                             letter-spacing: 1px;
                             text-decoration: none;
+                            position: absolute;
+                            left: 50%; top: 50%;
+                            @include transform(translate(-50%, -50%));
                         }
 
                         & > span {
@@ -170,16 +225,13 @@ export default {
                     & > a{
                         & {
                             display: table-cell;
-                            width: 100px;
-                            height: 35px;
                             vertical-align: middle;
                             text-decoration: none;
                             color: #f1f1f1;
                             text-align: center;
-                            font-size: 13px;
-                            padding: 0;
-                            margin: 0;
-                            letter-spacing: 1px;
+                            width: 100px; height: 35px;
+                            padding: 0; margin: 0;
+                            font-size: #{$font-size - 1};
                             cursor: pointer;
                             @include transform(scale(1));
                             @include transition(all .2s);
@@ -199,20 +251,27 @@ export default {
 
                     & > a.ham {
                         & {
-                            width: 50px;
+                            width: 50px; height: auto;
+                            border: 0; background: none;
+                            padding: 0; margin: 0;
+                            outline: none; font-size: 0;
                             background-color: $bg-blue;
-                            border:none;
-                            @include box-shadow(5px 5px 15px rgba(0,0,0,0.1));
+                            position: relative;
                         }
 
-                        & > div {
+                        &:after {
+                            content: " ";
+                            display: block;
+                            padding-bottom: 100%;
+                        }
+
+                        & > i {
                             & {
-                                width: 20px;
-                                height: 2px;
-                                margin: 6px auto;
-                                background-color: #fff;
-                                display:block;
-                                border-radius: 5px;
+                                position: absolute;
+                                left: 50%; top: 50%;
+                                color: #fff;
+                                font-size: #{$font-size + 7};
+                                @include transform(translate(-50%, -50%));
                             }
                         }
                     }
@@ -265,6 +324,95 @@ export default {
                             }
                         }
 
+                    }
+                }
+            }
+        }
+
+        &.mobile {
+            & > .top-bar {
+                & {
+                    height: 45px;
+                }
+                
+                & > div {
+                    & > .logo {
+                        & {
+                            width: 45px;
+                        }
+
+                        & > a {
+                            & > span {
+                                & {
+                                    font-size: #{$font-size + 2};
+                                }
+                            }
+                        }
+                    }
+
+                    & > .menu {
+                        & {
+                            height: 45px;    
+                        }
+
+                        & > a.btn {
+                            & {
+                                width: 45px; height: auto;
+                                position: relative;
+                                padding: 0; margin: 0;
+                            }
+
+                            & > i {
+                                & {
+                                    position: absolute;
+                                    left: 50%; top: 50%;
+                                    font-size: #{$font-size};
+                                    color: #fff;
+                                    @include transform(translate(-50%, -50%));
+                                }
+                            }
+
+                            &.profile {
+                                & > div {
+                                    & {
+                                        width: 100%; height: 100%;
+                                        position: absolute;
+                                        left: 50%; top: 50%;
+                                        padding: 10px;
+                                        @include transform(translate(-50%, -50%));
+                                    }
+
+                                    & > div {
+                                        & {
+                                            position: relative;
+                                            width: 100%; height: auto;
+                                            border: 1px solid #ddd;
+                                            border-radius: 50%;
+                                            background-color: #fff;
+                                            overflow: hidden;
+                                        }
+
+                                        &:after {
+                                            content: " ";
+                                            display: block;
+                                            padding-bottom: 100%;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        & > a.ham {
+                            & {
+                                width: 45px;
+                            }
+
+                            & > i {
+                                & {
+                                    font-size: #{$font-size + 4};
+                                }
+                            }
+                        }
                     }
                 }
             }

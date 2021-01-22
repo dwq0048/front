@@ -12,6 +12,15 @@ const routes = [
 		beforeEnter: before()
 	},
 	{
+		path: '*',
+		redirect: '/404'
+	},
+	{
+		path: '/404',
+		component: () => import('@/views/404.vue'),
+		beforeEnter: before(),
+	},
+	{
 		path: '/auth',
 		name: 'Auth',
 		component: () => import('@/views/auth/sign/user.vue'),
@@ -124,10 +133,16 @@ const routes = [
 		path: '/photo/edit',
 		name: 'PhotoEdit',
 		component: () => import('@/views/board/photo/edit'),
-		beforeEnter: before()
+		beforeEnter: before(),
+		children: [
+			{
+				path: ':id',
+				name: 'PhotoEditFixed',
+			}
+		]
 	},
 	{
-		path: '/photo/post/:id',
+		path: '/photo/:id',
 		name: 'PhotoPost',
 		component: () => import('@/views/board/photo/post.vue'),
 		beforeEnter: before()

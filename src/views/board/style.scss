@@ -28,62 +28,82 @@
     }
 }
 
-.contents {
-    & {
-        width: 100%;
-        max-width: $wrap;
-        height: auto;
-        margin: -100px auto;
-        text-align: center;
-        @include transition(.2s all);
-    }
-
-    &::after {
-        content: " ";
-        display: block;
-        clear: both;
-    }
-
-    & > .board {
+.board{
+    & > .contents {
         & {
-            width: 900px;
+            width: 100%;
+            max-width: $wrap;
             height: auto;
-            display: inline-block;
-            margin: 0 auto;
-            vertical-align: top;
-            padding: 80px 30px 10px 30px;
-            text-align: left;
+            margin: -100px auto;
+            text-align: center;
             @include transition(.2s all);
         }
-    }
-
-    & > .nav {
-        & {
-            width: 300px;
-            height: auto;
-            display: inline-block;
-            margin-top: 80px;
-            vertical-align: top;
-            text-align: left;
-            @include transition(.2s all);
+    
+        &::after {
+            content: " ";
+            display: block;
+            clear: both;
         }
-    }
-
-    &.hidden {
+    
         & > .board {
             & {
-                width: 100%;
+                width: 900px;
+                height: auto;
+                display: inline-block;
+                margin: 0 auto;
+                vertical-align: top;
+                padding: 80px 30px 10px 30px;
+                text-align: left;
                 @include transition(.2s all);
             }
         }
-
+    
         & > .nav {
             & {
-                width: 0px;
+                width: 300px;
+                height: auto;
+                display: inline-block;
+                margin-top: 80px;
+                vertical-align: top;
+                text-align: left;
                 @include transition(.2s all);
+            }
+        }
+    
+        &.hidden {
+            & > .board {
+                & {
+                    width: 100%;
+                    @include transition(.2s all);
+                }
+            }
+    
+            & > .nav {
+                & {
+                    width: 0px;
+                    @include transition(.2s all);
+                }
+            }
+        }
+    
+    }
+
+    &.mobile {
+        & > .contents {
+            & {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+
+            & > .board {
+                & {
+                    width: 100%;
+                    padding: 0;
+                }
             }
         }
     }
+
 }
 
 /*

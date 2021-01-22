@@ -24,7 +24,7 @@ import Navigation from '@/components/layout/navigation'
 import Footer from '@/components/layout/footer'
 
 import CommentSkin from '@/components/board/comment_skin/chat_pack_02'
-import BoardSkin from '@/components/board/main_skin/photo_pack_01'
+import BoardSkin from '@/components/board/view_skin/photo_pack_01'
 
 import { Photo } from '../config'
 

@@ -1,5 +1,22 @@
 <template>
-    <div id="side" v-bind:class="{ active : GET_NAVIGATION, close : TO_CLOSE }">
+    <div id="side" v-bind:class="{ active : GET_NAVIGATION, close : TO_CLOSE }" v-if="!is_mobile()"> <!-- PC -->
+        <div class="close" title="닫기" v-on:click="Navigation(false)"></div>
+        <div class="contents" ref="side">
+            <div class="banner">
+                <button v-on:clikc="Navigation(false)">
+                    <i><font-awesome-icon :icon="faTimes" /></i>
+                </button>
+            </div>
+            <ul>
+                <nav-login v-if="!GET_LOGIN" />
+                <nav-mypage v-if="GET_LOGIN" />
+                <nav-menu />
+            </ul>
+
+            <div class="scrollBar" ref="scrollBar" :style="styleObject"></div>
+        </div>
+    </div>
+    <div id="side" class="mobile" v-bind:class="{ active : GET_NAVIGATION, close : TO_CLOSE }" v-else> <!-- MOBILE -->
         <div class="close" title="닫기" v-on:click="Navigation(false)"></div>
         <div class="contents" ref="side">
             <div class="banner">
@@ -22,6 +39,7 @@
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { mapActions, mapGetters } from 'vuex'
+import { IS_MOBILE } from '@/store/helper/'
 
 import NavLogin from './login'
 import NavMyPage from './mypage'
@@ -55,6 +73,7 @@ export default {
         ...mapActions([
             'ON_NAVIGATION'
         ]),
+        is_mobile(){ return IS_MOBILE() },
         Navigation(payload){
             if(!payload){
                 this.TO_CLOSE = true;
@@ -87,7 +106,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
     #side {
         & {
             position: fixed;
@@ -317,6 +335,26 @@ export default {
                         }
                     }
                     right: -350px;
+                }
+            }
+        }
+
+        &.mobile {
+            & > .contents {
+                & {
+                    width: 90%;
+                }
+
+                & > .banner {
+                    & {
+                        height: 45px;
+                    }
+
+                    & > button {
+                        & {
+                            width: 45px; height: 45px;
+                        }
+                    }
                 }
             }
         }
