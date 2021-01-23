@@ -85,7 +85,7 @@ export default {
         return {
             list : [],
             page : 0,
-            view : 15,
+            view : 32,
             count : false,
 
             title: '',
@@ -164,6 +164,8 @@ export default {
             this.POST_LIST(data).then((req) => {
                 this.list = req.list;
                 this.count = req.count;
+
+                console.log(this.list);
             }).catch((err) => {
                 console.log(err);
             })

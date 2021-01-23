@@ -85,107 +85,109 @@ export default {
 <style lang="scss" scoped>
     @import '../style.scss';
 
-    .contents {
-        & {
-            position: relative;
-            width: auto;
-            max-width: 100%;
-            font-size: 0;
-            vertical-align: top;
-            text-align: center;
-            margin: 0;
-            margin-top: 70px;
-        }
+    .board {
+        & > .contents {
+                & {
+                    position: relative;
+                    width: auto;
+                    max-width: 100%;
+                    font-size: 0;
+                    vertical-align: top;
+                    text-align: center;
+                    margin: 0;
+                    margin-top: 70px;
+                }
 
-        .photo {
-            & {
-                width: 850px;
-                height: auto;
-                display: inline-block;
-                font-size: #{$font-size};
-                vertical-align: top;
-                text-align: left;
-                padding-right: 30px;
+                .photo {
+                    & {
+                        width: 850px;
+                        height: auto;
+                        display: inline-block;
+                        font-size: #{$font-size};
+                        vertical-align: top;
+                        text-align: left;
+                        padding-right: 30px;
+                    }
+                }
+
+                .comet {
+                    & {
+                        display: inline-block;
+                        width: 350px;
+                        font-size: #{$font-size};
+                        vertical-align: top;
+                        text-align: left;
+                    }
+                }
+
+                &.active {
+                    & > .comet {
+                        & > div {
+                            position: fixed;
+                            top: 0; left: 0;
+                            width: 350px;
+                        }
+                    }
+                }
+
             }
-        }
 
-        .comet {
-            & {
-                display: inline-block;
-                width: 350px;
-                font-size: #{$font-size};
-                vertical-align: top;
-                text-align: left;
-            }
-        }
+            .widget {
+                & {
+                    width: 1300px;
+                    margin: 0 auto;
+                }
 
-        &.active {
-            & > .comet {
                 & > div {
-                    position: fixed;
-                    top: 0; left: 0;
-                    width: 350px;
-                }
-            }
-        }
-
-    }
-
-    .widget {
-        & {
-            width: 1300px;
-            margin: 0 auto;
-        }
-
-        & > div {
-            width: 800px;
-            position: relative;
-        }
-    }
-
-    @media (max-width: 1650px) {
-        .contents {
-            & > .photo {
-                & {
-                    width: 900px;
-                }
-            }
-        }
-    }
-
-    @media (max-width: 1330px) {
-        .contents {
-            & {
-                padding: 0 15px;
-            }
-
-            & > .photo {
-                & {
-                    width: 100%;
-                    max-width: 1024px;
-                    display: block;
-                    margin: 0 auto;
-                    padding: 0;
+                    width: 800px;
+                    position: relative;
                 }
             }
 
-            & > .comet {
-                & {
-                    width: 100%;
-                    max-width: 1024px;
-                    display: block;
-                    margin: 0 auto;
-                    padding-top: 15px;
-                }
-            }
-
-            &.active {
-                & > .comet {
-                    & > div {
-                        position: relative;
+            @media (max-width: 1650px) {
+                .contents {
+                    & > .photo {
+                        & {
+                            width: 900px;
+                        }
                     }
                 }
             }
-        }
+
+            @media (max-width: 1330px) {
+                .contents {
+                    & {
+                        padding: 0 15px;
+                    }
+
+                    & > .photo {
+                        & {
+                            width: 100%;
+                            max-width: 1024px;
+                            display: block;
+                            margin: 0 auto;
+                            padding: 0;
+                        }
+                    }
+
+                    & > .comet {
+                        & {
+                            width: 100%;
+                            max-width: 1024px;
+                            display: block;
+                            margin: 0 auto;
+                            padding-top: 15px;
+                        }
+                    }
+
+                    &.active {
+                        & > .comet {
+                            & > div {
+                                position: relative;
+                            }
+                        }
+                    }
+                }
+            }
     }
 </style>

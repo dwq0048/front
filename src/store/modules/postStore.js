@@ -93,7 +93,7 @@ const Post = {
 
                         // 썸네일 설정
                         if(typeof item.meta == 'object'){
-                            if(typeof item.meta.thumbnail != 'object'){
+                            if(typeof item.meta.thumbnail != 'number'){
                                 if(typeof item.ImageMeta[0] == 'object'){
                                     item.meta.thumbnail = 0;
                                 }else{

@@ -4,16 +4,19 @@
             <div>
                 <div class="thumbnail">
                     <div>
-                        {{ item }}
-                        <img
-                            :src="`http://127.0.0.1:3000/images/${item.images[item.meta.thumbnail]}?resize=480`"
-                            v-if="(item.meta.thumbnail != undefined) ? true : false"
-                        />
+                        <router-link :to="'/'+info.board+'/'+item._id">
+                            <img
+                                :src="`http://127.0.0.1:3000/images/${item.images[item.meta.thumbnail]}?resize=480`"
+                                v-if="(item.meta.thumbnail != undefined) ? true : false"
+                            />
+                        </router-link>
                     </div>
                 </div>
                 <div class="info">
                     <div class="title">
-                        <h1 v-html="item.title"></h1>
+                        <router-link :to="'/'+info.board+'/'+item._id">
+                            <h1 v-html="item.title"></h1>
+                        </router-link>
                     </div>
                     <div class="info">
                         <div>
@@ -102,6 +105,7 @@ export default {
             list-style: none;
             padding: 5px 0;
             margin-left: -10px;
+            margin-right: -10px;
         }
 
         & > li {
@@ -147,12 +151,21 @@ export default {
                             }
                         }
 
-                        & > img {
+                        & > a {
                             & {
-                                width: 100%; height: 100%;
+                                display: block;
+                                width:100%; height: 100%;
                                 position: absolute;
-                                object-fit: cover;
+                                left: 0; top: 0;
                             }
+
+                            & > img {
+                                & {
+                                    width: 100%; height: 100%;
+                                    object-fit: cover;
+                                }
+                            }
+
                         }
                     }
                 }
@@ -166,14 +179,28 @@ export default {
                             padding: 5px 5px;
                         }
 
-                        & > h1 {
+                        & > a {
                             & {
                                 display: block;
-                                font-size: #{$font-size};
-                                margin:0; padding:0;
-                                line-height: 1;
-                                color: #555;
-                                font-size: #{$font-size};
+                                text-decoration: none;
+                            }
+
+                            & > h1 {
+                                & {
+                                    display: block;
+                                    font-size: #{$font-size};
+                                    margin:0; padding:0;
+                                    line-height: 1;
+                                    color: #555;
+                                    font-size: #{$font-size};
+                                }
+                            }
+
+                            &:hover {
+                                & {
+                                    text-decoration: underline;
+                                    text-decoration-color: #555;
+                                }
                             }
                         }
                     }
@@ -253,179 +280,15 @@ export default {
                         }
                     }
                 }
-            }
-        }
 
-        /*
-        & > li {
-            & {
-                display: block;
-                width: 100%; height: auto;
-                padding: 5px 10px;
-                border-bottom: 1px solid #ddd;
-            }
-
-            &:nth-last-child(1){
-                & {
-                    border-bottom: 0;
-                }
-            }
-
-            & > div {
-                & {
-                    display: table;
-                    width: 100%; height: auto;
-                    font-size: 0;
-                }
-
-                & > .love {
+                & > .thumbnail:hover ~ .info > .title > a {
                     & {
-                        display: table-cell;
-                        vertical-align: middle;
-                        width: 50px; height: auto;
-                        text-align: center;
-                    }
-
-                    & > div {
-                        & {
-                            display: inline-block;
-                            text-align: center;
-                        }
-
-                        & > i {
-                            & {
-                                display: block;
-                                font-size: #{$font-size};
-                                color: #aaa;
-                            }
-                        }
-
-                        & > span {
-                            & {
-                                display: block;
-                                font-size: #{$font-size - 2};
-                                color: #aaa;
-                                font-weight: bold;
-                                padding-top: 3px;
-                            }
-                        }
-                    }
-                }
-
-                & > .list {
-                    & {
-                        display: table-cell;
-                        vertical-align: middle;
-                        padding-left: 10px;
-                    }
-
-                    & > .title {
-                        & {
-                            display: block;
-                        }
-
-                        & > a {
-                            & {
-                                text-decoration: none;
-                                color: #555;
-                                display: block;
-                            }
-
-                            & > h1 {
-                                & {
-                                    font-size: #{$font-size + 1};
-                                    color: #555;
-                                    font-weight: bold;
-                                    margin: 0; padding: 0;
-                                    line-height: 1.3;
-                                }
-
-                                & > span {
-                                    & {
-                                        color: $bg-blue;
-                                        font-weight: bold;
-                                        padding-left: 5px;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    & > .options {
-                        & {
-                            display: block;
-                            padding-top: 5px;
-                        }
-
-                        & > ul {
-                            & {
-                                display: block;
-                                font-size: 0;
-                                list-style: 0;
-                            }
-
-                            & > li {
-                                & {
-                                    display: inline-block;
-                                    font-size: #{$font-size - 2}; 
-                                    color: #aaa;
-                                    padding-right: 10px;
-                                }
-
-                                &.user {
-                                    & {
-                                        font-weight: bold;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                & > .thumbnail {
-                    & {
-                        display: table-cell;
-                        width: 80px; height: auto;
-                        position: relative;
-                        background-color: #ddd;
-                        vertical-align: middle;
-                        border-radius: 1px;
-                        overflow: hidden;
-                    }
-
-                    &:after {
-                        & {
-                            content: " ";
-                            display: block;
-                            padding-bottom: 80%;
-                        }
-                    }
-
-                    & > a {
-                        & > i {
-                            & {
-                                position: absolute;
-                                color: #bbb;
-                                font-size: #{$font-size + 4};
-                                left: 50%; top: 50%;
-                                @include transform(translate(-50%, -50%));
-                            }
-                        }
-
-                        & > img {
-                            & {
-                                position: absolute;
-                                display: block;
-                                width: 100%; height: 100%;
-                                left: 50%; top: 50%;
-                                object-fit: cover;
-                                @include transform(translate(-50%, -50%));
-                            }
-                        }
+                        text-decoration: underline;
+                        text-decoration-color: #555;
                     }
                 }
             }
         }
-        */
+
     }
 </style>

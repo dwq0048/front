@@ -379,8 +379,11 @@ export default {
 					openSetting : this.CheckSetting,
 					mod : this.RadioMod,
 					hash : this.StorageHashs,
+					thumbnail : this.ImagesThumbnail
 				},
-			}
+			};
+
+			console.log(this.ImagesThumbnail);
 
 			this.StorageImages.map(item => {
 				const toFile = SET_BOARD.dataURLtoFile(item.base, item.name);

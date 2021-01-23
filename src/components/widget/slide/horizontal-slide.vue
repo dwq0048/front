@@ -290,7 +290,9 @@ export default {
 			}else {
 				return false;
 			}
-		}
+        }
+        
+        console.log(this.StorageImages);
     }
 }
 </script>
