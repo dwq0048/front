@@ -2,11 +2,20 @@
     <div class="comment">
         <div class="profile">
             <div class="intro">
-                <div class="img">
-                    <div></div>
+                <div class="wrap">
+                    <div class="img">
+                        <div></div>
+                    </div>
+                    <div class="user">
+                        <p v-if="post.users.nickname">{{ post.users.nickname }}</p>
+                    </div>
                 </div>
-                <div class="user">
-                    <p v-if="post.users.nickname">{{ post.users.nickname }}</p>
+                <div class="love">
+                    <div>
+                        <i><font-awesome-icon :icon="faHeartR" /></i>
+                        <i><font-awesome-icon :icon="faPlus" /></i>
+                        <span>0</span>
+                    </div>
                 </div>
             </div>
             <div class="submit">
@@ -75,8 +84,8 @@ import io from 'socket.io-client';
 
 import { mapActions, mapGetters } from 'vuex'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPlus, faArrowUp, faUserPlus } from '@fortawesome/free-solid-svg-icons'
-import { faSmile } from '@fortawesome/free-regular-svg-icons'
+import { faHeart as faHeartS, faPlus, faArrowUp, faUserPlus } from '@fortawesome/free-solid-svg-icons'
+import { faHeart as faHeartR, faSmile } from '@fortawesome/free-regular-svg-icons'
 
 const socket = io('http://localhost:3000')
 const userStore = 'userStore'
@@ -87,7 +96,7 @@ export default {
     props: ['info', 'post'],
     data() {
         return {
-            faPlus, faArrowUp, faUserPlus, faSmile,
+            faPlus, faArrowUp, faUserPlus, faSmile, faHeartS, faHeartR,
             reply: '',
             page: 0,
             index: false,
@@ -144,10 +153,10 @@ export default {
 <style lang="scss" scoped>
     .comment {
         & {
-            background-color: #f1f1f1;
-            width: 350px;
-            height: 100vh;
-            z-index: 1;
+            background-color: #f9f9f9;
+            width: 100%; height: 100%;
+            border-radius: 5px;
+            overflow: hidden;
             @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
         }
 
@@ -158,45 +167,100 @@ export default {
 
             & > .intro {
                 & {
-                    padding: 30px 15px 15px 15px;
-                    font-size: 0;
+                    display: table;
+                    width: 100%; height: auto;
+                    padding: 25px 15px 0px 15px;
                 }
 
-                & > .img {
+                & > .wrap {
                     & {
-                        display: inline-block;
+                        display: table-cell;
                         vertical-align: middle;
+                        font-size: 0;
+                    }
+
+                    & > .img {
+                        & {
+                            display: inline-block;
+                            vertical-align: middle;
+                        }
+
+                        & > div {
+                            & {
+                                width: 30px; height: auto;
+                                position: relative;
+                                border-radius: 50%;
+                                background-color: #ccc;
+                            }
+
+                            &:after {
+                                display: block;
+                                content: " ";
+                                padding-bottom: 100%;
+                            }
+                        }
+                    }
+
+                    & > .user {
+                        & {
+                            display: inline-block;
+                            vertical-align: middle;
+                            font-size: #{$font-size};
+                            color: #555;
+                        }
+
+                        & > p {
+                            & {
+                                padding-left: 10px;
+                                font-weight: bold;
+                            }
+                        }
+                    }
+                }
+
+                & > .love {
+                    & {
+                        display: table-cell;
+                        vertical-align: middle;
+                        text-align: right;
                     }
 
                     & > div {
                         & {
-                            width: 30px;
-                            height: auto;
-                            position: relative;
-                            border-radius: 50%;
-                            background-color: #ccc;
+                            display: inline-block;
+                            font-size: 0;
+                            color: #999;
+                            padding-right: 5px;
+                            cursor: pointer;
                         }
 
-                        &:after {
-                            display: block;
-                            content: " ";
-                            padding-bottom: 100%;
+                        & > i:nth-child(1) {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                font-size: #{$font-size + 2};
+                                line-height: 1;
+                            }
                         }
-                    }
-                }
 
-                & > .user {
-                    & {
-                        display: inline-block;
-                        font-size: #{$font-size};
-                        color: #555;
-                        vertical-align: middle;
-                    }
+                        & > i:nth-child(2){
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                font-size: #{$font-size - 6};
+                                padding: 0 5px;
+                                line-height: 1;
+                            }
+                        }
 
-                    & > p {
-                        & {
-                            padding-left: 10px;
-                            font-weight: bold;
+                        & > span {
+                            & {
+                                display: inline-block;
+                                vertical-align: middle;
+                                font-size: #{$font-size + 2};
+                                font-weight: bold;
+                                line-height: 1;
+                            }
                         }
                     }
                 }
@@ -204,29 +268,42 @@ export default {
 
             & > .submit {
                 & {
-                    padding: 15px 30px;
+                    padding: 15px 20px;
                 }
 
                 & > button {
                     & {
                         display: block;
                         width: 100%; height: auto;
-                        border: 0;
-                        background: none;
-                        outline: none;
+                        border: 0; background: none;
                         margin: 0; padding: 0;
-                        padding: 10px 0;
-                        text-align: center;
+                        cursor: pointer; outline: none;
+                        font-size: 0;
+                        padding: 10px 5px;
                         background-color: $bg-orange;
                         border-radius: 15px;
-                        font-size: #{$font-size - 2};
+                        text-align: center;
                         color: #fff;
-                        cursor: pointer;
+                    }
+
+                    & > span {
+                        & {
+                            display: inline-block;
+                            vertical-align: middle;
+                            font-size: #{$font-size - 2};
+                            font-weight: bold;
+                            letter-spacing: 1px;
+                            line-height: 1;
+                        }
                     }
 
                     & > i {
                         & {
+                            display: inline-block;
+                            vertical-align: middle;
+                            font-size: #{$font-size - 2};
                             padding-left: 10px;
+                            line-height: 1;
                         }
                     }
                 }

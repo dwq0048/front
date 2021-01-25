@@ -7,9 +7,6 @@
             <div class="photo">
                 <board-skin :info="info" :post="post" @childs-event="parentsMethod" v-if="post"/>
             </div>
-            <div class="comet" ref="comet">
-                <comment-skin :info="info" :post="post" v-if="post"/>
-            </div>
         </div>
 
         <layout-footer />
@@ -23,7 +20,6 @@ import Header from '@/components/layout/header'
 import Navigation from '@/components/layout/navigation'
 import Footer from '@/components/layout/footer'
 
-import CommentSkin from '@/components/board/comment_skin/chat_pack_02'
 import BoardSkin from '@/components/board/view_skin/photo_pack_01'
 
 import { Photo } from '../config'
@@ -38,7 +34,6 @@ export default {
         'layout-navigation': Navigation,
         'layout-footer' : Footer,
         
-        'comment-skin' : CommentSkin,
         'board-skin' : BoardSkin,
     },
     data(){
@@ -87,107 +82,22 @@ export default {
 
     .board {
         & > .contents {
-                & {
-                    position: relative;
-                    width: auto;
-                    max-width: 100%;
-                    font-size: 0;
-                    vertical-align: top;
-                    text-align: center;
-                    margin: 0;
-                    margin-top: 70px;
-                }
-
-                .photo {
-                    & {
-                        width: 850px;
-                        height: auto;
-                        display: inline-block;
-                        font-size: #{$font-size};
-                        vertical-align: top;
-                        text-align: left;
-                        padding-right: 30px;
-                    }
-                }
-
-                .comet {
-                    & {
-                        display: inline-block;
-                        width: 350px;
-                        font-size: #{$font-size};
-                        vertical-align: top;
-                        text-align: left;
-                    }
-                }
-
-                &.active {
-                    & > .comet {
-                        & > div {
-                            position: fixed;
-                            top: 0; left: 0;
-                            width: 350px;
-                        }
-                    }
-                }
-
+            & {
+                position: relative;
+                width: 100%; height:auto;
+                max-width: $wrap;
+                font-size: 0;
+                margin: 35px auto 0 auto;
             }
+        }
 
-            .widget {
-                & {
-                    width: 1300px;
-                    margin: 0 auto;
-                }
+        @media (max-width: 1650px) {
 
-                & > div {
-                    width: 800px;
-                    position: relative;
-                }
-            }
+        }
 
-            @media (max-width: 1650px) {
-                .contents {
-                    & > .photo {
-                        & {
-                            width: 900px;
-                        }
-                    }
-                }
-            }
+        @media (max-width: 1330px) {
 
-            @media (max-width: 1330px) {
-                .contents {
-                    & {
-                        padding: 0 15px;
-                    }
-
-                    & > .photo {
-                        & {
-                            width: 100%;
-                            max-width: 1024px;
-                            display: block;
-                            margin: 0 auto;
-                            padding: 0;
-                        }
-                    }
-
-                    & > .comet {
-                        & {
-                            width: 100%;
-                            max-width: 1024px;
-                            display: block;
-                            margin: 0 auto;
-                            padding-top: 15px;
-                        }
-                    }
-
-                    &.active {
-                        & > .comet {
-                            & > div {
-                                position: relative;
-                            }
-                        }
-                    }
-                }
-            }
+        }
     }
+    
 </style>
