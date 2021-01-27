@@ -30,7 +30,7 @@
                 <h1>실시간 채팅<span>댓글 수 : 0</span></h1>
             </div>
             <div class="form-input">
-                <textarea v-model="reply"></textarea>
+                <input v-model="reply" placeholder="댓글을 입력해주세요." />
 
                 <div class="smile">
                     <button type="button">
@@ -42,7 +42,7 @@
                 <div class="upload">
                     <button type="button" v-on:click="Comment()">
                         <div>
-                            <i><font-awesome-icon :icon="faArrowUp" /></i>
+                            <i><font-awesome-icon :icon="faArrowRight" /></i>
                         </div>
                     </button>
                 </div>
@@ -84,7 +84,7 @@ import io from 'socket.io-client';
 
 import { mapActions, mapGetters } from 'vuex'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faHeart as faHeartS, faPlus, faArrowUp, faUserPlus } from '@fortawesome/free-solid-svg-icons'
+import { faHeart as faHeartS, faPlus, faArrowRight, faUserPlus } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as faHeartR, faSmile } from '@fortawesome/free-regular-svg-icons'
 
 const socket = io('http://localhost:3000')
@@ -96,7 +96,7 @@ export default {
     props: ['info', 'post'],
     data() {
         return {
-            faPlus, faArrowUp, faUserPlus, faSmile, faHeartS, faHeartR,
+            faPlus, faArrowRight, faUserPlus, faSmile, faHeartS, faHeartR,
             reply: '',
             page: 0,
             index: false,
@@ -343,66 +343,106 @@ export default {
 
             & > .form-input {
                 & {
-                    width: 100%;
-                    height: auto;
+                    display:table;
+                    width: 100%;height: auto;
                     vertical-align: top;
                     border: 1px solid #ccc;
-                    border-radius: 30px;
+                    border-radius: 3px;
                     font-size: 0;
-                    position: relative;
                 }
 
-                & > textarea {
-                    border: none;
-                    background: none;
-                    width: calc(100% - 50px);
-                    height: 35px;
-                    line-height: 25px;
-                    outline: none;
-                    border: none;
-                    padding: 0;
-                    margin: 0;
-                    padding: 5px 10px;
-                    font-size: #{$font-size};
-                    resize: none;
-                    overflow: auto;
-                    vertical-align: middle;
-                }
-
-                & > .upload, & > .smile {
+                & > input {
                     & {
-                        position: absolute;
-                        right: -1px; top: -1px;
-                        width: 37px; height: 37px;
-                        border-radius: 5px;
-                        overflow: hidden;
+                        display: table-cell;
+                        vertical-align: middle;
+                        border: 0; background: none;
+                        width: 100%; height: 35px;
+                        outline: none;
+                        padding: 0; margin: 0;
+                        padding: 5px 10px;
+                        font-size: #{$font-size};
+                        resize: none; overflow: auto;
+                        vertical-align: middle;
+                    }
+                }
+
+                & > .smile, & > .upload {
+                    & {
+                        position: relative;
+                        display: table-cell;
+                        vertical-align: middle;
+                        width: 35px; height: auto;
+                        font-size: 0;
+                    }
+
+                    &:after {
+                        content: " ";
+                        display: block;
+                        padding-bottom: 100%;
                     }
 
                     & > button {
                         & {
-                            display: block;
+                            display: inline-block;
+                            position: absolute;
                             width: 100%; height: 100%;
-                            border: 0;
-                            background: none;
-                            margin: 0; padding: 0;
-                            color: #fff;
-                            background-color: $bg-blue;
-                            cursor: pointer;
+                            left: 0; top: 0;
+                            border: 0; background: none;
+                            padding: 0; margin: 0;
+                            cursor: pointer; outline: none;
+                        }
+
+                        & > div {
+                            & {
+                                position: relative;
+                                width: 100%; height: 100%;
+                                overflow :hidden;
+                            }
+
+                            & > i {
+                                & {
+                                    display: inline-block;
+                                    position: absolute;
+                                    left: 50%; top: 50%;
+                                    font-size: #{$font-size + 2};
+                                    color: #555;
+                                    @include transform(translate(-50%, -50%));
+                                }
+                            }
                         }
                     }
 
-                    &.smile {
+                    &.upload {
                         & {
-                            right: 37px;
+                            width: 0px;
+                            @include transition(.2s all);
                         }
 
                         & > button {
                             & {
-                                background: none;
-                                color: #ccc;
-                                font-size: #{$font-size + 4};
+                                padding: 3px;
+                            }
+
+                            & > div {
+                                & {
+                                    background-color: $bg-blue;
+                                    border-radius: 3px;
+                                }
+                                
+                                & > i {
+                                    & {
+                                        color: #fff;
+                                    }
+                                }
                             }
                         }
+                    }
+                }
+
+                & > input:focus ~ .upload {
+                    & {
+                        width: 35px;
+                        @include transition(.2s all);
                     }
                 }
             }

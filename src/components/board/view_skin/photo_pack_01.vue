@@ -61,17 +61,17 @@
                 <!-- Title End -->
 
                 <!-- Post Start -->
-                <div class="post">
-                    <!-- Images Start -->
+                <!-- If Slide --> 
+                <div class="post" v-if="Slide.active">
                     <div class="view">
                         <div class="img-post" ref="ImgPost">
                             <img :src="`http://127.0.0.1:3000/images/${post.images[Slide.current]}`" alt="">
                         </div>
                         <div class="arrow">
-                            <button type="button" class="left">
+                            <button type="button" class="left" @click="SlideBtn(false)">
                                 <i><font-awesome-icon :icon="faChevronLeft" /></i>
                             </button>
-                            <button type="button" class="right">
+                            <button type="button" class="right" @click="SlideBtn(true)">
                                 <i><font-awesome-icon :icon="faChevronRight" /></i>
                             </button>
                         </div>
@@ -81,13 +81,22 @@
                         <ul>
                             <li v-for="(item, i) in post.images" :key="i">
                                 <div :class="{ active : (Slide.current == i) }" @click="SlideIndex(i)">
-                                    <img :src="`http://127.0.0.1:3000/images/${item}`" alt="">
+                                    <img :src="`http://127.0.0.1:3000/images/${item}`" alt="img">
                                 </div>
                             </li>
                         </ul>
                     </div>
-                    <!-- Images End -->
                 </div>
+
+                <!-- Else Slide -->
+                <div class="post" v-else>
+                    <ul class="list">
+                        <li v-for="(item, i) in post.images" :key="i">
+                            <img :src="`http://127.0.0.1:3000/images/${item}`" alt="img">
+                        </li>
+                    </ul>
+                </div>
+
                 <!-- Introduce Start -->
                 <div class="intro">
                     <div>
@@ -194,6 +203,7 @@ export default {
                 current : 0,
                 prev : undefined,
                 next : undefined,
+                active : false,
             },
 
             grid: {
@@ -205,40 +215,63 @@ export default {
         }
     },
     methods : {
+        SlideBtn(option){
+            (option) ? this.SlideIndex(this.Slide.next) : this.SlideIndex(this.Slide.prev);
+        },
         SlideIndex(option){
-            if(this.Slide.prev == undefined){
-                this.Slide.prev = this.post.images.length - 1;
-            }
-            if(this.Slide.next == undefined){
-                this.Slide.next = this.Slide.current + 1;
-            }
-        
-            if(typeof option == ('number' || 'string')){
+            if(this.post.images.length > 1){
                 this.Slide.current = option;
+
+                // Next
+                if(this.Slide.current >= this.post.images.length - 1){
+                    this.Slide.next = 0;
+                }else{
+                    this.Slide.next = this.Slide.current + 1;
+                }
+
+                // Prev
+                if(this.Slide.current <= 0){
+                    this.Slide.prev = this.post.images.length - 1;
+                }else{
+                    this.Slide.prev = this.Slide.current - 1;
+                }
+
                 const radio = (this.post.ImageMeta[option].meta.height / this.post.ImageMeta[option].meta.width) * 100;
                 this.$refs.ImgPost.style.paddingBottom = `${radio}%`;
+                this.$refs.ImgPost.style.transition = `.2s all`;
+            }
+
+            console.log(this.Slide);
+        }
+    },
+    created(){
+        if(this.post){
+            if(typeof this.post.meta == 'object'){
+                if(typeof this.post.meta.mod == 'string'){
+                    if(this.post.meta.mod == 'horizontal'){
+                        this.Slide.active = (this.post.images.length > 1) ? true : false;
+                        (this.Slide.next == undefined) ? this.Slide.next = this.Slide.current + 1 : undefined;
+                        (this.Slide.prev == undefined) ? this.Slide.prev = this.post.images.length - 1 : undefined;
+                    }
+                }
             }
         }
     },
     mounted() {
-        const cont = this.$refs.content;
-
         window.addEventListener('scroll', (data) => {
-            //console.log(window.scrollY);
-            const el = cont.getBoundingClientRect();
+            const el = this.$refs.content.getBoundingClientRect();
             const top = el.top;
             const left = el.left;
-            if(top <= 0){
-                this.Side.option = true;
-            }else{
-                this.Slide.option = false;
-            }
+            if(top <= 0){ this.Side.option = true }
+            else{ this.Slide.option = false };
 
-            this.$emit('childs-event', this.Slide)
+            this.$emit('childs-event', this.Slide);
         });
 
-        const radio = (this.post.ImageMeta[0].meta.height / this.post.ImageMeta[0].meta.width) * 100;
-        this.$refs.ImgPost.style.paddingBottom = `${radio}%`;
+        if(this.Slide.active){
+            const radio = (this.post.ImageMeta[0].meta.height / this.post.ImageMeta[0].meta.width) * 100;
+            this.$refs.ImgPost.style.paddingBottom = `${radio}%`;
+        }
     }
 }
 </script>
@@ -557,6 +590,29 @@ export default {
                 & > .post {
                     & {
                         position: relative;
+                    }
+
+                    & > ul.list {
+                        & {
+                            display: block;
+                            margin: 0; padding: 0;
+                            list-style: none;
+                            font-size: 0;
+                        }
+
+                        & > li {
+                            & {
+                                display: block;
+                                width: 100%; height: auto;
+                            }
+
+                            & > img {
+                                & {
+                                    display: block;
+                                    width: 100%; height: auto;
+                                }
+                            }
+                        }
                     }
 
                     & > .view {
