@@ -12,8 +12,8 @@
 			<!-- Title End -->
 
 			<!-- Pee -->
-			<div class="section-2">
-				<pee :grid="{ img : 'auto' }" />
+			<div class="section-2" v-if="list.length > 0">
+				<pee :grid="{ img : 'auto' }" :post="list" />
 			</div>
 			<!-- Pee End -->
 
@@ -44,6 +44,8 @@ import Footer from '@/components/layout/footer'
 import Search from '@/components/widget/main/search'
 import Grid from '@/components/widget/main/grid-square'
 
+const postStore = 'postStore'
+
 export default {
 	name: 'Home',
 	components: {
@@ -53,11 +55,32 @@ export default {
 		'layout-search': Search,
 		'pee' : Grid
 	},
+	data(){
+		return {
+			list : []
+		}
+	},
 	methods : {
-		is_mobile(){ return IS_MOBILE() }
+        ...mapActions(postStore, [
+            'POST_LIST'
+        ]),
+		is_mobile(){ return IS_MOBILE() },
+		UpdateData(){
+            return { board: 'photo', page: 0, view: 50 };
+        },
+        ListLoad(){
+            const data = this.UpdateData();
+            this.POST_LIST(data).then((req) => {
+				this.list = req.list;
+				
+                console.log(this.list);
+            }).catch((err) => {
+                console.log(err);
+            })
+        }
 	},
 	created(){
-		console.log(IS_MOBILE());
+		this.ListLoad();
 	}
 }
 

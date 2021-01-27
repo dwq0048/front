@@ -1,11 +1,12 @@
 <template>
     <div class="pee" ref="grid">
         <div class="grid" ref="element">
-            <div class="grid__item" v-for="(item, i) in list" :key="i" :style="`width: ${imgWidth}px; height: ${((item.size.height / item.size.width)) * (imgWidth)}px;`">
-                <a href="img/original/1.jpg" class="img-wrap"
-                :data-radio="(item.size.height / item.size.width) * 100"
-                :data-width="imgWidth"
-                :data-height="((item.size.height / item.size.width)) * (imgWidth)">
+            <div class="grid__item" v-for="(item, i) in list" :key="i" :style="`width: ${imgWidth}px; height: ${((item.square.size.height / item.square.size.width)) * (imgWidth)}px;`">
+                <router-link :to="'/photo/'+item._id" class="img-wrap"
+                    :data-radio="(item.square.size.height / item.square.size.width) * 100"
+                    :data-width="imgWidth"
+                    :data-height="((item.square.size.height / item.square.size.width)) * (imgWidth)"
+                >
                     <div class="background">
                         <div class="black">
 
@@ -21,8 +22,10 @@
                             </span>
                         </div>
                     </div>
-                    <div class="after"></div>
-                </a>
+                    <div class="after">
+                        <img :src="`http://127.0.0.1:3000/images/${item.images[item.meta.thumbnail]}?resize=480`" alt="img" v-if="post">
+                    </div>
+                </router-link>
             </div>
 		</div>
 	</div>
@@ -35,13 +38,9 @@ import { SET_BOARD, SET_TIME } from '@/store/helper/'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faHeart, faComment } from '@fortawesome/free-solid-svg-icons'
 
-const postStore = 'postStore';
-
-// 250 / X =  300
-
 export default {
     name: 'GridPost',
-    props: ['grid'],
+    props: ['grid', 'post'],
     data() {
         return {
             Screen: 0,
@@ -60,9 +59,6 @@ export default {
         }
     },
     methods: {
-        ...mapActions(postStore, [
-            'POST_LIST'
-        ]),
         TempJson(){
             let JSON = [];
             for(let i=0; i<50; i++){
@@ -178,8 +174,30 @@ export default {
         })
     },
     created(){
-        this.list = this.TempJson();
-        this.LoadEvent();
+        this.post.map(item => {
+            const rand = this.getRandomInt(0, 100);
+            let square = {
+                size : {
+                    width: 300,
+                    height: 300
+                }
+            }
+
+            if(rand > 85){
+                square.size.height = 600;
+            }else if(rand > 70 && rand <= 85){
+                square.size.height = 500;
+            }else if(rand > 55 && rand <= 70){
+                square.size.height = 400;
+            }else {
+                square.size.height = 300;
+            }
+
+            item.square = square;
+        });
+
+        console.log(this.post);
+        this.list = this.post;
     },
     mounted(){
 		(function() {
@@ -206,7 +224,7 @@ export default {
             this.ResizeEvent();
         });
 
-    
+        /*
         window.addEventListener('scroll', (data) => {
             const GRID = this.$refs.grid;
 		    const WinHeight = window.innerHeight;
@@ -224,6 +242,7 @@ export default {
                 })
             }
         })
+        */
     },
     updated() {
         this.ResizeEvent();
@@ -246,16 +265,15 @@ export default {
 
             & > .grid__item {
                 & {
-                    width: 300px;
+                    position:absolute;
                     display: inline-block;
                     vertical-align: top;
-                    position:absolute;
-                    left:0;
-                    top:0;
+                    width: 300px;
+                    left:0; top:0;
                     padding: 5px;
+                    cursor: pointer;
                     @include transform(scale(1));
                     @include transition(all .2s);
-                    cursor: pointer;
                 }
 
                 & > a {
@@ -266,6 +284,7 @@ export default {
                         overflow: hidden;
                         position: relative;
                         background-color: #ccc;
+                        @include box-shadow(2px 2px 2px rgba(0,0,0,0.1));
                     }
 
                     & > img {
@@ -332,6 +351,24 @@ export default {
                                         display: inline-block;
                                     }
                                 }
+                            }
+                        }
+                    }
+
+                    & > .after {
+                        & {
+                            position: absolute;
+                            display: block;
+                            left: 0; top: 0;
+                            width: 100%; height: 100%;
+                            font-size: 0;
+                        }
+
+                        & > img {
+                            & {
+                                display: block;
+                                width: 100%; height: 100%;
+                                object-fit: cover;
                             }
                         }
                     }
