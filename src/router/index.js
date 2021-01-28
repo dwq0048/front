@@ -21,6 +21,21 @@ const routes = [
 		beforeEnter: before(),
 	},
 	{
+		path: '/profile/:id',
+		name: 'Profile',
+		component: () => import('@/views/profile/index'),
+		beforeEnter: before(),
+		/*
+		children: [
+			{
+				name: 'ProfileBoard',
+				path: 'board',
+				component: () => import('@/views/profile/board')
+			}
+		]
+		*/
+	},
+	{
 		path: '/auth',
 		name: 'Auth',
 		component: () => import('@/views/auth/sign/user.vue'),

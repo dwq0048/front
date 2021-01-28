@@ -26,6 +26,21 @@
                         <img :src="`http://127.0.0.1:3000/images/${item.images[item.meta.thumbnail]}?resize=480`" alt="img" v-if="post">
                     </div>
                 </router-link>
+                <div class="info">
+                    <div>
+                        <div>
+                            <h1 class="title" v-html="item.title"></h1>
+                            <div class="profile">
+                                <div>
+                                    <div class="img">
+                                        <div></div>
+                                    </div>
+                                    <p class="name">관리자</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 		</div>
 	</div>
@@ -157,15 +172,17 @@ export default {
                 }
 
                 if(this.option[this.min.name].height != 0){
-                    element[i].style.top = `${ Number(this.option[this.min.name].height) }px`;
+                    element[i].style.top = `${ Number(this.option[this.min.name].height ) }px`;
                 }
 
-                this.option[this.min.name].height = Number(this.option[this.min.name].height) + Number(element[i].querySelector(`[data-height]`).getAttribute("data-height"));
+                this.option[this.min.name].height = Number(this.option[this.min.name].height) + Number(element[i].querySelector(`[data-height]`).getAttribute("data-height")) + 40;
                 this.option[this.min.name].meta.push( i );
             }
 
             document.querySelector('.pee > .grid').style.width = `${ this.imgWidth * this.option.length }px`;
             document.querySelector('.pee > .grid').style.height = `${ this.max.height }px`;
+
+            console.log(this.option);
         }
     },
     computed: {
@@ -341,7 +358,6 @@ export default {
                                 & > p {
                                     & {
                                         display: inline-block;
-                                        padding-left: 10px;
                                         font-weight: bold;
                                     }
                                 }
@@ -371,6 +387,95 @@ export default {
                                 object-fit: cover;
                             }
                         }
+                    }
+                }
+
+                & > .info {
+                    & {
+                        display: table;
+                        width: 100%; height: 40px;
+                        padding: 0 10px;
+                    }
+
+                    & > div {
+                        & {
+                            display: table-cell;
+                            vertical-align: middle;
+                            width: 100%; height: auto;
+                        }
+
+                        & > div {
+                            & {
+                                display: table;
+                                width: 100%; height: auto;
+                            }
+
+                            & > h1 {
+                                & {
+                                    display: table-cell;
+                                    vertical-align: middle;
+                                    width: 100%; height: auto;
+                                    font-size: #{$font-size};
+                                    font-weight: bold;
+                                    line-height: 1;
+                                }
+                            }
+
+                            & > .profile {
+                                & {
+                                    display: table-cell;
+                                    vertical-align: middle;
+                                    text-align: right;
+                                }
+
+                                & > div {
+                                    & {
+                                        display: block;
+                                        font-size: 0;
+                                        white-space: nowrap;
+                                    }
+
+                                    & > .img {
+                                        & {
+                                            position: relative;
+                                            display: inline-block;
+                                            vertical-align: middle;
+                                            width: 30px; height: auto;
+                                            padding: 5px;
+                                        }
+
+                                        & > div {
+                                            & {
+                                                display: block;
+                                                width: 100%; height: auto;
+                                                border-radius: 50%;
+                                                overflow: hidden;
+                                                background-color: #333;
+                                            }
+
+                                            &:after {
+                                                content: " ";
+                                                display: block;
+                                                padding-bottom: 100%;
+                                            }
+                                        }
+                                    }
+
+                                    & > p {
+                                        & {
+                                            display: inline-block;
+                                            vertical-align: middle;
+                                            padding: 0; margin: 0;
+                                            line-height: 1;
+                                            font-size: #{$font-size - 2};
+                                            font-weight: bold;
+                                            padding-left: 5px;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                     }
                 }
 
