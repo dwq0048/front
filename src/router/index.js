@@ -25,15 +25,13 @@ const routes = [
 		name: 'Profile',
 		component: () => import('@/views/profile/index'),
 		beforeEnter: before(),
-		/*
 		children: [
 			{
-				name: 'ProfileBoard',
-				path: 'board',
-				component: () => import('@/views/profile/board')
+				name: 'Profile',
+				path: '',
+				component: () => import('@/views/profile/profile')
 			}
 		]
-		*/
 	},
 	{
 		path: '/auth',
