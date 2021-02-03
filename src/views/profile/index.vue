@@ -38,34 +38,146 @@
 						</div>
 						<div class="nav">
 							<div>
-								<ul>
-									<li>
-										<router-link to="#">
-                                			<i><font-awesome-icon :icon="faChartBar" /></i>
+								<div class="list open">
+									<div>
+										<button type="button">
 											<div>
-												<span>DashBoard</span>
+												<i><font-awesome-icon :icon="faLockOpen" /></i>
+												<span>공개 게시글</span>
 											</div>
-										</router-link>
-									</li>
-									<li>
-										<router-link to="#">
-                                			<i><font-awesome-icon :icon="faAddressCard" /></i>
+										</button>
+									</div>
+									<ul>
+										<li>
+											<router-link to="#">
+												<i><font-awesome-icon :icon="faChartBar" /></i>
+												<div>
+													<span>DashBoard</span>
+												</div>
+											</router-link>
+										</li>
+										<li>
+											<router-link :to="`/profile/${this.$route.params.id}/post`">
+												<i><font-awesome-icon :icon="faClone" /></i>
+												<div>
+													<span>게시글</span>
+													<b>[52]</b>
+												</div>
+											</router-link>
+										</li>
+										<li>
+											<router-link :to="`/profile/${this.$route.params.id}/image`">
+												<i><font-awesome-icon :icon="faImages" /></i>
+												<div>
+													<span>이미지</span>
+													<b>[102]</b>
+												</div>
+											</router-link>
+										</li>
+										<li>
+											<router-link to="#">
+												<i><font-awesome-icon :icon="faBookmark" /></i>
+												<div>
+													<span>북마크</span>
+													<b>[69]</b>
+												</div>
+											</router-link>
+										</li>
+										<li>
+											<router-link :to="`/profile/${this.$route.params.id}/visit`">
+												<i><font-awesome-icon :icon="faCat" /></i>
+												<div>
+													<span>방명록</span>
+													<b>[999+]</b>
+												</div>
+											</router-link>
+										</li>
+									</ul>
+								</div>
+
+								<div class="tag-list">
+									<div class="title">
+										<div>
+											<button type="button">
+												<div>
+													<i><font-awesome-icon :icon="faHashtag" /></i>
+													<span>자주 사용한 태그</span>
+												</div>
+											</button>
+										</div>
+									</div>
+									<div class="list">
+										<ul>
+											<li>
+												<div>
+													<i><font-awesome-icon :icon="faHashtag" /></i>
+													<span>대충 해시 여러개</span>
+												</div>
+											</li>
+											<li>
+												<div>
+													<i><font-awesome-icon :icon="faHashtag" /></i>
+													<span>대충 해시 여러개</span>
+												</div>
+											</li>
+											<li>
+												<div>
+													<i><font-awesome-icon :icon="faHashtag" /></i>
+													<span>대충 해시 여러개</span>
+												</div>
+											</li>
+										</ul>
+									</div>
+								</div>
+								
+								<div class="list">
+									<div>
+										<button type="button">
 											<div>
-												<span>게시글</span>
-												<b>[52]</b>
+												<i><font-awesome-icon :icon="faLock" /></i>
+												<span>비공개 게시글</span>
 											</div>
-										</router-link>
-									</li>
-									<li>
-										<router-link to="#">
-                                			<i><font-awesome-icon :icon="faBookOpen" /></i>
-											<div>
-												<span>라이브러리</span>
-												<b>[69]</b>
-											</div>
-										</router-link>
-									</li>
-								</ul>
+										</button>
+									</div>
+									<ul>
+										<li>
+											<router-link to="#">
+												<i><font-awesome-icon :icon="faBell" /></i>
+												<div>
+													<span>알림</span>
+													<b>[0]</b>
+												</div>
+											</router-link>
+										</li>
+										<li>
+											<router-link to="#">
+												<i><font-awesome-icon :icon="faHeart" /></i>
+												<div>
+													<span>좋아요</span>
+													<b>[31]</b>
+												</div>
+											</router-link>
+										</li>
+										<li>
+											<router-link to="#">
+												<i><font-awesome-icon :icon="faWheelchair" /></i>
+												<div>
+													<span>팔로우</span>
+													<b>[3]</b>
+												</div>
+											</router-link>
+										</li>
+										<li>
+											<router-link to="#">
+												<i><font-awesome-icon :icon="faComments" /></i>
+												<div>
+													<span>댓글</span>
+													<b>[1375]</b>
+												</div>
+											</router-link>
+										</li>
+									</ul>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -82,8 +194,8 @@ import { mapActions, mapGetters } from 'vuex'
 import { IS_MOBILE } from '@/store/helper/'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faChartBar, faBookOpen } from '@fortawesome/free-solid-svg-icons'
-import { faAddressCard } from '@fortawesome/free-regular-svg-icons'
+import { faChartBar, faLockOpen, faHashtag, faLock, faWheelchair, faCat } from '@fortawesome/free-solid-svg-icons'
+import { faBookmark, faClone, faImages, faComments, faBell, faHeart } from '@fortawesome/free-regular-svg-icons'
 
 import Header from '@/components/layout/header'
 import Navigation from '@/components/layout/navigation'
@@ -101,7 +213,7 @@ export default {
 	data(){
 		return {
 			// Icons
-			faChartBar, faAddressCard, faBookOpen,
+			faChartBar, faClone, faBookmark, faImages, faLockOpen, faHashtag, faLock, faComments, faBell, faHeart, faWheelchair, faCat,
 
 			list : []
 		}
@@ -282,77 +394,304 @@ export default {
 
 						& > div {
 							& {
-								background-color: #fff;
+								background-color: #f9f9f9;
 								width: 100%; height: auto;
 								border-radius: 5px;
 								@include box-shadow(2px 2px 5px rgba(0,0,0,0.1));
 							}
 
-							& > ul {
+							/* Open Nan Start */
+							& > .list {
 								& {
 									display: block;
-									width: 100; height: auto;
-									list-style: 0;
-									font-size: 0;
+									width: 100%; height: auto
 								}
 
-								& > li {
+								& > div {
 									& {
+										position: relative;
 										display: block;
 										width: 100%; height: auto;
+										background-color: #fff;
+										border-top: 1px solid #ddd;
+										border-bottom: 1px solid #ddd;
 									}
 
-									& > a {
+									&:after {
+										content: " ";
+										display: block;
+										position: absolute;
+										width: 3px; height: 100%;
+										left: 0; top: 0;
+										background-color: #ddd;
+									}
+
+									& > button {
 										& {
 											display: block;
 											width: 100%; height: auto;
-											text-decoration: none;
-											padding: 15px;
-										}
-
-										& > i {
-											& {
-												display: inline-block;
-												vertical-align: middle;
-												font-size: #{$font-size + 2};
-												color: #555;
-												line-height: 1;
-												padding-right: 10px;
-											}
+											border: 0; background: none;
+											margin: 0; padding: 0;
+											outline: none; cursor: pointer;
+											font-size: 0;
+											padding: 10px 15px;
+											text-align: left;
 										}
 
 										& > div {
 											& {
-												display: inline-block;
-												vertical-align: middle;
-												font-size: 0;
-												font-weight: bold;
-												color: #555;
-												line-height: 1;
+												display: block;
+												width: 100%; height: auto;
 												white-space: nowrap;
+											}
+
+											& > i {
+												& {
+													display: inline-block;
+													vertical-align: middle;
+													font-size: #{$font-size + 1};
+													padding-right: 10px;
+													color: #ddd;
+												}
 											}
 
 											& > span {
 												& {
 													display: inline-block;
 													vertical-align: middle;
-													font-size: #{$font-size};
+													font-size: #{$font-size + 1};
+													font-weight: bold;
+													color: #999;
 												}
 											}
 
-											& > b {
+										}
+									}
+								}
+
+								& > ul {
+									& {
+										display: block;
+										width: 100; height: auto;
+										list-style: 0;
+										font-size: 0;
+									}
+
+									& > li {
+										& {
+											display: block;
+											width: 100%; height: auto;
+										}
+
+										& > a {
+											& {
+												display: block;
+												width: 100%; height: auto;
+												text-decoration: none;
+												padding: 15px;
+											}
+
+											& > i {
 												& {
 													display: inline-block;
 													vertical-align: middle;
-													padding-left: 5px;
-													font-size: #{$font-size};
-													color: $bg-blue;
+													font-size: #{$font-size + 2};
+													color: #555;
+													line-height: 1;
+													padding-right: 10px;
+												}
+											}
+
+											& > div {
+												& {
+													display: inline-block;
+													vertical-align: middle;
+													font-size: 0;
+													font-weight: bold;
+													color: #555;
+													line-height: 1;
+													white-space: nowrap;
+												}
+
+												& > span {
+													& {
+														display: inline-block;
+														vertical-align: middle;
+														font-size: #{$font-size};
+													}
+												}
+
+												& > b {
+													& {
+														display: inline-block;
+														vertical-align: middle;
+														padding-left: 5px;
+														font-size: #{$font-size};
+														color: $bg-blue;
+													}
+												}
+											}
+										}
+									}
+								}
+
+								&.open {
+									& > div {
+										&:after {
+											content: " ";
+											display: block;
+											position: absolute;
+											width: 3px; height: 100%;
+											left: 0; top: 0;
+											background-color: $bg-blue;
+										}
+
+										& > button {
+											& > div {
+												& > i {
+													& {
+														color: $bg-blue;
+													}
 												}
 											}
 										}
 									}
 								}
 							}
+							/* Open Nan End */
+
+							/* Tag List Start */
+							& > .tag-list {
+								& {
+									display: block;
+									width: 100%; height: auto;
+								}
+
+								& > .title {
+									& {
+										display: block;
+										width: 100%; height: auto;
+									}
+
+									& > div {
+										& {
+											position: relative;
+											display: block;
+											width: 100%; height: auto;
+											border-top: 1px solid #ddd;
+											border-bottom: 1px solid #ddd;
+											background-color: #fff;
+										}
+
+										&:after {
+											content: " ";
+											display: block;
+											position: absolute;
+											width: 3px; height: 100%;
+											left: 0; top: 0;
+											background-color: $bg-orange;
+										}
+
+										& > button {
+											& {
+												display: block;
+												width: 100%; height: auto;
+												border: 0; background: none;
+												padding: 0; margin: 0;
+												outline: none; cursor: pointer;
+												text-align: left;
+												font-size: 0;
+												padding: 10px 15px;
+											}
+
+											& > div {
+												& {
+													display: block;
+													width: 100%; height: auto;
+													white-space: nowrap;
+												}
+
+												& > i {
+													& {
+														display: inline-block;
+														vertical-align: middle;;
+														font-size: #{$font-size + 1};
+														color: $bg-orange;
+														padding-right: 10px;
+													}
+												}
+
+												& > span {
+													& {
+														display: inline-block;
+														vertical-align: middle;
+														font-size: #{$font-size + 1};
+														font-weight: bold;
+														color: #999;
+													}
+												}
+											}
+										}
+									}
+								}
+
+								& > .list {
+									& {
+										display: block;
+										width: 100%; height: auto;
+										padding: 15px 0;
+									}
+
+									& > ul {
+										& {
+											display: block;
+											width: 100%; height: auto;
+											list-style: none;
+											font-size: 0;
+											text-align: center;
+										}
+
+										& > li {
+											& {
+												display: inline-block;
+												vertical-align: middle;
+												padding: 5px;
+											}
+
+											& > div {
+												& {
+													white-space: nowrap;
+													padding: 5px 10px;
+													border-radius: 3px;
+													background-color: #555;
+												}
+
+												& > i {
+													& {
+														display: inline-block;
+														vertical-align: middle;
+														font-size: #{$font-size - 2};
+														padding-right: 5px;
+														color: #f1f1f1;
+													}
+												}
+
+												& > span {
+													& {
+														display: inline-block;
+														vertical-align: middle;
+														font-size: #{$font-size - 2};
+														font-weight: bold;
+														color: #f1f1f1;
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+							/* Tag List End */
+
 						}
 					}
 				}

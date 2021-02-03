@@ -30,6 +30,24 @@ const routes = [
 				name: 'Profile',
 				path: '',
 				component: () => import('@/views/profile/profile')
+			},
+			{
+				name: 'ProfilePost',
+				path: 'post',
+				component: () => import('@/views/profile/post')
+			},
+			{
+				name: 'ProfileImage',
+				path: 'image',
+				component: () => import('@/views/profile/image')
+			},
+
+			// 여기는 북마크
+			
+			{
+				name: 'ProfileVisit',
+				path: 'visit',
+				component: () => import('@/views/profile/visit')
 			}
 		]
 	},
