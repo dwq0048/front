@@ -52,6 +52,28 @@ const routes = [
 		]
 	},
 	{
+		path: '/setting',
+		redirect: '/setting/profile'
+	},
+	{
+		name: 'Setting',
+		path: '/setting/:id',
+		component: () => import('@/views/setting/index'),
+		beforeEnter: before(),
+		children: [
+			{
+				name: '',
+				path: '',
+				component: () => import('@/views/setting/profile')
+			},
+			{
+				name: 'SettingProfile',
+				path: 'profile',
+				component: () => import('@/views/setting/profile')
+			}
+		]
+	},
+	{
 		path: '/auth',
 		name: 'Auth',
 		component: () => import('@/views/auth/sign/user.vue'),

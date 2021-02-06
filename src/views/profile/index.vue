@@ -23,7 +23,13 @@
 						</div>
 						<div class="state">
 							<div>
-
+								<div class="setting">
+									<router-link to="/setting">
+										<div>
+											<span>프로필 수정</span>
+										</div>
+									</router-link>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -338,11 +344,62 @@ export default {
 
 						& > div {
 							& {
+								position: relative;
 								display: block;
 								width: 100%; height: 120px;
 								background-color: #ddd;
 								border-radius: 5px;
-								
+							}
+
+							& > .setting {
+								& {
+									display: block;
+									position: absolute;
+									left: 0; bottom: 0;
+									width: 100%; height: 35px;
+									padding: 0px 15px;
+									margin-bottom: 10px;
+								}
+
+								& > a {
+									& {
+										display: table;
+										width: 100%; height: 100%;
+										text-decoration: none;
+										background-color: $bg-blue;
+										border-radius: 5px;
+										padding: 0px 15px;
+									}
+
+									& > div {
+										& {
+											display: table-cell;
+											vertical-align: middle;
+											text-align: left;
+										}
+
+										& > i {
+											& {
+												display: inline-block;
+												vertical-align: middle;
+												font-size: #{$font-size};
+												padding-right: 5px;
+												color: #fff;
+											}
+										}
+
+										& > span {
+											& {
+												display: inline-block;
+												vertical-align: middle;
+												font-size: #{$font-size};
+												font-weight: bold;
+												color: #fff;
+											}
+										}
+									}
+								}
+
 							}
 						}
 					}
