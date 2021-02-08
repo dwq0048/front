@@ -1,6 +1,14 @@
 <template>
     <div class="profile">
-        <h1>프로필 수정</h1>
+        <div class="title">
+            <h1>
+                <router-link to="#">내 프로필</router-link>
+            </h1>
+            <span>
+			    <i><font-awesome-icon :icon="faChevronRight" /></i>
+            </span>
+            <h2>프로필 수정</h2>
+        </div>
         <ul>
             <li class="image">
                 <div>
@@ -42,7 +50,9 @@
                         <div>
                             <div class="form-input">
                                 <div class="input">
-                                    <input type="text">
+                                    <div>
+                                        <input type="text">
+                                    </div>
                                 </div>
                                 <div class="button">
                                     <button type="button">
@@ -56,13 +66,39 @@
                     </div>
                 </div>
             </li>
+            <li class="description">
+                <div>
+                    <h1>프로필 설명</h1>
+                    <div>
+                        <p>
+                            asdsad
+                        </p>
+                        <div>
+                            <div class="text-area">
+                                <div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
         </ul>
     </div>
 </template>
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+
 export default {
-    name : 'SettingProfile'
+    name : 'SettingProfile',
+    data(){
+        return {
+            // Icons
+            faChevronRight
+        }
+    }
 }
 </script>
 
@@ -77,14 +113,59 @@ export default {
             @include box-shadow(2px 2px 5px rgba(0,0,0,0.1));
         }
 
-        & > h1 {
+        & > .title {
             & {
                 display: block;
-                font-size: #{$font-size + 10};
-                font-weight: bold;
-                color: #999;
-                line-height: 1;
-                padding-bottom: 10px;
+                width: 100%; height: auto;
+                font-size: 0;
+                list-style: none;
+                padding: 10px 15px;
+            }
+
+            & > h1 {
+                & {
+                    display: inline-block;
+                    vertical-align: bottom;
+                    font-size: #{$font-size + 10};
+                    font-weight: bold;
+                    line-height: 1;
+                }
+
+                & > a {
+                    & {
+                        display: block;
+                        color: $bg-blue;
+                        text-decoration: none;
+                    }
+                }
+
+                &:hover {
+                    & {
+                        text-decoration: underline;
+                    }
+                }
+            }
+
+            & > span {
+                & {
+                    display: inline-block;
+                    vertical-align: bottom;
+                    font-size: #{$font-size};
+                    font-weight: bold;
+                    line-height: 1;
+                    padding: 0 10px;
+                    color: #555;
+                }
+            }
+
+            & > h2 {
+                & {
+                    display: inline-block;
+                    vertical-align: bottom;
+                    font-size: #{$font-size};
+                    line-height: 1;
+                    color: #555;
+                }
             }
         }
 
@@ -101,6 +182,12 @@ export default {
                     display: block;
                     width: 100%; height: auto;
                     border-bottom: 1px solid #ddd;
+                }
+
+                &:nth-last-child(1){
+                    & {
+                        border-bottom: 0;
+                    }
                 }
                 
                 & > div {
@@ -130,10 +217,12 @@ export default {
                                 display: block;
                                 width: 100%; height: auto;
                                 font-size: #{$font-size};
+                                font-weight: bold;
                                 margin: 0; padding: 0;
                                 line-height: 1.3;
                                 letter-spacing: 1px;
-                                padding: 0 0 15px 5px;
+                                padding: 0 0 15px 1px;
+                                color: #999;
                                 text-align: left;
                             }
                         }
@@ -224,7 +313,7 @@ export default {
                                 font-size: #{$font-size};
                                 color: #fff;
                                 padding: 7px 25px;
-                                border-radius: 2px;
+                                border-radius: 5px;
                             }
                         }
                     }
@@ -240,7 +329,6 @@ export default {
                                     & {
                                         display: table;
                                         width: 100%; height: 35px;
-                                        border: 1px solid #ddd;
                                     }
 
                                     & > .input {
@@ -248,15 +336,29 @@ export default {
                                             display: table-cell;
                                             vertical-align: middle;
                                             width:100%; height: 100%;
+                                            padding-right: 15px;
                                         }
 
-                                        & > input {
+                                        & > div {
                                             & {
                                                 display: block;
                                                 width: 100%; height: 100%;
-                                                padding: 0; margin: 0;
-                                                border: 0; background: none;
-                                                outline: none;
+                                                border: 1px solid #ddd;
+                                                border-radius: 5px;
+                                            }
+
+                                            & > input {
+                                                & {
+                                                    display: block;
+                                                    width: 100%; height: 100%;
+                                                    padding: 0; margin: 0;
+                                                    border: 0; background: none;
+                                                    outline: none;
+                                                    padding: 0 15px;
+                                                    font-size: #{$font-size};
+                                                    color: #555;
+                                                    letter-spacing: 1px;
+                                                }
                                             }
                                         }
                                     }
@@ -268,17 +370,17 @@ export default {
                                             width: auto; height: auto;
                                             text-align: right;
                                             font-size: 0;
-                                            padding-right: 5px;
                                             white-space: nowrap;
                                         }
 
                                         & > button {
                                             & {
                                                 display: inline-block;
+                                                width: auto; height: 100%;
                                                 border: 0; background: none;
                                                 padding: 0; margin: 0;
                                                 outline: none; cursor: pointer;
-                                                background-color: $bg-orange;
+                                                background-color: $bg-blue;
                                                 border-radius: 5px;
                                             }
 
@@ -291,9 +393,9 @@ export default {
                                                     & {
                                                         display: inline-block;
                                                         vertical-align: middle;
-                                                        font-size: #{$font-size - 2};
+                                                        font-size: #{$font-size};
                                                         color: #fff;
-                                                        padding: 5px 15px;
+                                                        padding: 0px 30px;
                                                     }
                                                 }
                                             }
@@ -305,6 +407,32 @@ export default {
                     }
                 }
                 /* 닉네임 수정 끝 */
+
+                /* 프로필 설명 */
+                &.description {
+                    & > div {
+                        & > div {
+                            & > div {
+                                & > .text-area {
+                                    & {
+                                        display: block;
+                                        width: 100%; height: 100px;
+                                    }
+
+                                    & > div {
+                                        & {
+                                            display: block;
+                                            width: 100%; height: 100%;
+                                            border: 1px solid #ddd;
+                                            border-radius: 5px;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                /* 프로필 설명 끝 */
             }
         }
     }
