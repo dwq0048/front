@@ -19,7 +19,8 @@ const User = {
 			USER_PW: false,
 			ERROR: false,
 			MESSAGE: ''
-		}
+		},
+		DETAILS_INFO: {},
 	},
 	getters: {
 		GET_LOGIN: state => state.IS_LOGIN,
@@ -45,7 +46,7 @@ const User = {
 		SET_LOGOUT(state, payload){
 			state.IS_LOGIN = false;
 			state.USER_INFO = {};
-		}
+		},
 	},
 	actions: {
 		USER_LOGIN: function({commit}, payload){
@@ -122,6 +123,19 @@ const User = {
 		},
 		USER_DATA: function({commit}, payload){
 			commit('SET_STATUS', payload);
+		},
+		USER_DETAILS: function({commit}, payload){
+			return new Promise((resolve, reject) => {
+				axios({
+					method: 'post',
+					url: `/api/1/auth/info`,
+					withCredentials: true,
+				}).then((req) => {
+					resolve(req);
+				}).catch((err) => {
+					reject(false);
+				})
+			});
 		},
 		USER_TOKEN: function({commit}, payload){
 			return new Promise((resolve, reject) => {

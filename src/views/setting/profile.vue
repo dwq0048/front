@@ -84,21 +84,51 @@
                 </div>
             </li>
         </ul>
+        <div class="submit">
+            <div>
+                <div class="right">
+                    <button type="button">
+                        <div>
+                            <span>프로필 저장</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
+
+const userStore = 'userStore'
 
 export default {
     name : 'SettingProfile',
     data(){
         return {
             // Icons
-            faChevronRight
+            faChevronRight,
+
+            info : false
         }
-    }
+    },
+    computed: {},
+    methods : {
+		...mapActions(userStore, [
+            'USER_DETAILS'
+		]),
+    },
+    created(){
+        this.USER_DETAILS().then((req) => {
+            console.log(req);
+        }).catch((err) => {
+            console.log(err);
+        });
+    },
 }
 </script>
 
@@ -433,6 +463,71 @@ export default {
                     }
                 }
                 /* 프로필 설명 끝 */
+            }
+        }
+
+        & > .submit {
+            & {
+                display: block;
+                width: 100%; height: auto;
+            }
+
+            & > div {
+                & {
+                    display: table;
+                    width: 100%; height: auto;
+                    font-size: 0;
+                    padding: 0 15px;
+                }
+
+                & > .right {
+                    & {
+                        display: table-cell;
+                        vertical-align: middle;
+                        text-align: right;
+                        white-space: nowrap;
+                    }
+
+                    & > button {
+                        & {
+                            display: inline-block;
+                            border: 0; background: none;
+                            padding: 0; margin: 0;
+                            outline: none; cursor: pointer;
+                            padding: 10px 30px;
+                            background-color: $bg-orange;
+                            border-radius: 3px;
+                            color: #fff;
+                        }
+
+                        & > div {
+                            & {
+                                display: block;
+                                font-size: 0;
+                            }
+
+                            & > span {
+                                & {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    font-size: #{$font-size};
+                                    font-weight: bold;
+                                    line-height: 1;
+                                }
+                            }
+
+                            & > i {
+                                & {
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    font-size: #{$font-size};
+                                    padding-right: 5px;
+                                    line-height: 1;
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
