@@ -160,6 +160,21 @@ const User = {
 					reject('fail')
 				});
 			});
+		},
+
+		USER_SETTING: function({commit}, payload){
+			return new Promise((resolve, reject) => {
+				axios({
+					method: 'post',
+					url: `/api/1/write/auth/setting/profile`,
+					data: payload,
+					withCredentials: true,
+				}).then((req) => {
+					resolve(req);
+				}).catch((err) => {
+					reject(err);
+				});
+			});
 		}
 	}
 }

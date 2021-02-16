@@ -20,7 +20,7 @@
                             최소 120px x 120px 사이즈 이상의 이미지를 업로드 해주세요( 필수아님 )
                         </p>
                         <div>
-                            <ul>
+                            <ul ref="ImageList">
                                 <li>
                                     <div></div>
                                 </li>
@@ -33,7 +33,10 @@
                             </ul>
                         </div>
                     </div>
-                    <button type="button">
+
+                    <input type="file" ref="ImgRef" @change="UploadImage('ImgRef')" />
+
+                    <button type="button" @click="ClickInput('ImgRef')">
                         <div>
                             <span>사진 업로드</span>
                         </div>
@@ -51,7 +54,7 @@
                             <div class="form-input">
                                 <div class="input">
                                     <div>
-                                        <input type="text">
+                                        <input type="text" v-model="nickname" placeholder="닉네임을 입력해주세요." />
                                     </div>
                                 </div>
                                 <div class="button">
@@ -76,7 +79,7 @@
                         <div>
                             <div class="text-area">
                                 <div>
-
+                                    <textarea v-model="description"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -87,7 +90,7 @@
         <div class="submit">
             <div>
                 <div class="right">
-                    <button type="button">
+                    <button type="button" @click="SubmitProfile">
                         <div>
                             <span>프로필 저장</span>
                         </div>
@@ -100,6 +103,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import { SET_SCRIPT, SET_BOARD } from '@/store/helper/index'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faChevronRight } from '@fortawesome/free-solid-svg-icons'
@@ -113,17 +117,74 @@ export default {
             // Icons
             faChevronRight,
 
-            info : false
+            info : false,
+
+            // variable
+            ImageStorage : {},
+            nickname : '', description : '',
         }
     },
-    computed: {},
+    computed: {
+        ...mapGetters(userStore, [
+            'GET_USER'
+        ]),
+    },
     methods : {
 		...mapActions(userStore, [
-            'USER_DETAILS'
-		]),
+            'USER_DETAILS', 'USER_SETTING'
+        ]),
+        TriggerInput(type){
+			try{
+				this.$refs[type].click();
+			} catch(err) {
+				console.log('Undefined Element');
+			}
+		},
+        ClickInput(type){
+            this.TriggerInput(type);
+        },
+        async UploadImage(type){
+            const input = this.$refs[type].files;
+            if(typeof input == 'object'){
+                if(typeof input[0] == 'object'){
+                    const img = await SET_BOARD.encodeBase64ImageFile(input[0]);
+                    const List = this.$refs.ImageList;
+                    List.querySelectorAll('li').forEach(item => {
+                        item.querySelectorAll('div').forEach(pin => {
+                            pin.innerHTML = `<img src="${img}" class="global-img" />`;
+                        });
+                    });
+
+                    this.ImageStorage = SET_BOARD.dataURLtoFile(img, input[0].name);
+                }
+            }
+        },
+        async SubmitProfile(){
+            let data = {
+                nickname : this.nickname,
+                description : this.description
+            }
+            
+            const fs = new FormData();
+            fs.append('nickname', data.nickname);
+            fs.append('description', data.description);
+            fs.append('image', data.ImageStorage)
+
+            this.USER_SETTING(fs).then((req) => {
+                console.log(req);
+            }).catch((err) => {
+                console.log(err);
+            })
+        }
     },
     created(){
-        this.USER_DETAILS().then((req) => {
+        const data = {
+            index : this.GET_USER.index
+        }
+
+        this.nickname = this.GET_USER.nickname;
+
+        this.USER_DETAILS(data).then((req) => {
             console.log(req);
         }).catch((err) => {
             console.log(err);
@@ -237,6 +298,12 @@ export default {
                         }
                     }
 
+                    & > input[type=file]{
+                        & {
+                            display: none;
+                        }
+                    }
+
                     & > div {
                         & {
                             padding: 10px 0;
@@ -296,6 +363,7 @@ export default {
                                                 border: 1px solid #ddd;
                                                 background-color: #ccc;
                                                 overflow: hidden;
+                                                font-size: 0;
                                             }
 
                                             &:after {
@@ -446,7 +514,8 @@ export default {
                                 & > .text-area {
                                     & {
                                         display: block;
-                                        width: 100%; height: 100px;
+                                        width: 100%; height: 100%;
+                                        min-height: 100%;
                                     }
 
                                     & > div {
@@ -455,6 +524,22 @@ export default {
                                             width: 100%; height: 100%;
                                             border: 1px solid #ddd;
                                             border-radius: 5px;
+                                            font-size: 0;
+                                        }
+
+                                        & > textarea {
+                                            & {
+                                                display: block;
+                                                width: 100%; height: 100%;
+                                                min-height: 100px;
+                                                border: 0; background: none;
+                                                padding: 0; margin: 0;
+                                                outline: none; cursor: text;
+                                                resize: none;
+                                                padding: 10px;
+                                                font-size: #{$font-size};
+                                                color: #555;
+                                            }
                                         }
                                     }
                                 }
@@ -529,6 +614,17 @@ export default {
                     }
                 }
             }
+        }
+    }
+</style>
+
+<style lang="scss">
+    .global-img {
+        & {
+            position: absolute;
+            width: 100%; height: 100%;
+            left: 0; top: 0;
+            object-fit: cover;
         }
     }
 </style>
