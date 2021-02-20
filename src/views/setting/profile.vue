@@ -90,7 +90,7 @@
         <div class="submit">
             <div>
                 <div class="right">
-                    <button type="button" @click="SubmitProfile">
+                    <button type="button" @click="Submit">
                         <div>
                             <span>프로필 저장</span>
                         </div>
@@ -159,16 +159,18 @@ export default {
                 }
             }
         },
-        async SubmitProfile(){
+        async Submit(){
             let data = {
                 nickname : this.nickname,
                 description : this.description
             }
+
+            console.log(data);
             
             const fs = new FormData();
             fs.append('nickname', data.nickname);
             fs.append('description', data.description);
-            fs.append('image', data.ImageStorage)
+            //fs.append('image', data.ImageStorage);
 
             this.USER_SETTING(fs).then((req) => {
                 console.log(req);

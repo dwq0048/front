@@ -166,8 +166,9 @@ const User = {
 			return new Promise((resolve, reject) => {
 				axios({
 					method: 'post',
-					url: `/api/1/write/auth/setting/profile`,
+					url: `/api/1/auth/write/setting/profile`,
 					data: payload,
+                    headers: {'Content-Type': 'multipart/form-data'},
 					withCredentials: true,
 				}).then((req) => {
 					resolve(req);
