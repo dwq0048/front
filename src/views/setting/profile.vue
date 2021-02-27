@@ -20,7 +20,7 @@
                             최소 120px x 120px 사이즈 이상의 이미지를 업로드 해주세요( 필수아님 )
                         </p>
                         <div>
-                            <ul ref="ImageList">
+                            <ul ref="ImageList" :class="{ active : this.meta.image.change }">
                                 <li>
                                     <div></div>
                                 </li>
@@ -51,10 +51,10 @@
                             하루에 최대 1번 ( 한국기준 오전 12시 ) 변경 가능 합니다.
                         </p>
                         <div>
-                            <div class="form-input">
+                            <div class="form-input" :class="{ active : this.meta.nickname.change }">
                                 <div class="input">
                                     <div>
-                                        <input type="text" v-model="nickname" placeholder="닉네임을 입력해주세요." />
+                                        <input type="text" v-model="nickname" @change="InputNickname" placeholder="닉네임을 입력해주세요." />
                                     </div>
                                 </div>
                                 <div class="button">
@@ -77,9 +77,9 @@
                             asdsad
                         </p>
                         <div>
-                            <div class="text-area">
+                            <div class="text-area" :class="{ active : this.meta.description.change }">
                                 <div>
-                                    <textarea v-model="description"></textarea>
+                                    <textarea v-model="description" @change="InputDescription"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -122,6 +122,17 @@ export default {
             // variable
             ImageStorage : {},
             nickname : '', description : '',
+            meta : {
+                image : {
+                    change : false,
+                },
+                nickname : {
+                    change : false,
+                },
+                description : {
+                    change : false
+                },
+            }
         }
     },
     computed: {
@@ -157,8 +168,21 @@ export default {
 
                     this.ImageStorage = [];
                     this.ImageStorage.push(SET_BOARD.dataURLtoFile(img, input[0].name));
+
+                    // Enable Change Image
+                    this.meta.image.change = true;
                 }
             }
+        },
+        InputNickname(){
+            if(this.GET_USER.nickname == this.nickname){
+                this.meta.nickname.change = false;
+            }else{
+                this.meta.nickname.change = true;
+            }
+        },
+        InputDescription(){
+            this.meta.description.change = true;
         },
         async Submit(){
             const FileListItems = (files) => {
@@ -170,7 +194,8 @@ export default {
             let data = {
                 nickname : this.nickname,
                 description : this.description,
-                image : this.ImageStorage
+                image : this.ImageStorage,
+                meta : this.meta
             }
 
             const ImageRequest = new FileListItems(data.image);
@@ -178,6 +203,7 @@ export default {
             const fs = new FormData();
             fs.append('nickname', data.nickname);
             fs.append('description', data.description);
+            fs.append('meta', JSON.stringify(data.meta));
             for(let i=0;i<ImageRequest.length;i++){
 				fs.append('images', ImageRequest[i]);
 			}
@@ -376,6 +402,7 @@ export default {
                                                 background-color: #ccc;
                                                 overflow: hidden;
                                                 font-size: 0;
+                                                @include transition(.2s all);
                                             }
 
                                             &:after {
@@ -409,6 +436,17 @@ export default {
                                             }
                                         }
                                     }
+
+                                    &.active {
+                                        & > li {
+                                            & > div {
+                                                & {
+                                                    border: 2px solid $bg-orange;
+                                                    @include transition(.2s all);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -438,7 +476,7 @@ export default {
                                 & > .form-input {
                                     & {
                                         display: table;
-                                        width: 100%; height: 35px;
+                                        width: 100%; height: 34px;
                                     }
 
                                     & > .input {
@@ -455,6 +493,7 @@ export default {
                                                 width: 100%; height: 100%;
                                                 border: 1px solid #ddd;
                                                 border-radius: 5px;
+                                                @include transition(.2 all);
                                             }
 
                                             & > input {
@@ -511,6 +550,17 @@ export default {
                                             }
                                         }
                                     }
+
+                                    &.active {
+                                        & > .input {
+                                            & > div {
+                                                & {
+                                                    border: 1px solid $bg-orange;
+                                                    @include transition(.2 all);
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -537,6 +587,7 @@ export default {
                                             border: 1px solid #ddd;
                                             border-radius: 5px;
                                             font-size: 0;
+                                            @include transition(.2s all);
                                         }
 
                                         & > textarea {
@@ -551,6 +602,15 @@ export default {
                                                 padding: 10px;
                                                 font-size: #{$font-size};
                                                 color: #555;
+                                            }
+                                        }
+                                    }
+
+                                    &.active {
+                                        & > div {
+                                            & {
+                                                border: 1px solid $bg-orange;
+                                                @include transition(.2s all);
                                             }
                                         }
                                     }
