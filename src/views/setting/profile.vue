@@ -155,22 +155,32 @@ export default {
                         });
                     });
 
-                    this.ImageStorage = SET_BOARD.dataURLtoFile(img, input[0].name);
+                    this.ImageStorage = [];
+                    this.ImageStorage.push(SET_BOARD.dataURLtoFile(img, input[0].name));
                 }
             }
         },
         async Submit(){
-            let data = {
-                nickname : this.nickname,
-                description : this.description
+            const FileListItems = (files) => {
+				var b = new ClipboardEvent("").clipboardData || new DataTransfer()
+				for (var i = 0, len = files.length; i<len; i++) b.items.add(files[i])
+				return b.files
             }
 
-            console.log(data);
+            let data = {
+                nickname : this.nickname,
+                description : this.description,
+                image : this.ImageStorage
+            }
+
+            const ImageRequest = new FileListItems(data.image);
             
             const fs = new FormData();
             fs.append('nickname', data.nickname);
             fs.append('description', data.description);
-            //fs.append('image', data.ImageStorage);
+            for(let i=0;i<ImageRequest.length;i++){
+				fs.append('images', ImageRequest[i]);
+			}
 
             this.USER_SETTING(fs).then((req) => {
                 console.log(req);
