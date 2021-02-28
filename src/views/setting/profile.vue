@@ -20,7 +20,7 @@
                             최소 120px x 120px 사이즈 이상의 이미지를 업로드 해주세요( 필수아님 )
                         </p>
                         <div>
-                            <ul ref="ImageList" :class="{ active : this.meta.image.change }">
+                            <ul ref="ImageList" :class="{ active : this.meta.thumbnail.change }">
                                 <li>
                                     <div></div>
                                 </li>
@@ -123,7 +123,7 @@ export default {
             ImageStorage : {},
             nickname : '', description : '',
             meta : {
-                image : {
+                thumbnail : {
                     change : false,
                 },
                 nickname : {
@@ -170,7 +170,7 @@ export default {
                     this.ImageStorage.push(SET_BOARD.dataURLtoFile(img, input[0].name));
 
                     // Enable Change Image
-                    this.meta.image.change = true;
+                    this.meta.thumbnail.change = true;
                 }
             }
         },
@@ -205,7 +205,7 @@ export default {
             fs.append('description', data.description);
             fs.append('meta', JSON.stringify(data.meta));
             for(let i=0;i<ImageRequest.length;i++){
-				fs.append('images', ImageRequest[i]);
+				fs.append('thumbnail', ImageRequest[i]);
 			}
 
             this.USER_SETTING(fs).then((req) => {
