@@ -15,20 +15,26 @@
                     <h1>프로필 사진</h1>
                     <div>
                         <p>
-                            기기의 Jpeg, Jpg, Png 파일을 업로드 해주세요
+                            기기의 Jpeg, Jpg, Png 파일을 업로드 해주세요.
                             <br />
-                            최소 120px x 120px 사이즈 이상의 이미지를 업로드 해주세요( 필수아님 )
+                            최소 120px x 120px 사이즈 이상의 이미지를 업로드 해주세요.
                         </p>
                         <div>
                             <ul ref="ImageList" :class="{ active : this.meta.thumbnail.change }">
                                 <li>
-                                    <div></div>
+                                    <div>
+                                        <img v-if="this.thumbnail" :src="this.thumbnail" >
+                                    </div>
                                 </li>
                                 <li>
-                                    <div></div>
+                                    <div>
+                                        <img v-if="this.thumbnail" :src="this.thumbnail" >
+                                    </div>
                                 </li>
                                 <li>
-                                    <div></div>
+                                    <div>
+                                        <img v-if="this.thumbnail" :src="this.thumbnail" >
+                                    </div>
                                 </li>
                             </ul>
                         </div>
@@ -49,6 +55,8 @@
                     <div>
                         <p>
                             하루에 최대 1번 ( 한국기준 오전 12시 ) 변경 가능 합니다.
+                            <br />
+                            최소 2글자 이상, 특수문자 제외입니다.
                         </p>
                         <div>
                             <div class="form-input" :class="{ active : this.meta.nickname.change }">
@@ -74,7 +82,7 @@
                     <h1>프로필 설명</h1>
                     <div>
                         <p>
-                            asdsad
+                            최대 300자 이내 작성 가능 합니다.
                         </p>
                         <div>
                             <div class="text-area" :class="{ active : this.meta.description.change }">
@@ -122,6 +130,7 @@ export default {
             // variable
             ImageStorage : {},
             nickname : '', description : '',
+            thumbnail : false,
             meta : {
                 thumbnail : {
                     change : false,
@@ -221,6 +230,8 @@ export default {
         }
 
         this.nickname = this.GET_USER.nickname;
+        this.description = (typeof this.GET_USER.meta.description == 'string') ? this.GET_USER.meta.description : '';
+        this.thumbnail = (typeof this.GET_USER.meta.thumbnail == 'string') ? `http://127.0.0.1:3000/images/${this.GET_USER.meta.thumbnail}` : false;
 
         this.USER_DETAILS(data).then((req) => {
             console.log(req);
@@ -409,6 +420,16 @@ export default {
                                                 content: " ";
                                                 display: block;
                                                 padding-bottom: 100%;
+                                            }
+
+                                            & > img {
+                                                & {
+                                                    display: block;
+                                                    position: absolute;
+                                                    left: 0; top: 0;
+                                                    width: 100%; height: 100%;
+                                                    object-fit: cover;
+                                                }
                                             }
                                         }
 
