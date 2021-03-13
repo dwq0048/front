@@ -161,7 +161,6 @@ const User = {
 				});
 			});
 		},
-
 		USER_SETTING: function({commit}, payload){
 			return new Promise((resolve, reject) => {
 				axios({
@@ -176,7 +175,21 @@ const User = {
 					reject(err);
 				});
 			});
-		}
+		},
+		USER_CAPTURE: function({commit}, payload){
+			return new Promise((resolve, reject) => {
+				axios({
+					method: 'post',
+					url: `/api/1/auth/read/capture_user`,
+					data: payload,
+					withCredentials: true,
+				}).then((req) => {
+					resolve(req);
+				}).catch((err) => {
+					reject(err);
+				});
+			});
+		},
 	}
 }
 

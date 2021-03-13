@@ -45,32 +45,6 @@
 										</div>
 									</div>
 								</div>
-								<!--
-								<div class="notice">
-									<div>
-										<div class="top">
-											<div class="title">
-												<i><font-awesome-icon :icon="faBell" /></i>
-												<h1>새 알림</h1>
-												<span>
-													<span>0</span>
-												</span>
-											</div>
-										</div>
-										<div class="text">
-											<ul>
-												<li>
-													<div>
-														<router-link to="#">
-															새 알림이 없습니다.
-														</router-link>
-													</div>
-												</li>
-											</ul>
-										</div>
-									</div>
-								</div>
-								-->
 								<div class="setting">
 									<router-link to="/setting">
 										<div>
@@ -272,6 +246,7 @@ export default {
 
 			// Variable
 			list : [],
+			index : false,
 			nickname : false,
 			thumbnail : false,
 			description : false,
@@ -286,10 +261,23 @@ export default {
         ...mapActions(postStore, [
             'POST_LIST'
         ]),
+        ...mapActions(userStore, [
+            'USER_CAPTURE'
+        ]),
 		is_mobile(){ return IS_MOBILE() },
 	},
     created(){
-		console.log(this.GET_USER);
+		this.index = (typeof this.$route.params.id == 'string') ? this.$route.params.id : false;
+		const data = {
+			index : this.index,
+			request : ['description', 'thumbnail'],
+		}
+
+		this.USER_CAPTURE(data).then((req) => {
+			console.log(req);
+		}).catch((err) => {
+			console.log(err);
+		})
 
 		this.nickname = (typeof this.GET_USER.nickname == 'string') ? this.GET_USER.nickname : 'ERROR';
         this.thumbnail = (typeof this.GET_USER.meta.thumbnail == 'string') ? `http://127.0.0.1:3000/images/${this.GET_USER.meta.thumbnail}` : false;
@@ -538,111 +526,6 @@ export default {
 											}
 										}
 									}
-								}
-							}
-
-							& > .notice {
-								& {
-									display: block;
-									width: 100%; height: 100%;
-									padding-bottom: 10px;
-								}
-
-								& > div {
-									& {
-										display: block;
-										width: 100%; height: 100%;
-										border-radius: 5px;
-										background-color: #ddd;
-										overflow: hidden;
-									}
-
-									& > .top {
-										& {
-											display: table;
-											width: 100%; height: auto;
-											background-color: #555;
-										}
-
-										& > .title {
-											& {
-												display: table-cell;
-												width: 100%; height: auto;
-												font-size: 0;
-												padding: 7px 10px;
-											}
-
-											& > i {
-												& {
-													display: inline-block;
-													vertical-align: middle;
-													font-size: #{$font-size - 1};
-													line-height: 1;
-													padding-right: 5px;
-													color: #f1f1f1;
-												}
-											}
-
-											& > h1 {
-												& {
-													display: inline-block;
-													vertical-align: middle;
-													font-size: #{$font-size - 1};
-													line-height: 1;
-													color: #f1f1f1;
-													padding-right: 10px;
-												}
-											}
-										}
-									}
-
-									& > .text {
-										& {
-											display: block;
-											width: 100%; height: auto;
-										}
-
-										& > ul {
-											& {
-												display: block;
-												width: 100%; height: auto;
-												font-size: 0;
-												list-style: none;
-											}
-
-											& > li {
-												& {
-													display: block;
-													width: 100%; height: auto;
-													padding: 0 5px;
-												}
-
-												& > div {
-													& {
-														display: block;
-														width: 100%; height: auto;
-													}
-
-													& > a{
-														& {
-															display: block;
-															text-decoration: none;
-															font-size: #{$font-size - 1};
-															padding: 2px 0;
-															color: #555;
-														}
-
-														&:hover {
-															& {
-																text-decoration: underline;
-															}
-														}
-													}
-												}
-											}
-										}
-									}
-
 								}
 							}
 
