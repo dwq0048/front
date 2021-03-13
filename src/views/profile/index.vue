@@ -10,19 +10,67 @@
 						<div class="info">
 							<div>
 								<div class="image">
-									<div>
-
-									</div>
+									<div v-if="!this.thumbnail"></div>
+									<img v-else :src="this.thumbnail" />
 								</div>
 								<div class="description">
 									<div class="name">
-										<h1>닉네임</h1>
+										<h1 v-html="this.nickname"></h1>
+									</div>
+									<div class="text">
+										<!-- <div>{{ this.description }}</div> -->
+										<div v-html="this.description"></div>
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="state">
 							<div>
+								<div class="level">
+									<div>
+										<div class="top">
+											<div>
+												<div class="circle">
+													<h1>
+														<span>0</span>
+													</h1>
+												</div>
+												<div class="line">
+													<h1>Level</h1>
+													<div>
+														<div></div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!--
+								<div class="notice">
+									<div>
+										<div class="top">
+											<div class="title">
+												<i><font-awesome-icon :icon="faBell" /></i>
+												<h1>새 알림</h1>
+												<span>
+													<span>0</span>
+												</span>
+											</div>
+										</div>
+										<div class="text">
+											<ul>
+												<li>
+													<div>
+														<router-link to="#">
+															새 알림이 없습니다.
+														</router-link>
+													</div>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								-->
 								<div class="setting">
 									<router-link to="/setting">
 										<div>
@@ -54,14 +102,6 @@
 										</button>
 									</div>
 									<ul>
-										<li>
-											<router-link to="#">
-												<i><font-awesome-icon :icon="faChartBar" /></i>
-												<div>
-													<span>DashBoard</span>
-												</div>
-											</router-link>
-										</li>
 										<li>
 											<router-link :to="`/profile/${this.$route.params.id}/post`">
 												<i><font-awesome-icon :icon="faClone" /></i>
@@ -148,6 +188,14 @@
 									<ul>
 										<li>
 											<router-link to="#">
+												<i><font-awesome-icon :icon="faChartBar" /></i>
+												<div>
+													<span>DashBoard</span>
+												</div>
+											</router-link>
+										</li>
+										<li>
+											<router-link to="#">
 												<i><font-awesome-icon :icon="faBell" /></i>
 												<div>
 													<span>알림</span>
@@ -208,6 +256,7 @@ import Navigation from '@/components/layout/navigation'
 import Footer from '@/components/layout/footer'
 
 const postStore = 'postStore'
+const userStore = 'userStore'
 
 export default {
 	name: 'ProfileIndex',
@@ -221,15 +270,31 @@ export default {
 			// Icons
 			faChartBar, faClone, faBookmark, faImages, faLockOpen, faHashtag, faLock, faComments, faBell, faHeart, faWheelchair, faCat,
 
-			list : []
+			// Variable
+			list : [],
+			nickname : false,
+			thumbnail : false,
+			description : false,
 		}
 	},
+    computed: {
+        ...mapGetters(userStore, [
+            'GET_USER'
+        ]),
+    },
 	methods : {
         ...mapActions(postStore, [
             'POST_LIST'
         ]),
 		is_mobile(){ return IS_MOBILE() },
 	},
+    created(){
+		console.log(this.GET_USER);
+
+		this.nickname = (typeof this.GET_USER.nickname == 'string') ? this.GET_USER.nickname : 'ERROR';
+        this.thumbnail = (typeof this.GET_USER.meta.thumbnail == 'string') ? `http://127.0.0.1:3000/images/${this.GET_USER.meta.thumbnail}` : false;
+		this.description = (typeof this.GET_USER.meta.description == 'string') ? this.GET_USER.meta.description : 'ERROR';
+    }
 }
 
 </script>
@@ -331,6 +396,23 @@ export default {
 										}
 									}
 								}
+
+								& > .text {
+									& {
+										display: block;
+										width: 100%; height: auto;
+										padding-top: 10px;
+									}
+
+									& > div {
+										& {
+											font-size: #{$font-size};
+											letter-spacing: 1px;
+											line-height: 1.6;
+											color: #666;
+										}
+									}
+								}
 							}
 						}
 					}
@@ -347,18 +429,229 @@ export default {
 								position: relative;
 								display: block;
 								width: 100%; height: 120px;
-								background-color: #ddd;
 								border-radius: 5px;
+								font-size: 0;
+								padding-bottom: 35px;
+							}
+
+							& > .level {
+								& {
+									display: block;
+									width: 100%; height: auto;
+								}
+
+								& > div {
+									& > .top {
+										& {
+											display: block;
+											width: 100%; height: auto;
+										}
+
+										& > div {
+											& {
+												display: table;
+												width: 100%; height: auto;
+											}
+
+											& > .line {
+												& {
+													display: table-cell;
+													vertical-align: bottom;
+													width: 100%; height: auto;
+													padding-left: 10px;
+													padding-bottom: 3px;
+												}
+
+												& > h1 {
+													& {
+														display: block;
+														font-size: #{$font-size + 2};
+														font-weight: bold;
+														color: #999;
+														letter-spacing: 1px;
+														padding: 0px 2px;
+													}
+												}
+
+												& > div {
+													& {
+														display: block;
+														width: 100%; height: 9px;
+														background-color: #ddd;
+														border: 2px solid #ddd;
+														border-radius: 15px;
+														font-size: 0;
+													}
+
+													& > div {
+														& {
+															display: inline-block;
+															width: 50%; height: 100%;
+															background-color: $bg-blue;
+															border-radius: 15px;
+														}
+													}
+												}
+											}
+
+											& > .circle {
+												& {
+													display: table-cell;
+													vertical-align: middle;
+													width: 32px; height: auto;
+												}
+
+												& > h1 {
+													& {
+														position: relative;
+														display: block;
+														width: 32px; height: auto;
+														overflow: hidden;
+														border-radius: 50%;
+														border: 2px solid #aaa;
+														font-size: 0;
+													}
+
+													&:after {
+														& {
+															content: " ";
+															display: block;
+															padding-bottom: 100%;
+														}
+													}
+
+													& > span {
+														& {
+															display: block;
+															position: absolute;
+															text-align: center;
+															line-height: 0;
+															letter-spacing: 0;
+															width: 100%; height: auto; top: 50%;
+															font-size: #{$font-size + 3};
+															font-weight: bold;
+															color: #aaa;
+															@include transform(translateY(-50%));
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+
+							& > .notice {
+								& {
+									display: block;
+									width: 100%; height: 100%;
+									padding-bottom: 10px;
+								}
+
+								& > div {
+									& {
+										display: block;
+										width: 100%; height: 100%;
+										border-radius: 5px;
+										background-color: #ddd;
+										overflow: hidden;
+									}
+
+									& > .top {
+										& {
+											display: table;
+											width: 100%; height: auto;
+											background-color: #555;
+										}
+
+										& > .title {
+											& {
+												display: table-cell;
+												width: 100%; height: auto;
+												font-size: 0;
+												padding: 7px 10px;
+											}
+
+											& > i {
+												& {
+													display: inline-block;
+													vertical-align: middle;
+													font-size: #{$font-size - 1};
+													line-height: 1;
+													padding-right: 5px;
+													color: #f1f1f1;
+												}
+											}
+
+											& > h1 {
+												& {
+													display: inline-block;
+													vertical-align: middle;
+													font-size: #{$font-size - 1};
+													line-height: 1;
+													color: #f1f1f1;
+													padding-right: 10px;
+												}
+											}
+										}
+									}
+
+									& > .text {
+										& {
+											display: block;
+											width: 100%; height: auto;
+										}
+
+										& > ul {
+											& {
+												display: block;
+												width: 100%; height: auto;
+												font-size: 0;
+												list-style: none;
+											}
+
+											& > li {
+												& {
+													display: block;
+													width: 100%; height: auto;
+													padding: 0 5px;
+												}
+
+												& > div {
+													& {
+														display: block;
+														width: 100%; height: auto;
+													}
+
+													& > a{
+														& {
+															display: block;
+															text-decoration: none;
+															font-size: #{$font-size - 1};
+															padding: 2px 0;
+															color: #555;
+														}
+
+														&:hover {
+															& {
+																text-decoration: underline;
+															}
+														}
+													}
+												}
+											}
+										}
+									}
+
+								}
 							}
 
 							& > .setting {
 								& {
 									display: block;
 									position: absolute;
-									left: 0; bottom: 0;
+									left: 0; bottom: 0; right: 0;
 									width: 100%; height: 35px;
-									padding: 0px 15px;
-									margin-bottom: 10px;
 								}
 
 								& > a {
