@@ -65,8 +65,8 @@ import { SET_BOARD, SET_TIME } from '@/store/helper/'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faThLarge, faThList, faEdit, faFilter, faSearch } from '@fortawesome/free-solid-svg-icons'
 
-import BoardList from '../list_skin/board_list.vue'
-import BoardGrid from '../list_skin/board_grid.vue'
+import BoardList from '../list_skin/defaultPack01/list.vue'
+import BoardGrid from '../list_skin/defaultPack01/grid.vue'
 import BoardPhotoGrid from '../list_skin/board_photo_grid.vue'
 import Pagenation from '@/components/board/_variety/pagenation'
 

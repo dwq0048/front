@@ -18,7 +18,6 @@
 										<h1 v-html="this.nickname"></h1>
 									</div>
 									<div class="text">
-										<!-- <div>{{ this.description }}</div> -->
 										<div v-html="this.description"></div>
 									</div>
 								</div>
@@ -77,6 +76,14 @@
 									</div>
 									<ul>
 										<li>
+											<router-link :to="`/profile/${this.$route.params.id}`">
+												<i><font-awesome-icon :icon="faUser" /></i>
+												<div>
+													<span>프로필</span>
+												</div>
+											</router-link>
+										</li>
+										<li>
 											<router-link :to="`/profile/${this.$route.params.id}/post`">
 												<i><font-awesome-icon :icon="faClone" /></i>
 												<div>
@@ -96,16 +103,16 @@
 										</li>
 										<li>
 											<router-link to="#">
-												<i><font-awesome-icon :icon="faBookmark" /></i>
+												<i><font-awesome-icon :icon="faBox" /></i>
 												<div>
-													<span>북마크</span>
+													<span>보관함</span>
 													<b>[69]</b>
 												</div>
 											</router-link>
 										</li>
 										<li>
 											<router-link :to="`/profile/${this.$route.params.id}/visit`">
-												<i><font-awesome-icon :icon="faCat" /></i>
+												<i><font-awesome-icon :icon="faGhost" /></i>
 												<div>
 													<span>방명록</span>
 													<b>[999+]</b>
@@ -188,7 +195,7 @@
 										</li>
 										<li>
 											<router-link to="#">
-												<i><font-awesome-icon :icon="faWheelchair" /></i>
+												<i><font-awesome-icon :icon="faAddressBook" /></i>
 												<div>
 													<span>팔로우</span>
 													<b>[3]</b>
@@ -222,8 +229,8 @@ import { mapActions, mapGetters } from 'vuex'
 import { IS_MOBILE } from '@/store/helper/'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faChartBar, faLockOpen, faHashtag, faLock, faWheelchair, faCat } from '@fortawesome/free-solid-svg-icons'
-import { faBookmark, faClone, faImages, faComments, faBell, faHeart } from '@fortawesome/free-regular-svg-icons'
+import { faChartBar, faLockOpen, faHashtag, faLock, faGhost, faCat, faBox } from '@fortawesome/free-solid-svg-icons'
+import { faBookmark, faClone, faImages, faComments, faBell, faHeart, faUser, faAddressBook } from '@fortawesome/free-regular-svg-icons'
 
 import Header from '@/components/layout/header'
 import Navigation from '@/components/layout/navigation'
@@ -242,7 +249,7 @@ export default {
 	data(){
 		return {
 			// Icons
-			faChartBar, faClone, faBookmark, faImages, faLockOpen, faHashtag, faLock, faComments, faBell, faHeart, faWheelchair, faCat,
+			faChartBar, faClone, faBookmark, faImages, faLockOpen, faHashtag, faLock, faComments, faBell, faHeart, faGhost, faCat, faUser, faBox, faAddressBook,
 
 			// Variable
 			list : [],
@@ -610,10 +617,6 @@ export default {
 							& {
 								display: block;
 								width: 100%; height: auto;
-								border-radius: 5px;
-								padding: 15px;
-								background-color: #fff;
-								@include box-shadow(2px 2px 5px rgba(0,0,0,0.1));
 							}
 						}
 					}

@@ -26,7 +26,7 @@ import { SET_BOARD, SET_TIME } from '@/store/helper/'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faThLarge, faThList, faEdit, faFilter, faSearch } from '@fortawesome/free-solid-svg-icons'
 
-import BoardGrid from '../../list_skin/board_grid.vue'
+import BoardGrid from '../../list_skin/defaultPack01/grid.vue'
 import Pagenation from '@/components/board/_variety/pagenation'
 
 const postStore = 'postStore'
